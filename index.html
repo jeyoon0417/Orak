@@ -1,0 +1,1766 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>오르락내리락 - 가볍게 즐기는 주식·코인 게임</title>
+<meta name="description" content="가상 주식·코인을 사고팔고, 번 돈으로 집·차·옷을 꾸미는 가벼운 픽셀 게임">
+<meta name="theme-color" content="#0b0f14">
+<meta property="og:title" content="오르락내리락">
+<meta property="og:description" content="500만 원으로 시작해서 성까지! 가볍게 즐기는 가상 주식·코인 게임">
+<meta property="og:type" content="website">
+<meta property="og:image" content="icon-512.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="오르락내리락">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+:root{--bg:#0b0f14;--card:#141a22;--line:#232c38;--tx:#e6edf3;--sub:#8b98a5;--up:#ff4d55;--dn:#3d8bff;--acc:#ffc94d}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{min-height:100%;background:var(--bg);color:var(--tx);font-family:-apple-system,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif;font-size:15px}
+body{overscroll-behavior:none}
+button{font-family:inherit;cursor:pointer}
+#app{max-width:520px;margin:0 auto;padding-bottom:76px}
+header{position:sticky;top:0;z-index:5;background:rgba(11,15,20,.96);padding:12px 16px 10px;border-bottom:1px solid var(--line)}
+.hrow{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--sub)}
+.total{font-size:24px;font-weight:800;margin-top:4px;font-variant-numeric:tabular-nums;display:flex;align-items:baseline;gap:8px}
+.total small{font-size:14px;font-weight:700}
+.up{color:var(--up)}.dn{color:var(--dn)}.fl{color:var(--sub)}
+.fu,.fd{border-radius:4px}
+.fu{animation:fu .5s}.fd{animation:fd .5s}
+@keyframes fu{from{background:rgba(255,77,85,.35)}to{background:transparent}}
+@keyframes fd{from{background:rgba(61,139,255,.35)}to{background:transparent}}
+main section{display:none;padding:12px}
+main section.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
+.ct{font-size:13px;color:var(--sub);margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
+.big{font-size:22px;font-weight:800;font-variant-numeric:tabular-nums}
+nav{position:fixed;bottom:0;left:0;right:0;display:flex;justify-content:center;background:#0f141b;border-top:1px solid var(--line);z-index:6;padding-bottom:env(safe-area-inset-bottom)}
+nav .in{display:flex;width:100%;max-width:520px}
+nav button{flex:1;background:none;border:0;color:var(--sub);padding:9px 0 11px;font-size:12px}
+nav button b{display:block;font-size:18px;margin-bottom:2px}
+nav button.on{color:var(--acc)}
+.row{display:flex;align-items:center;gap:10px;padding:11px 4px;border-bottom:1px solid var(--line);cursor:pointer}
+.row:last-child{border-bottom:0}
+.nm{flex:1;min-width:0}.nm b{display:block;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.nm small{color:var(--sub);font-size:11px}
+.pr{text-align:right;font-variant-numeric:tabular-nums}.pr b{display:block}.pr small{font-size:12px}
+.badge{display:inline-block;font-size:10px;padding:1px 5px;border-radius:4px;margin-left:4px;vertical-align:2px;font-weight:700}
+.badge.u{background:var(--up);color:#fff}.badge.d{background:var(--dn);color:#fff}
+.chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:8px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;padding:6px 12px;border-radius:99px;background:var(--card);border:1px solid var(--line);color:var(--sub);font-size:13px}
+.chip.on{background:var(--acc);color:#111;border-color:var(--acc);font-weight:700}
+.news{padding:9px 2px;border-bottom:1px solid var(--line);font-size:14px;line-height:1.4}
+.news:last-child{border-bottom:0}
+.news small{color:var(--sub);font-size:11px;display:block;margin-bottom:2px}
+.tag{display:inline-block;font-size:10px;padding:0 5px;border-radius:4px;margin-left:4px;font-weight:700;background:#2a3340;color:#c9d4df}
+.t-찌라시{background:#4b2a63;color:#e2c3ff}.t-공시{background:#1d4a35;color:#9df0c4}.t-예고{background:#5a4a14;color:#ffe08a}.t-속보{background:#5c1f24;color:#ffb3b8}.t-리포트{background:#1f3a5c;color:#a9cdff}
+.empty{color:var(--sub);text-align:center;padding:20px 0;font-size:13px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.mv .row{padding:8px 2px}
+.sheet{position:fixed;inset:0;background:var(--bg);z-index:10;overflow-y:auto;transform:translateX(100%);transition:transform .2s}
+.sheet.on{transform:none}
+.sheet .wrap{max-width:520px;margin:0 auto;padding:0 12px 30px}
+.dhead{display:flex;align-items:center;gap:10px;padding:12px 0;position:sticky;top:0;background:var(--bg);z-index:2}
+.dhead button{background:none;border:0;color:var(--tx);font-size:28px;line-height:1;padding:0 8px 0 0}
+.dhead small{display:block;color:var(--sub);font-size:12px}
+.dpx{display:flex;align-items:baseline;gap:10px;margin:4px 0 12px}
+.dpx #dprice{font-size:30px;font-weight:800;font-variant-numeric:tabular-nums}
+canvas{width:100%;display:block}
+.seg{display:flex;background:#0e1319;border-radius:10px;padding:3px;margin-bottom:10px}
+.seg button{flex:1;background:none;border:0;color:var(--sub);padding:7px 0;border-radius:8px;font-size:13px;font-weight:600}
+.seg button.on{background:var(--line);color:var(--tx)}
+.seg button.on.buy{background:var(--up);color:#fff}
+.seg button.on.sell{background:var(--dn);color:#fff}
+.hold{font-size:13px;color:var(--sub);margin-bottom:10px;line-height:1.6}
+.qty{display:flex;gap:8px;margin-bottom:8px}
+.qty button{width:46px;background:var(--line);border:0;color:var(--tx);border-radius:10px;font-size:20px}
+.qty input{flex:1;min-width:0;background:#0e1319;border:1px solid var(--line);color:var(--tx);border-radius:10px;padding:10px;font-size:18px;text-align:center;font-variant-numeric:tabular-nums}
+.pcts{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px}
+.pcts button{background:#0e1319;border:1px solid var(--line);color:var(--tx);padding:8px 0;border-radius:8px;font-size:13px}
+.est{font-size:13px;color:var(--sub);text-align:right;margin-bottom:10px;min-height:18px}
+.go{width:100%;border:0;border-radius:12px;padding:14px;font-size:16px;font-weight:800;color:#fff}
+.go.buy{background:var(--up)}.go.sell{background:var(--dn)}
+.go:disabled{opacity:.4}
+#toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%) translateY(20px);background:#222b36;color:#fff;padding:10px 16px;border-radius:10px;font-size:14px;opacity:0;transition:.2s;z-index:30;pointer-events:none;max-width:90%;text-align:center}
+#toast.on{opacity:1;transform:translateX(-50%)}
+#modal{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:20;display:none;align-items:center;justify-content:center;padding:20px}
+#modal.on{display:flex}
+#modal .box{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;width:100%;max-width:400px;max-height:80vh;overflow-y:auto}
+#modal h3{font-size:18px;margin-bottom:6px}
+#modal .go{background:var(--acc);color:#111;margin-top:14px}
+#loading{position:fixed;inset:0;background:var(--bg);z-index:40;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}
+#loading .bar{width:200px;height:6px;background:var(--line);border-radius:3px;overflow:hidden}
+#loading .bar i{display:block;height:100%;width:0;background:var(--acc)}
+#loading p{color:var(--sub);font-size:13px}
+.badge.r{background:#5a4a14;color:#ffe08a}
+.news.early{background:rgba(255,201,77,.06);border-radius:6px;padding-left:6px}
+.t-선공개{background:#5a4a14;color:#ffe08a}
+.xpbar{height:8px;background:#0e1319;border-radius:4px;overflow:hidden;margin-top:10px}
+.xpbar i{display:block;height:100%;background:var(--acc);transition:width .3s}
+.skill{display:flex;align-items:center;gap:12px}
+.skill .sic{font-size:26px}
+.skill .nm small{display:block;margin-top:2px}
+.sbtn{flex:none;background:var(--acc);color:#111;border:0;border-radius:10px;padding:9px 10px;font-size:12px;font-weight:800}
+.sbtn:disabled{background:var(--line);color:var(--sub)}
+/* ---- 마이/상점 ---- */
+.avbox{width:84px;flex:none}
+.stage{position:relative;border-radius:16px;overflow:hidden;margin-bottom:10px;border:2px solid #2a3340;box-shadow:0 6px 20px #0006}
+.stage>img.px{width:100%;display:block}
+.stage .ch{position:absolute;left:46%;bottom:-1%;height:64%;transform:translateX(-50%)}
+.roomtag{position:absolute;top:8px;right:8px;background:#000a;color:#fff;font-weight:800;font-size:11px;padding:4px 8px;border-radius:99px}
+.stage .ch img.px{height:100%;width:auto}
+.flexb{position:absolute;top:8px;left:8px;background:#000a;color:#ffe680;font-weight:800;font-size:12px;padding:4px 9px;border-radius:99px;border:1px solid #ffd84d66}
+.carcard{padding:8px;cursor:pointer}.carcard img.px{border-radius:10px}
+.garage{font-size:12px;color:var(--sub);margin-top:6px;text-align:center}
+.tabs button{font-size:14px;padding:10px 0}
+.cashbar{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--sub);padding:2px 4px 8px}
+.cashbar b{color:#7dffb0;font-size:14px}
+#myslots .chip i{font-style:normal;font-size:10px;background:#0003;border-radius:4px;padding:0 4px;margin-left:2px}
+.mynote{background:#1c2430;border:1px dashed #3a4656;border-radius:10px;padding:8px 10px;font-size:12px;color:#c9d4df;margin-bottom:10px;line-height:1.5}
+.igrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.igrid img.px,.stage img.px,.carcard img.px{max-width:100%}
+.icard{position:relative;background:linear-gradient(180deg,#18202b,#121820);border:2px solid #2a3340;border-radius:14px;padding:8px;cursor:pointer;transition:transform .1s}
+.icard:active{transform:scale(.96)}
+.icard .th{width:100%;background:#0b1017;border-radius:10px;overflow:hidden;aspect-ratio:1/1;display:flex;align-items:flex-end;justify-content:center}
+.icard .th-house,.icard .th-car{aspect-ratio:auto}
+.icard .th img.px{width:100%;height:auto}
+.icard .th-char img.px{width:100%;height:auto}
+.iname{font-size:13px;font-weight:700;margin:7px 2px 6px;line-height:1.25;min-height:32px}
+.st{display:block;text-align:center;font-size:13px;font-weight:800;border-radius:9px;padding:6px 0}
+.st.buy{background:var(--acc);color:#111}.st.buy.no{background:#3a3020;color:#8a7a50}
+.st.own{background:#2a3340;color:var(--tx)}.st.on{background:#1f4d36;color:#7dffb0}
+.icard.on{border-color:#2fd081;box-shadow:0 0 0 1px #2fd08155 inset}
+.rar{position:absolute;top:12px;left:12px;font-size:10px;font-weight:900;padding:1px 6px;border-radius:6px;background:#0009;color:#aab4bf;z-index:1}
+.r1 .rar{color:#7fb6ff}.r2 .rar{color:#d59bff}.r3 .rar{color:#ffd84d}
+.icard.r1{border-color:#2b4c7a}.icard.r2{border-color:#5b3a86;box-shadow:0 0 12px #8e5bd633}.icard.r3{border-color:#a8822a;animation:leg 2s infinite}
+@keyframes leg{0%,100%{box-shadow:0 0 6px #ffd84d33}50%{box-shadow:0 0 18px #ffd84d88}}
+.buybox{text-align:center}.buybox .rar.big{position:static;display:inline-block;font-size:12px;margin-bottom:8px}
+.bigth{width:70%;margin:0 auto 10px;background:#0b1017;border-radius:12px;overflow:hidden}
+.bigth img.px{width:100%}
+.bprice{font-size:24px;font-weight:900;color:var(--acc);margin:4px 0}
+.bnote{color:var(--sub);font-size:12px;margin:6px 0 4px;line-height:1.5}
+#modal .go.flexgo{background:linear-gradient(90deg,#ffd84d,#ff9f43);color:#111;font-size:17px}
+.burst{position:fixed;left:50%;top:50%;font-size:26px;z-index:50;pointer-events:none;animation:bst 1.2s ease-out forwards}
+@keyframes bst{0%{transform:translate(-50%,-50%) scale(.4);opacity:1}100%{transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy) + 120px)) scale(1.2) rotate(30deg);opacity:0}}
+.rrow{gap:8px}
+.gempty{text-align:center;padding:18px 8px}.gempty .gic2{font-size:40px}.gempty b{display:block;font-size:16px;margin:6px 0}.gempty p{color:var(--sub);font-size:13px;line-height:1.5;margin-bottom:12px}
+.gform{display:flex;gap:6px;margin-top:8px}.gform input{flex:1;min-width:0;background:#0e1319;border:1px solid var(--line);color:var(--tx);border-radius:10px;padding:10px;font-size:15px}
+.ghead{display:flex;justify-content:space-between;align-items:center;padding:10px 4px 8px;border-bottom:1px solid var(--line)}.ghead b{font-size:17px}.ghead small{display:block;color:var(--sub);font-size:12px;margin-top:2px}
+.ginv{width:100%;margin:8px 0;background:#0e1319;border:1px solid var(--acc);color:var(--tx);border-radius:8px;padding:8px;font-size:12px}
+.gerr{background:#3a1a1e;color:#ffb3b8;border-radius:8px;padding:8px 10px;font-size:13px;margin:6px 0}
+.gfoot{display:flex;justify-content:space-between;align-items:center;padding:12px 4px 6px;font-size:11px;color:var(--sub)}
+.gleave{background:none;border:1px solid #5c1f24;color:#ff8a92;border-radius:8px;padding:6px 10px;font-size:12px}.rav{width:40px;flex:none}.rav img.px{width:40px}
+.vstats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px}
+.vst{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 4px;text-align:center}
+.vst span{display:block;font-size:11px;color:var(--sub)}.vst b{font-size:13px}
+.gar{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-top:8px}.gar small{display:block;text-align:center;color:var(--sub);font-size:11px}
+.pill{display:inline-block;background:#2a3340;border-radius:99px;padding:4px 10px;font-size:12px;margin:0 4px 6px 0}
+img.px{image-rendering:pixelated;image-rendering:crisp-edges;width:100%;display:block}
+.pv img.px{border-radius:10px}
+.pv-char img.px,.th-char img.px{width:auto;margin:0 auto}
+.pv-char img.px{height:240px}
+.th-char img.px{height:74px}
+.avbox.big img.px{height:150px;width:auto}
+.avbox img.px{height:110px;width:auto;margin:0 auto}
+.avbox.big{width:120px}
+.mytop{display:flex;gap:12px;align-items:center}
+.mytop small{display:block;color:var(--sub);font-size:12px;margin-top:4px}
+#mynick{width:100%;background:#0e1319;border:1px solid var(--line);color:var(--tx);border-radius:8px;padding:7px 9px;font-size:16px;font-weight:800}
+.pv svg{width:100%;display:block;border-radius:10px}
+.pv-char svg{max-height:240px}
+.pv{padding:10px}
+.item{display:flex;align-items:center;gap:12px;padding:10px;margin-bottom:8px}
+.item.on{border-color:var(--acc)}
+.item .nm small{display:block;color:var(--sub);font-size:12px;margin-top:2px}
+.th{width:84px;flex:none;background:#0e1319;border-radius:8px;overflow:hidden}
+.th svg{width:100%;display:block}
+.th-char svg{height:74px}
+.sbtn.eq{background:#2a3340;color:var(--tx)}
+#modal .go.cancel{background:var(--line);color:var(--tx)}
+#myslots{margin-bottom:4px}
+.vtop{display:flex;gap:14px;align-items:center}
+.rank{width:28px;text-align:center;font-weight:800;color:var(--sub)}
+.row.me{background:rgba(255,201,77,.08);border-radius:8px}
+.row.me .nm b{color:var(--acc)}
+.dev{display:flex;gap:6px;flex-wrap:wrap}
+.brand{color:var(--acc);font-weight:900}
+#loading .logo{font-size:26px;font-weight:900;letter-spacing:-.5px;display:flex;align-items:center;gap:8px}
+#loading .logo span{font-size:32px;animation:bob 1s infinite alternate}
+@keyframes bob{to{transform:translateY(-6px)}}
+.setlist{display:grid;gap:8px;margin-bottom:10px}
+.setlist button{background:#0e1319;border:1px solid var(--line);color:var(--tx);padding:11px;border-radius:10px;font-size:14px;text-align:left}
+.legal{color:var(--sub);font-size:11px;line-height:1.6;margin-top:6px}
+.guide{text-align:center}.guide .gic{font-size:46px;margin-bottom:6px}.guide h3{margin-bottom:8px}
+.guide p{color:#c9d4df;font-size:14px;line-height:1.6;margin:8px 0 12px}.guide p b{color:var(--acc)}
+.guide .kv{font-size:15px;padding:6px 4px;border-bottom:1px solid var(--line)}
+#gnick{width:100%;background:#0e1319;border:1px solid var(--acc);color:var(--tx);border-radius:10px;padding:11px;font-size:17px;font-weight:800;text-align:center;margin-bottom:8px}
+.gdots{display:flex;gap:6px;justify-content:center;margin:6px 0 4px}.gdots i{width:7px;height:7px;border-radius:50%;background:var(--line)}.gdots i.on{background:var(--acc);width:18px;border-radius:4px}
+.dev button{background:#0e1319;border:1px solid var(--line);color:var(--sub);padding:7px 10px;border-radius:8px;font-size:12px}
+select{background:var(--card);color:var(--tx);border:1px solid var(--line);border-radius:8px;padding:5px 8px;font-size:12px}
+.kv{display:flex;justify-content:space-between;font-size:14px;padding:4px 0}
+.kv span:first-child{color:var(--sub)}
+</style>
+</head>
+<body>
+<div id="loading"><div class="logo"><span>📈</span>오르락내리락</div><div class="bar"><i id="lbar"></i></div><p id="ltxt">시장 불러오는 중…</p></div>
+
+<div id="app">
+  <header>
+    <div class="hrow"><span id="hseason"></span><span id="hclock"></span></div>
+    <div class="total"><span id="htotal">-</span><small id="hret"></small></div>
+    <div class="hrow" style="margin-top:2px"><span id="hrank"></span><span id="hleft"></span></div>
+  </header>
+  <main>
+    <section id="v-home" class="on">
+      <div class="card">
+        <div class="ct"><span>종합지수 · 오늘</span><span id="idxchg"></span></div>
+        <div class="big" id="idxval"></div>
+        <canvas id="idxcv" style="height:110px;margin-top:6px"></canvas>
+      </div>
+      <div class="grid2">
+        <div class="card mv"><div class="ct">🔥 급등</div><div id="gainers"></div></div>
+        <div class="card mv"><div class="ct">🧊 급락</div><div id="losers"></div></div>
+      </div>
+      <div class="card"><div class="ct"><span>📰 속보</span><span style="font-size:11px">찌라시는 믿거나 말거나</span></div><div id="newsfeed"></div></div>
+    </section>
+    <section id="v-market">
+      <div class="chips" id="fchips">
+        <button class="chip on" data-f="all">전체</button><button class="chip" data-f="big">대형주</button><button class="chip" data-f="mid">중형주</button><button class="chip" data-f="theme">테마주</button><button class="chip" data-f="junk">잡주</button><button class="chip" data-f="coin">코인</button><button class="chip" data-f="hold">보유</button>
+      </div>
+      <div class="card" style="padding:4px 12px">
+        <div class="ct" style="margin:8px 0 2px"><span id="mcount"></span>
+          <select id="msort"><option value="chg">등락률 높은순</option><option value="chgr">등락률 낮은순</option><option value="vol">거래량순</option><option value="name">이름순</option></select>
+        </div>
+        <div id="mlist"></div>
+      </div>
+    </section>
+    <section id="v-acct">
+      <div class="card">
+        <div class="kv"><span>현금</span><b id="acash"></b></div>
+        <div class="kv"><span>평가금액</span><b id="aeval"></b></div>
+        <div class="kv"><span>평가손익</span><b id="apl"></b></div>
+      </div>
+      <div class="card" style="padding:4px 12px"><div class="ct" style="margin:10px 0 2px">보유 종목</div><div id="aholds"></div></div>
+      <div class="card"><div class="ct">최근 거래</div><div id="atrades"></div></div>
+      <div class="card"><div class="ct">⚙️ 설정</div>
+        <div class="setlist"><button data-set="guide">📖 게임 안내 다시 보기</button><button data-set="wipe">🗑️ 모든 데이터 초기화</button></div>
+        <p class="legal">오르락내리락은 가상의 기업과 코인을 다루는 시뮬레이션 게임이야. 실제 주식·코인 시세와 관계없고, 투자 조언이 아니야. 게임 속 돈은 현금으로 바꿀 수 없어.</p>
+        <p class="legal">v1.1.1</p>
+      </div>
+      <div class="card" id="devcard" style="display:none"><div class="ct">개발용 (주소 끝에 #dev 일 때만 보임)</div>
+        <div class="dev"><button data-dev="3600000">+1시간</button><button data-dev="86400000">+1일</button><button data-dev="reset">내 계좌 초기화</button><button data-dev="clear">시간 원래대로</button><button data-dev="xp">+500 XP</button><button data-dev="cash">+10억 현금</button><button data-dev="mreset">성장 초기화</button></div>
+      </div>
+    </section>
+    <section id="v-my">
+      <div class="card mytop"><div id="myavatar" class="avbox"></div><div class="nm">
+        <input id="mynick" maxlength="12" placeholder="닉네임">
+        <small id="mytitle"></small>
+        <button id="myvisit" class="sbtn eq" style="margin-top:8px">👀 내 프로필 보기</button>
+      </div></div>
+      <div id="mystage"></div>
+      <div class="card carcard" id="mycar"></div>
+      <div class="seg tabs" id="myseg"><button data-my="char" class="on">😎 캐릭터</button><button data-my="house">🏠 집</button><button data-my="car">🚗 차</button><button data-my="grow">🌱 성장</button></div>
+      <div id="my-shop">
+        <div class="cashbar"><span id="mycash"></span><span>산 물건은 시즌이 바뀌어도 유지</span></div>
+        <div class="chips" id="myslots"></div>
+        <div class="mynote" id="mynote"></div>
+        <div class="igrid" id="myitems"></div>
+      </div>
+      <div id="my-grow" style="display:none">
+      <div class="card"><div class="ct"><span>내 트레이더</span><span id="gsp"></span></div>
+        <div class="big" id="gtitle"></div>
+        <div class="xpbar"><i id="gxp"></i></div><div class="ct" style="margin:6px 0 0"><span id="gxpt"></span><span>다음 칭호: <b id="gnext"></b></span></div>
+      </div>
+      <div id="gskills"></div>
+      <div class="card"><div class="ct">경험치 얻는 법</div>
+        <div class="kv"><span>매매 1회</span><b>+2 XP (게임 하루 40까지)</b></div>
+        <div class="kv"><span>실현 수익 1만 원당</span><b>+1 XP</b></div>
+        <p style="color:var(--sub);font-size:12px;margin-top:6px">레벨과 스킬은 시즌이 바뀌어도 유지돼.</p>
+      </div>
+    </div>
+    </section>
+    <section id="v-rank">
+      <div class="seg tabs"><button data-rmode="asset" class="on">💰 자산</button><button data-rmode="flex">💎 플렉스</button><button data-rmode="group">👥 그룹</button></div><div class="card" style="padding:4px 10px"><div id="rlist"></div></div>
+      <p id="rnote" style="color:var(--sub);font-size:12px;padding:0 6px">지금은 AI 트레이더 12명과 경쟁해. 온라인 랭킹은 곧 열려! 누르면 그 사람 집·차·명품을 구경할 수 있어. 플렉스 랭킹은 산 물건 총액 순이야.</p>
+    </section>
+  </main>
+</div>
+
+<nav><div class="in">
+  <button class="on" data-v="home"><b>🏠</b>홈</button>
+  <button data-v="market"><b>📈</b>시장</button>
+  <button data-v="acct"><b>💼</b>계좌</button>
+  <button data-v="my"><b>😎</b>마이</button>
+  <button data-v="rank"><b>🏆</b>랭킹</button>
+</div></nav>
+
+<div id="detail" class="sheet"><div class="wrap">
+  <div class="dhead"><button id="dback">‹</button><div><b id="dname"></b><small id="dtag"></small></div></div>
+  <div class="dpx"><span id="dprice"></span><span id="dchg"></span></div>
+  <div class="card">
+    <div class="seg" id="cmode"><button data-cm="day" class="on">일봉</button><button data-cm="intra">오늘</button></div>
+    <canvas id="dcv" style="height:230px"></canvas>
+    <div class="ct" style="margin:8px 0 0" id="dinfo"></div>
+  </div>
+  <div class="card">
+    <div class="seg" id="tmode"><button data-tm="buy" class="on buy">매수</button><button data-tm="sell" class="sell">매도</button></div>
+    <div class="hold" id="dhold"></div>
+    <div class="qty"><button id="qm">−</button><input id="qin" type="number" inputmode="numeric" min="0" value="0"><button id="qp">+</button></div>
+    <div class="pcts"><button data-p="0.1">10%</button><button data-p="0.25">25%</button><button data-p="0.5">50%</button><button data-p="1">최대</button></div>
+    <div class="est" id="dest"></div>
+    <button id="dgo" class="go buy">매수하기</button>
+  </div>
+  <div class="card" id="autocard" style="display:none"><div class="ct">🤖 자동 감시 주문 <span style="font-size:11px">평단 기준</span></div><div class="kv"><span>손절</span><select id="asl"><option value="0">없음</option><option value="-5">-5%</option><option value="-10">-10%</option><option value="-20">-20%</option><option value="-30">-30%</option><option value="-50">-50%</option></select></div><div class="kv"><span>익절</span><select id="atp"><option value="0">없음</option><option value="10">+10%</option><option value="20">+20%</option><option value="50">+50%</option><option value="100">+100%</option><option value="300">+300%</option></select></div></div>
+  <div class="card"><div class="ct">관련 뉴스</div><div id="dnews"></div></div>
+</div></div>
+
+<div id="visit" class="sheet"><div class="wrap">
+  <div class="dhead"><button id="vback">‹</button><div><b id="vname"></b><small id="vsub"></small></div></div>
+  <div id="vstage"></div>
+  <div class="vstats" id="vstats"></div>
+  <div class="card carcard" id="vcar"></div>
+  <div class="card"><div class="ct">💎 착용 중인 명품·오라·럭셔리</div><div id="vbling"></div></div>
+</div></div>
+<div id="modal"><div class="box" id="mbox"></div></div>
+<div id="toast"></div>
+
+<script>
+(()=>{
+// ===== 설정 =====
+const TICK_MS=5000;            // 현실 5초 = 1틱
+const TPD=120;                 // 1게임일 = 120틱 = 현실 10분 (09:00~15:00, 틱당 3분)
+const SEASON_TICKS=Math.floor(7*86400000/TICK_MS); // 1주 시즌
+const LEAK=10;                 // 뉴스 전 거래량 선행 틱 수
+const START_CASH=5000000;
+const sqT=Math.sqrt(TPD);
+
+const SECT={IT:'전자·IT',CAR:'자동차',TEL:'통신',FIN:'금융',CHEM:'화학·소재',FOOD:'유통·식품',ENT:'엔터·게임',BIO:'바이오',SPACE:'우주항공',BAT:'2차전지',AI:'AI',SHIP:'건설·조선',COIN:'코인'};
+// sx:일 변동성, kx:평균회귀, smu:장기추세 변동, beta:시장 민감도, ev:뉴스 충격 범위(로그), vb:기본 거래량
+const TYPE={
+  big:{label:'대형주',sx:.015,kx:.2,smu:.006,beta:1.0,ev:[.02,.07],vb:60000},
+  mid:{label:'중형주',sx:.025,kx:.15,smu:.01,beta:1.1,ev:[.04,.12],vb:25000},
+  theme:{label:'테마주',sx:.045,kx:.1,smu:.02,beta:1.2,ev:[.08,.35],vb:40000},
+  junk:{label:'잡주',sx:.07,kx:.06,smu:.03,beta:1.3,ev:[.1,.45],vb:15000},
+  coin:{label:'코인',sx:.24,kx:.04,smu:.08,beta:.3,ev:[.2,.9],vb:200000}
+};
+const DEF=[
+ ['누리전자','IT','big',68000],['하늘자동차','CAR','big',210000],['바름통신','TEL','big',52000],['한빛금융','FIN','big',41000],['다온화학','CHEM','big',380000],
+ ['새벽식품','FOOD','mid',27000],['별빛엔터','ENT','mid',45000],['푸른조선','SHIP','mid',33000],['미래로봇','IT','mid',88000],['온새미유통','FOOD','mid',15000],
+ ['새싹바이오','BIO','theme',12000],['우주항공K','SPACE','theme',23000],['이차전지랩','BAT','theme',56000],['초전도테크','CHEM','theme',8700],['AI두뇌','AI','theme',31000],
+ ['작전건설','SHIP','junk',2300],['수상한상사','FOOD','junk',1450],['반짝게임즈','ENT','junk',3900],['묻지마홀딩스','FIN','junk',870],['한방바이오','BIO','junk',1900],
+ ['존버코인','COIN','coin',52000],['떡상체인','COIN','coin',3200],['가즈아토큰','COIN','coin',870],['물타기코인','COIN','coin',120],['밈멍코인','COIN','coin',15]
+];
+const STOCKS=DEF.map((d,i)=>({i,name:d[0],sec:d[1],type:d[2],p0:d[3],lp0:Math.log(d[3]),coin:d[2]==='coin'}));
+const N=STOCKS.length;
+const SEC_IDX={}; STOCKS.forEach(s=>(SEC_IDX[s.sec]=SEC_IDX[s.sec]||[]).push(s.i));
+const ACT_SECT=Object.keys(SEC_IDX);
+const ALL_SECT=Object.keys(SECT);
+
+// ===== 난수 =====
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function mkGauss(r){let sp=null;return()=>{if(sp!==null){const s=sp;sp=null;return s}let u=0;while(u===0)u=r();const v=r();const m=Math.sqrt(-2*Math.log(u));sp=m*Math.sin(2*Math.PI*v);return m*Math.cos(2*Math.PI*v)}}
+const pick=(r,a)=>a[Math.floor(r()*a.length)];
+
+// ===== 뉴스 생성기 =====
+// 원칙: 사건(대상·방향·크기·반응 모양)을 먼저 정하고, 그 수치로 문장을 만든다.
+// 주가는 문장이 아니라 사건의 "충격(impulse)"으로 움직인다 → 문장과 주가가 절대 어긋나지 않음.
+// 반응 모양: jump(즉시 반영), drift(1~2일에 걸쳐 서서히), fade(급등 후 재료 소멸로 일부 반납)
+function genEvents(seed){
+  const r=mulberry32(seed^0x9e3779b9), imps=[], news=[];
+  const R=(a,b)=>a+r()*(b-a), RI=(a,b)=>Math.floor(R(a,b+1)), pk=a=>a[Math.floor(r()*a.length)];
+  const N_=(t,o)=>{if(t<SEASON_TICKS)news.push(Object.assign({t},o))};
+  const I_=(t,o)=>{if(t<SEASON_TICKS)imps.push(Object.assign({t,dur:RI(3,8),leak:false},o))};
+  const rs=pred=>{const c=STOCKS.filter(pred);return c[Math.floor(r()*c.length)]};
+  const sev=(f,a,b,c)=>f<.4?a:f<.75?b:c;
+  const magOf=(s,f)=>{const e=TYPE[s.type].ev;return e[0]+f*(e[1]-e[0])};
+  const won억=(s,f)=>Math.round(((s.type==='big'?800:s.type==='mid'?300:80)*(.5+f*3))/10)*10;
+  const SK=(s,i,mag,profile,t)=>{        // 종목 충격 + 반응 모양
+    if(profile==='drift') I_(t,{kind:'stock',i,mag,dur:RI(60,200)});
+    else { I_(t,{kind:'stock',i,mag,leak:true});
+      if(profile==='fade') I_(t+RI(20,60),{kind:'stock',i,mag:-mag*R(.3,.6),dur:RI(80,200)}); }
+  };
+
+  // --- 단발 종목 뉴스 ---
+  const POS=[
+    {tag:'공시',p:'jump', f:(s,f)=>`${s.name}, ${won억(s,f)}억 원 규모 ${sev(f,'공급','대규모 수주','사상 최대 수주')} 계약 체결`},
+    {tag:'공시',p:'jump', f:(s,f)=>`${s.name}, ${won억(s,f)}억 원 자사주 매입 결정`, k:.6},
+    {tag:'속보',p:'drift',f:(s,f)=>`${s.name} 신제품 ${sev(f,'반응 양호','사전예약 폭주','출시 직후 품귀')}`},
+    {tag:'리포트',p:'jump',f:(s,f)=>`증권가, ${s.name} 목표주가 ${Math.round(10+f*40)}% 상향`, k:.5},
+  ];
+  const NEG=[
+    {tag:'공시',p:'jump', f:(s,f)=>`${s.name}, ${won억(s,f)}억 원 규모 유상증자 결정`},
+    {tag:'속보',p:'jump', f:(s,f)=>`${s.name}, ${sev(f,'일부 제품','주력 제품','전 제품')} 리콜 결정`},
+    {tag:'공시',p:'jump', f:(s,f)=>`${s.name} 최대주주, 지분 ${(1+f*9).toFixed(1)}% 장내 매도`},
+    {tag:'리포트',p:'jump',f:(s,f)=>`증권가, ${s.name} 목표주가 ${Math.round(10+f*40)}% 하향`, k:.5},
+  ];
+  const SEC_NEWS={
+    COIN:{p:[{tag:'속보',p:'fade',f:(s,f)=>`${s.name}, 대형 거래소 원화마켓 상장 확정`},{tag:'속보',p:'drift',f:(s,f)=>`고래 지갑, ${s.name} ${sev(f,'','대량','역대급')} 매집 포착`.replace('  ',' ')}],
+          n:[{tag:'속보',p:'jump',f:(s,f)=>`${s.name}, ${sev(f,'소규모','대규모','역대급')} 해킹 피해 발생`},{tag:'속보',p:'drift',f:(s,f)=>`고래 지갑, ${s.name} 대량 매도 포착`}]},
+    SPACE:{p:[{tag:'속보',p:'fade',f:s=>`${s.name}, 위성 발사 성공… 궤도 안착`}],n:[{tag:'속보',p:'jump',f:s=>`${s.name}, 발사체 이륙 직후 폭발`}]},
+    BAT:{p:[{tag:'속보',p:'drift',f:s=>`${s.name}, 차세대 배터리 양산 돌입`}],n:[{tag:'속보',p:'jump',f:s=>`${s.name} 배터리 화재 사고 잇따라`}]},
+    ENT:{p:[{tag:'속보',p:'fade',f:s=>`${s.name}, 신작 출시 첫날 매출 1위`}],n:[{tag:'속보',p:'jump',f:s=>`${s.name} 신작 흥행 참패`}]},
+    AI:{p:[{tag:'속보',p:'fade',f:s=>`${s.name}, 초거대 AI 모델 공개`}],n:[{tag:'속보',p:'jump',f:s=>`${s.name} AI 서비스 장애 장기화`}]},
+  };
+  function single(t){
+    const s=pk(STOCKS), f=r(), mag=magOf(s,f), pos=r()<.52;
+    const sp=SEC_NEWS[s.sec]; let c;
+    if(sp&&r()<.6) c=pk(pos?sp.p:sp.n); else if(s.coin) return; else c=pk(pos?POS:NEG);
+    const m=(pos?1:-1)*mag*(c.k||1);
+    N_(t,{kind:'stock',i:s.i,pos,tag:c.tag,text:c.f(s,f)}); SK(s,s.i,m,c.p,t);
+  }
+  // --- 실적 발표: 예고 → 다음 날 결과 ---
+  function earnings(t){
+    const s=rs(x=>!x.coin), f=r(), mag=magOf(s,f);
+    const day=Math.floor((t-1)/TPD), t2=(day+1)*TPD+1+RI(0,4);
+    N_(t,{kind:'stock',i:s.i,pos:null,tag:'예고',text:`${s.name}, 내일 장 시작 직후 실적 발표 예정`});
+    const u=r();
+    if(u<.4){ const x=Math.round(mag*300+r()*15);
+      N_(t2,{kind:'stock',i:s.i,pos:true,tag:'공시',text:`${s.name} 영업이익 전년 대비 +${x}%… ${sev(f,'예상 상회','어닝 서프라이즈','사상 최대 실적')}`}); SK(s,s.i,mag,'jump',t2);
+    } else if(u<.75){ const x=Math.round(mag*250+r()*15);
+      N_(t2,{kind:'stock',i:s.i,pos:false,tag:'공시',text:`${s.name} 영업이익 전년 대비 -${x}%… ${sev(f,'예상 하회','어닝 쇼크','적자 전환')}`}); SK(s,s.i,-mag,'jump',t2);
+    } else {
+      N_(t2,{kind:'stock',i:s.i,pos:null,tag:'공시',text:`${s.name} 실적, 시장 예상치 부합`}); SK(s,s.i,(r()-.5)*mag*.3,'jump',t2);
+    }
+  }
+  // --- 찌라시 → 공시로 확인 또는 해명 ---
+  const RUM_P=[['인수합병설','인수합병 공식 발표'],['대형 계약 임박설','대형 계약 체결 공시'],['신사업 진출설','신사업 진출 공식화'],['대기업 지분 투자설','대기업 지분 투자 확정']];
+  const RUM_N=[['회계 부정설','회계 부정 사실 확인'],['대주주 잠적설','대주주 연락 두절 공식 확인'],['부도설','1차 부도 공시'],['감사의견 거절설','감사의견 거절 공시']];
+  function rumor(t){
+    const s=rs(x=>!x.coin), f=r(), mag=magOf(s,f)*1.2, pos=r()<.55, d=pos?1:-1, rm=pk(pos?RUM_P:RUM_N);
+    N_(t,{kind:'stock',i:s.i,pos,tag:'찌라시',text:`[찌라시] ${s.name} ${rm[0]}`});
+    I_(t,{kind:'stock',i:s.i,mag:d*mag*.4,dur:RI(10,40)});            // 기대감/공포로 먼저 움직임
+    const t2=t+RI(TPD/2,TPD*3);
+    if(r()<.45){ N_(t2,{kind:'stock',i:s.i,pos,tag:'공시',text:`${s.name}, ${rm[1]}`}); I_(t2,{kind:'stock',i:s.i,mag:d*mag*.8,leak:true}); }
+    else { N_(t2,{kind:'stock',i:s.i,pos:!pos,tag:'공시',text:`${s.name}, "${rm[0].replace(/설$/,'')}" 사실무근 공식 해명`}); I_(t2,{kind:'stock',i:s.i,mag:-d*mag*.45}); }
+  }
+  // --- 경영진 의혹 → 압수수색 → 무혐의/기소 ---
+  function scandal(t){
+    const s=rs(x=>!x.coin), mag=magOf(s,r());
+    N_(t,{kind:'stock',i:s.i,pos:false,tag:'속보',text:`${s.name} 경영진 ${pk(['배임','횡령','시세조종'])} 의혹 제기`}); SK(s,s.i,-mag*.5,'jump',t);
+    const t2=t+RI(TPD,TPD*2);
+    if(r()<.6){
+      N_(t2,{kind:'stock',i:s.i,pos:false,tag:'속보',text:`검찰, ${s.name} 본사 압수수색`}); SK(s,s.i,-mag*.4,'jump',t2);
+      const t3=t2+RI(TPD*2,TPD*4);
+      if(r()<.5){ N_(t3,{kind:'stock',i:s.i,pos:true,tag:'속보',text:`${s.name} 경영진, 무혐의 처분`}); SK(s,s.i,mag*.6,'jump',t3); }
+      else { N_(t3,{kind:'stock',i:s.i,pos:false,tag:'속보',text:`${s.name} 경영진 기소… 경영 공백 우려`}); SK(s,s.i,-mag*.4,'jump',t3); }
+    } else { N_(t2,{kind:'stock',i:s.i,pos:true,tag:'공시',text:`${s.name}, 의혹 공식 반박… 법적 대응 예고`}); SK(s,s.i,mag*.3,'jump',t2); }
+  }
+  // --- 바이오 임상: 발표일 예고 → 기대감 상승 → 성공/실패 ---
+  function trial(t){
+    const s=rs(x=>x.sec==='BIO'), mag=magOf(s,r())*1.3, days=RI(2,4), t2=t+days*TPD;
+    N_(t,{kind:'stock',i:s.i,pos:null,tag:'예고',text:`${s.name}, 신약 임상 3상 결과 ${days}일 뒤 발표`});
+    I_(t,{kind:'stock',i:s.i,mag:mag*.35,dur:days*TPD});              // 기대감 선반영
+    if(r()<.45){ N_(t2,{kind:'stock',i:s.i,pos:true,tag:'공시',text:`${s.name}, 임상 3상 성공… 1차 지표 충족`}); SK(s,s.i,mag,'fade',t2); }
+    else { N_(t2,{kind:'stock',i:s.i,pos:false,tag:'공시',text:`${s.name}, 임상 3상 실패… 1차 지표 미충족`}); SK(s,s.i,-mag*1.3,'jump',t2); }
+  }
+  // --- 코인 상장설 → 상장 확정(재료 소멸) 또는 무산 ---
+  function listing(t){
+    const s=rs(x=>x.coin), mag=magOf(s,r());
+    N_(t,{kind:'stock',i:s.i,pos:true,tag:'찌라시',text:`[찌라시] 대형 거래소, ${s.name} 상장 검토설`});
+    I_(t,{kind:'stock',i:s.i,mag:mag*.4,dur:RI(20,60)});
+    const t2=t+RI(TPD,TPD*3);
+    if(r()<.5){ N_(t2,{kind:'stock',i:s.i,pos:true,tag:'공시',text:`대형 거래소, ${s.name} 상장 확정`}); SK(s,s.i,mag*.5,'fade',t2); }
+    else { N_(t2,{kind:'stock',i:s.i,pos:false,tag:'속보',text:`${s.name} 거래소 상장 무산`}); SK(s,s.i,-mag*.55,'jump',t2); }
+  }
+  // --- 업종 / 시장 ---
+  function sector(t){
+    const sec=pk(ACT_SECT), f=r(), pos=r()<.52, mag=(.03+f*.1)*(sec==='COIN'?3:1), n=SECT[sec];
+    const tx=pos?pk([`정부, ${n} 업종 육성책 발표`,`${n} 수요 ${sev(f,'회복','급증','폭발')} 전망 보고서`,`${n} 업종 수출 사상 최대`])
+                :pk([`정부, ${n} 업종 규제 강화`,`${n} 업황 ${sev(f,'둔화','악화','침체')} 우려 확산`,`${n} 원자재 가격 급등`]);
+    N_(t,{kind:'sector',sec,pos,tag:'업종',text:tx});
+    I_(t,{kind:'sector',sec,mag:pos?mag:-mag,dur:RI(60,240)});
+  }
+  function market(t){
+    const pos=r()<.5, mag=.02+r()*.05;
+    N_(t,{kind:'market',pos,tag:'시장',text:pos?pk(['기준금리 인하 결정','기관 대규모 순매수 유입','경기 회복 신호 뚜렷']):pk(['기준금리 인상 결정','증시 전반 패닉 셀링','경기 침체 경고 확산'])});
+    I_(t,{kind:'market',mag:pos?mag:-mag,dur:RI(5,30)});
+  }
+
+  let t=20;
+  while(true){
+    t+=1+Math.floor(-Math.log(1-r())*40);
+    if(t>=SEASON_TICKS) break;
+    const k=r();
+    if(k<.50) single(t); else if(k<.62) earnings(t); else if(k<.72) rumor(t); else if(k<.77) scandal(t);
+    else if(k<.81) trial(t); else if(k<.85) listing(t); else if(k<.96) sector(t); else market(t);
+  }
+  imps.sort((a,b)=>a.t-b.t); news.sort((a,b)=>a.t-b.t);
+  return {imps,news};
+}
+
+// ===== 시장 엔진 =====
+class Market{
+  constructor(seed){
+    this.rng=mulberry32(seed); this.g=mkGauss(this.rng);
+    const G=genEvents(seed); this.imps=G.imps; this.allNews=G.news; this.ip=0; this.np=0; this.active=[];
+    this.t=0; this.M=0; this.Mt=0; this.nextReg=TPD*2;
+    this.S={}; ALL_SECT.forEach(k=>this.S[k]=0);
+    this.X=new Float64Array(N); this.mu=new Float64Array(N); this.E=new Float64Array(N);
+    this.p=STOCKS.map(s=>s.p0); this.open=this.p.slice();
+    this.cur=STOCKS.map(s=>({o:s.p0,h:s.p0,l:s.p0,c:s.p0,v:0}));
+    this.days=STOCKS.map(()=>[]); this.intra=STOCKS.map(s=>[s.p0]);
+    this.news=[];
+    this.idx=1000; this.idxOpen=1000; this.idxIntra=[1000];
+    this.addE=new Float64Array(N); this.vm=new Float64Array(N);
+    this.pp=new Float64Array(this.p); this.lastV=new Float64Array(N); this.lastVm=new Float64Array(N);
+  }
+  step(){
+    const t=++this.t, r=this.rng, g=this.g;
+    this.pp.set(this.p);   // 직전 틱 가격 (실시간 봉 보간용)
+    // 새 거래일 시작
+    if(t>1&&(t-1)%TPD===0){
+      for(let i=0;i<N;i++){const p=this.p[i];this.days[i].push(this.cur[i]);this.open[i]=p;this.cur[i]={o:p,h:p,l:p,c:p,v:0};this.intra[i]=[p];}
+      this.idxOpen=this.idx; this.idxIntra=[this.idx];
+    }
+    // 장세 전환 (상승장/하락장/횡보)
+    if(t>=this.nextReg){
+      const u=r(); const d=.08+r()*.12;
+      this.Mt=this.M*.5+(u<.45?d:u<.8?-d:0);
+      this.nextReg=t+TPD*(3+Math.floor(r()*8));
+    }
+    // 이벤트 처리
+    const addE=this.addE.fill(0), vm=this.vm.fill(1), addS={}; let addM=0;
+    while(this.np<this.allNews.length&&this.allNews[this.np].t<=t) this.news.push(this.allNews[this.np++]);
+    while(this.ip<this.imps.length&&this.imps[this.ip].t-LEAK<=t) this.active.push(this.imps[this.ip++]);
+    if(this.active.length) this.active=this.active.filter(e=>t<=e.t+e.dur);
+    for(const e of this.active){
+      let f=0, vmul;
+      if(t<e.t){ if(!e.leak) continue; f=e.mag*.15/LEAK; vmul=1.5+(1-(e.t-t)/LEAK)*3; }  // 정보 새는 구간: 거래량 먼저 튐
+      else { if(t<e.t+e.dur) f=(e.leak?e.mag*.85:e.mag)/e.dur; vmul=e.dur>30?1.6:4; }
+      if(e.kind==='stock'){ addE[e.i]+=f; if(vmul>vm[e.i]) vm[e.i]=vmul; }
+      else if(e.kind==='sector'){ addS[e.sec]=(addS[e.sec]||0)+f; for(const i of SEC_IDX[e.sec]){const v=1+(vmul-1)*.6; if(v>vm[i]) vm[i]=v;} }
+      else { addM+=f; const v=1+(vmul-1)*.3; for(let i=0;i<N;i++) if(v>vm[i]) vm[i]=v; }
+    }
+    this.lastVm.set(vm);
+    // 시장 / 업종 요인
+    this.M+=(.12/TPD)*(this.Mt-this.M)+(.012/sqT)*g()+addM;
+    for(const k of ALL_SECT){
+      const c=k==='COIN', sd=c?.12:.015, kd=c?.05:.15;
+      this.S[k]+=-(kd/TPD)*this.S[k]+(sd/sqT)*g()+(addS[k]||0);
+    }
+    // 종목
+    let idxSum=0, idxN=0;
+    for(let i=0;i<N;i++){
+      const s=STOCKS[i], ty=TYPE[s.type];
+      this.mu[i]+=(ty.smu/sqT)*g();
+      this.X[i]+=(ty.kx/TPD)*(this.mu[i]-this.X[i])+(ty.sx/sqT)*g();
+      this.E[i]+=-(.15/TPD)*this.E[i]+addE[i];
+      let np=Math.exp(s.lp0+ty.beta*this.M+this.S[s.sec]+this.X[i]+this.E[i]);
+      if(!s.coin){ const o=this.open[i]; if(np>o*1.3) np=o*1.3; else if(np<o*.7) np=o*.7; }  // 상하한가 ±30%
+      const prev=this.p[i];
+      const v=Math.round(ty.vb*(.6+.8*r())*vm[i]*(1+30*Math.abs(np/prev-1)));
+      this.p[i]=np; this.lastV[i]=v;
+      const c=this.cur[i]; c.c=np; if(np>c.h)c.h=np; if(np<c.l)c.l=np; c.v+=v;
+      this.intra[i].push(np);
+      if(!s.coin){ idxSum+=np/s.p0; idxN++; }
+    }
+    this.idx=idxSum/idxN*1000; this.idxIntra.push(this.idx);
+  }
+}
+
+// ===== 시즌 / 시간 =====
+const DEV=location.hash==='#dev'; let devOff=0; if(DEV){try{devOff=+localStorage.getItem('sg_dev')||0}catch(e){}}
+const now=()=>Date.now()+devOff;
+function seasonOf(ms){const kst=ms+9*3600e3, day=Math.floor(kst/86400e3), dow=(day+3)%7, mon=day-dow;return{id:Math.floor(mon/7),start:mon*86400e3-9*3600e3}}
+const SS=seasonOf(now());
+const SEASON_NO=SS.id-seasonOf(Date.UTC(2026,10,10)).id+1;
+const SEED=((SS.id*2654435761)>>>0)^0x5eed1234;
+const curTick=()=>Math.max(0,Math.min(SEASON_TICKS,Math.floor((now()-SS.start)/TICK_MS)));
+const pad=n=>String(n).padStart(2,'0');
+function gclock(t){if(t<1)return '1일차 09:00';const d=Math.floor((t-1)/TPD)+1,mm=((t-1)%TPD)*3;return `${d}일차 ${pad(9+Math.floor(mm/60))}:${pad(mm%60)}`}
+
+// ===== 포맷 =====
+function tickSize(p,coin){
+  if(coin){if(p<1)return .0001;if(p<10)return .001;if(p<100)return .01;if(p<1000)return .1;return 1}
+  if(p<2000)return 1;if(p<5000)return 5;if(p<20000)return 10;if(p<50000)return 50;if(p<200000)return 100;if(p<500000)return 500;return 1000;
+}
+function rp(p,coin){const ts=tickSize(p,coin);return Math.max(ts,Math.round(p/ts)*ts)}
+function fp(p,coin){const ts=tickSize(p,coin);const d=ts<1?Math.round(-Math.log10(ts)):0;return p.toLocaleString('ko-KR',{minimumFractionDigits:d,maximumFractionDigits:d})}
+const won=n=>Math.round(n).toLocaleString('ko-KR')+'원';
+const cls=c=>c>1e-9?'up':c<-1e-9?'dn':'fl';
+const pct=c=>(c>0?'+':'')+(c*100).toFixed(2)+'%';
+const $=s=>document.querySelector(s);
+const px=i=>rp(liveP(i),STOCKS[i].coin);
+const tpx=i=>rp(m.p[i],STOCKS[i].coin);   // 체결가(틱 가격)
+const dchg=i=>liveP(i)/m.open[i]-1;
+
+// ===== 상태 =====
+const m=new Market(SEED);
+
+// ===== 실시간 봉: 틱 사이를 브라운 브리지로 채움 =====
+// (SEED, 틱, 종목)으로 결정되므로 서버에서도 같은 값을 재현할 수 있음
+const SUB=25;                  // 틱 하나를 25조각 = 0.2초마다 가격 변동
+let pathsT=-1, paths=null;
+function hash3(a,b,c){let h=(a^Math.imul(b+1,0x9E3779B1)^Math.imul(c+7,0x85EBCA77))|0;h=Math.imul(h^(h>>>16),0x7feb352d);h=Math.imul(h^(h>>>15),0x846ca68b);return(h^(h>>>16))>>>0}
+function buildPaths(){
+  pathsT=m.t;
+  paths=STOCKS.map(s=>{
+    const i=s.i, g=mkGauss(mulberry32(hash3(SEED,m.t,i)));
+    const a=Math.log(m.pp[i]), b=Math.log(m.p[i]), sig=TYPE[s.type].sx/sqT*1.6/Math.sqrt(SUB);
+    const w=new Float64Array(SUB+1); for(let k=1;k<=SUB;k++)w[k]=w[k-1]+g()*sig;
+    const out=new Float64Array(SUB+1);
+    for(let k=0;k<=SUB;k++){const f=k/SUB;let v=Math.exp(a+(b-a)*f+w[k]-f*w[SUB]);
+      if(!s.coin){const o=m.open[i];v=Math.min(o*1.3,Math.max(o*.7,v))} out[k]=v}
+    return out;
+  });
+}
+function subIdx(){if(m.t>=SEASON_TICKS)return SUB;const f=(now()-SS.start)/TICK_MS-m.t;return f>=1?SUB:f<=0?0:Math.floor(f*SUB)}
+function liveP(i){if(m.t<1)return m.p[i];if(pathsT!==m.t)buildPaths();return paths[i][subIdx()]}
+function liveCandle(i){
+  const a=m.intra[i],lp=liveP(i);let h=lp,l=lp;
+  for(let k=0;k<a.length-1;k++){if(a[k]>h)h=a[k];if(a[k]<l)l=a[k]}
+  const f=m.t>=1?subIdx()/SUB:1;
+  return{o:m.cur[i].o,h,l,c:lp,v:Math.max(0,Math.round(m.cur[i].v-m.lastV[i]*(1-f)))};
+}
+const liveIntra=i=>m.intra[i].slice(0,-1).concat([liveP(i)]);
+function liveIdx(){let s=0,n=0;for(const st of STOCKS)if(!st.coin){s+=liveP(st.i)/st.p0;n++}return s/n*1000}
+
+const KEY='sg_player_v1';
+let P;
+let PREV=null;
+function loadP(){try{P=JSON.parse(localStorage.getItem(KEY))}catch(e){P=null} if(P&&P.season<SS.id&&P.total)PREV={season:P.season,total:P.total,rank:P.rank||13}; if(!P||P.season!==SS.id)P={season:SS.id,cash:START_CASH,hold:{},trades:[],last:0}}
+function saveP(){try{localStorage.setItem(KEY,JSON.stringify(P))}catch(e){}}
+loadP();
+const lastSeen=P.last; let snap=null;
+
+// 봇: 시즌 시작에 종목을 사서 끝까지 보유
+const BOTN=['주린이123','존버장인','단타의신','물타기대장','손절못함','상한가헌터','차트도사','몰빵러','배당왕','코인광','장기투자자','가즈아맨'];
+const bots=BOTN.map((name,b)=>{
+  const r=mulberry32(SEED+b*7919); let cash=START_CASH; const hold={};
+  let pool=STOCKS.map(s=>s.i);
+  if(name==='코인광') pool=pool.filter(i=>STOCKS[i].coin);
+  if(name==='배당왕'||name==='장기투자자') pool=pool.filter(i=>STOCKS[i].type==='big'||STOCKS[i].type==='mid');
+  if(name==='몰빵러'||name==='상한가헌터') pool=pool.filter(i=>STOCKS[i].type==='theme'||STOCKS[i].type==='junk');
+  const k=name==='몰빵러'?1:2+Math.floor(r()*4); const picks=[];
+  while(picks.length<k&&pool.length){picks.push(pool.splice(Math.floor(r()*pool.length),1)[0])}
+  const w=picks.map(()=>.3+r()); const ws=w.reduce((a,b)=>a+b,0); const invest=.7+r()*.3;
+  picks.forEach((i,j)=>{const q=Math.floor(START_CASH*invest*w[j]/ws/STOCKS[i].p0); hold[i]=q; cash-=q*STOCKS[i].p0;});
+  return {name,cash,hold};
+});
+const botVal=b=>b.cash+Object.keys(b.hold).reduce((a,i)=>a+b.hold[i]*px(i),0);
+function holdVal(){let v=0;for(const i in P.hold)v+=P.hold[i].q*px(+i);return v}
+const total=()=>P.cash+holdVal();
+function myRank(){const me=total();return 1+bots.filter(b=>botVal(b)>me).length}
+
+
+// ===== 성장 (시즌이 바뀌어도 유지) =====
+const MKEY='sg_meta_v1';
+let MT; try{MT=JSON.parse(localStorage.getItem(MKEY))}catch(e){MT=null}
+if(!MT) MT={xp:0,lv:1,sp:0,sk:{info:0,fee:0,radar:0,auto:0},tday:-1,tdx:0};
+const saveM=()=>{try{localStorage.setItem(MKEY,JSON.stringify(MT))}catch(e){}};
+const TITLES=[[1,'쌩초보'],[3,'주린이 졸업'],[5,'단타 고수'],[8,'슈퍼 트레이더'],[12,'큰손'],[16,'전업 투자자'],[20,'펀드매니저'],[25,'증권가 고래'],[30,'전설의 트레이더']];
+const title=(lv=MT.lv)=>{let t=TITLES[0][1];for(const [l,n] of TITLES)if(lv>=l)t=n;return t};
+const needXP=lv=>Math.round(100*Math.pow(lv,1.5));
+const SKILLS=[
+  {id:'info',ic:'📡',name:'정보력',max:3,req:[2,5,9],desc:'뉴스를 남들보다 먼저 봐',eff:l=>['없음','3틱(약 9분) 먼저','6틱(약 18분) 먼저','10틱(약 30분) 먼저'][l]},
+  {id:'fee',ic:'🤝',name:'수수료 협상',max:3,req:[3,6,10],desc:'매매 수수료가 줄어',eff:l=>['0.10%','0.08%','0.05%','0.02%'][l]},
+  {id:'radar',ic:'⚡',name:'거래량 레이더',max:1,req:[4],desc:'거래량이 비정상적으로 튀는 종목에 ⚡ 표시',eff:l=>l?'켜짐':'없음'},
+  {id:'auto',ic:'🤖',name:'자동 감시 주문',max:1,req:[7],desc:'보유 종목에 손절·익절 가격을 걸어두면 자는 동안에도 자동 매도',eff:l=>l?'켜짐':'없음'},
+];
+const feeRate=()=>[.001,.0008,.0005,.0002][MT.sk.fee];
+const early=()=>[0,3,6,10][MT.sk.info];
+let lvQueue=[];
+function gainXP(n){
+  if(n<=0)return; MT.xp+=n;
+  while(MT.xp>=needXP(MT.lv)){MT.xp-=needXP(MT.lv);MT.lv++;MT.sp++;lvQueue.push(MT.lv)}
+  saveM();
+}
+function tradeXP(){const d=Math.floor((m.t-1)/TPD);if(MT.tday!==d){MT.tday=d;MT.tdx=0}if(MT.tdx<40){MT.tdx+=2;gainXP(2)}}
+// 뉴스: 정보력 스킬만큼 미래 뉴스를 미리 보여줌
+function visNews(){
+  const out=m.news.slice(), lim=m.t+early();
+  for(let k=m.np;k<m.allNews.length&&m.allNews[k].t<=lim;k++){const e=m.allNews[k];out.push(Object.assign({},e,{early:true}))}
+  return out;
+}
+// 매도 공통 처리 (수동·자동)
+function sellAt(i,q,why){
+  const s=STOCKS[i], p=tpx(i), amt=q*p, fee=Math.ceil(amt*feeRate()), h=P.hold[i];
+  const profit=(p-h.avg)*q-fee;
+  h.q-=q; P.cash+=amt-fee; if(!h.q)delete P.hold[i];
+  P.trades.push({t:m.t,s:subIdx(),i,q:-q,px:p,auto:why||undefined});
+  gainXP(Math.floor(Math.max(0,profit)/10000)); tradeXP();
+  return {p,profit};
+}
+let autoMsgs=[];
+function checkAuto(){
+  if(!MT.sk.auto)return;
+  for(const k in P.hold){const i=+k,h=P.hold[k];if(!h.sl&&!h.tp)continue;
+    const r=m.p[i]/h.avg-1;
+    if(h.sl&&r<=h.sl/100){const x=sellAt(i,h.q,'손절');autoMsgs.push(`🤖 ${STOCKS[i].name} 자동 손절 (${pct(r)})`)}
+    else if(h.tp&&r>=h.tp/100){const x=sellAt(i,h.q,'익절');autoMsgs.push(`🤖 ${STOCKS[i].name} 자동 익절 (${pct(r)})`)}
+  }
+}
+
+// ===== 시뮬 따라잡기 =====
+function catchUp(target,budget){let n=0;while(m.t<target&&n<budget){m.step();n++;if(lastSeen&&m.t===lastSeen)snap=m.p.slice();if(m.t>P.last)checkAuto()}if(autoMsgs.length)saveP();return m.t>=target}
+
+// ===== 차트 =====
+function prepCanvas(cv){const dpr=window.devicePixelRatio||1;const w=cv.clientWidth,h=cv.clientHeight;if(cv.width!==Math.round(w*dpr)||cv.height!==Math.round(h*dpr)){cv.width=Math.round(w*dpr);cv.height=Math.round(h*dpr)}const c=cv.getContext('2d');c.setTransform(dpr,0,0,dpr,0,0);c.clearRect(0,0,w,h);return{c,w,h}}
+const CUP='#ff4d55',CDN='#3d8bff',CGRID='#232c38',CSUB='#8b98a5';
+function drawLine(cv,arr,base,total){
+  const {c,w,h}=prepCanvas(cv); if(arr.length<2&&!total) return;
+  let mn=Math.min(base,...arr),mx=Math.max(base,...arr); if(mx-mn<1e-9){mx+=1;mn-=1} const pd=(mx-mn)*.1; mn-=pd; mx+=pd;
+  const n=total||arr.length; const X=i=>i/(n-1)*w, Y=v=>h-(v-mn)/(mx-mn)*h;
+  c.strokeStyle=CGRID;c.setLineDash([4,4]);c.beginPath();c.moveTo(0,Y(base));c.lineTo(w,Y(base));c.stroke();c.setLineDash([]);
+  const col=arr[arr.length-1]>=base?CUP:CDN;
+  c.beginPath();arr.forEach((v,i)=>i?c.lineTo(X(i),Y(v)):c.moveTo(X(i),Y(v)));c.strokeStyle=col;c.lineWidth=2;c.stroke();
+  c.lineTo(X(arr.length-1),h);c.lineTo(0,h);c.closePath();c.fillStyle=col+'22';c.fill();
+}
+function drawCandles(cv,arr){
+  const {c,w,h}=prepCanvas(cv); if(!arr.length) return;
+  const ch=h*.78, vh=h*.18;
+  let mn=Infinity,mx=-Infinity,vm=0; for(const k of arr){if(k.l<mn)mn=k.l;if(k.h>mx)mx=k.h;if(k.v>vm)vm=k.v}
+  if(mx-mn<1e-9){mx+=1;mn-=1} const pd=(mx-mn)*.06;mn-=pd;mx+=pd;
+  const n=Math.max(arr.length,20), cw=w/n, Y=v=>ch-(v-mn)/(mx-mn)*ch;
+  c.fillStyle=CSUB;c.font='10px sans-serif';c.textAlign='right';
+  for(let k=0;k<=3;k++){const v=mn+(mx-mn)*k/3;const y=Y(v);c.strokeStyle=CGRID;c.beginPath();c.moveTo(0,y);c.lineTo(w,y);c.stroke()}
+  arr.forEach((k,i)=>{
+    const x=i*cw+cw/2, col=k.c>=k.o?CUP:CDN; c.strokeStyle=col;c.fillStyle=col;
+    c.beginPath();c.moveTo(x,Y(k.h));c.lineTo(x,Y(k.l));c.stroke();
+    const y1=Y(Math.max(k.o,k.c)),y2=Y(Math.min(k.o,k.c));c.fillRect(x-cw*.35,y1,cw*.7,Math.max(1,y2-y1));
+    const vv=vm?k.v/vm*vh:0;c.globalAlpha=.45;c.fillRect(x-cw*.35,h-vv,cw*.7,vv);c.globalAlpha=1;
+  });
+  c.fillStyle=CSUB;c.fillText(fpShort(mx-pd),w-2,10);c.fillText(fpShort(mn+pd),w-2,ch-2);
+}
+const fpShort=v=>v>=100?Math.round(v).toLocaleString('ko-KR'):v.toFixed(v>=1?2:4);
+
+// ===== 렌더 =====
+let view='home', filt='all', det=-1, cmode='day', tmode='buy';
+function renderHeader(){
+  const T=total(), r=T/START_CASH-1;
+  $('#htotal').textContent=won(T); const e=$('#hret'); e.textContent=pct(r); e.className=cls(r);
+  $('#hseason').innerHTML=`<b class="brand">📈 오르락내리락</b> · 시즌 ${SEASON_NO} · Lv.${MT.lv} ${title()}`;
+  $('#hrank').textContent=`랭킹 ${myRank()}위 / ${bots.length+1}명`;
+}
+function renderClock(){
+  $('#hclock').textContent=m.t>=SEASON_TICKS?'시즌 종료':gclock(m.t);
+  const left=SS.start+7*86400e3-now(); if(left<=0){$('#hleft').textContent='정산 중';return}
+  const d=Math.floor(left/86400e3),hh=Math.floor(left%86400e3/3600e3),mm=Math.floor(left%3600e3/60e3),ss=Math.floor(left%60e3/1000);
+  $('#hleft').textContent=`종료까지 ${d}일 ${pad(hh)}:${pad(mm)}:${pad(ss)}`;
+}
+function stockRow(i,extra){
+  const s=STOCKS[i], c=dchg(i);
+  const lp=liveP(i);
+  const lim=!s.coin&&(lp>=m.open[i]*1.2999?'<span class="badge u">상한가</span>':lp<=m.open[i]*.7001?'<span class="badge d">하한가</span>':'');
+  const rad=MT.sk.radar&&m.lastVm[i]>=2.2?'<span class="badge r">⚡</span>':'';
+  return `<div class="row" data-i="${i}"><div class="nm"><b>${s.name}${lim||''}${rad}</b><small>${extra||TYPE[s.type].label+' · '+SECT[s.sec]}</small></div><div class="pr"><b class="${cls(c)}" data-lp="${i}">${fp(px(i),s.coin)}</b><small class="${cls(c)}" data-lc="${i}">${pct(c)}</small></div></div>`;
+}
+function newsHtml(list){
+  if(!list.length) return '<div class="empty">아직 뉴스가 없어</div>';
+  return list.map(e=>{const tgt=e.kind==='stock'?` data-i="${e.i}"`:'';
+    const mk=e.pos===true?'<span class="up">▲</span>':e.pos===false?'<span class="dn">▼</span>':'<span class="fl">●</span>';
+    return `<div class="news${e.early?' early':''}"${tgt}><small>${gclock(e.t)} <span class="tag t-${e.tag}">${e.tag}</span>${e.early?'<span class="tag t-선공개">📡 선공개</span>':''}</small>${mk} ${e.text}</div>`}).join('');
+}
+function renderIdx(){
+  const v=m.t>=1?liveIdx():m.idx, c=v/m.idxOpen-1;
+  $('#idxval').textContent=v.toFixed(2); const ic=$('#idxchg'); ic.textContent=pct(c); ic.className=cls(c);
+  drawLine($('#idxcv'),m.idxIntra.slice(0,-1).concat([v]),m.idxOpen,TPD+1);
+}
+function renderHome(){
+  renderIdx();
+  const ord=STOCKS.map(s=>s.i).sort((a,b)=>dchg(b)-dchg(a));
+  $('#gainers').innerHTML=ord.slice(0,4).map(i=>stockRow(i,' ')).join('');
+  $('#losers').innerHTML=ord.slice(-4).reverse().map(i=>stockRow(i,' ')).join('');
+  $('#newsfeed').innerHTML=newsHtml(visNews().slice(-20).reverse());
+}
+function renderMarket(){
+  let list=STOCKS.filter(s=>filt==='all'||(filt==='hold'?(P.hold[s.i]&&P.hold[s.i].q>0):s.type===filt)).map(s=>s.i);
+  const so=$('#msort').value;
+  if(so==='chg')list.sort((a,b)=>dchg(b)-dchg(a));else if(so==='chgr')list.sort((a,b)=>dchg(a)-dchg(b));
+  else if(so==='vol')list.sort((a,b)=>m.cur[b].v*m.p[b]-m.cur[a].v*m.p[a]);else list.sort((a,b)=>STOCKS[a].name.localeCompare(STOCKS[b].name,'ko'));
+  $('#mcount').textContent=`${list.length}종목`;
+  $('#mlist').innerHTML=list.map(i=>stockRow(i)).join('')||'<div class="empty">해당 종목이 없어</div>';
+}
+function renderAcct(){
+  const hv=holdVal(); let cost=0; for(const i in P.hold)cost+=P.hold[i].q*P.hold[i].avg;
+  $('#acash').textContent=won(P.cash); $('#aeval').textContent=won(hv);
+  const pl=hv-cost; const e=$('#apl'); e.textContent=(pl>0?'+':'')+won(pl)+(cost?` (${pct(pl/cost)})`:''); e.className=cls(pl);
+  const ids=Object.keys(P.hold).filter(i=>P.hold[i].q>0).map(Number);
+  $('#aholds').innerHTML=ids.length?ids.map(i=>{const h=P.hold[i],s=STOCKS[i],v=h.q*px(i),r=px(i)/h.avg-1;
+    return `<div class="row" data-i="${i}"><div class="nm"><b>${s.name}</b><small>${h.q.toLocaleString()}주 · 평단 ${fp(h.avg,s.coin)}</small></div><div class="pr"><b>${won(v)}</b><small class="${cls(r)}">${pct(r)}</small></div></div>`}).join(''):'<div class="empty">보유 종목이 없어. 시장에서 사봐!</div>';
+  const tr=P.trades.slice(-15).reverse();
+  $('#atrades').innerHTML=tr.length?tr.map(x=>{const s=STOCKS[x.i];return `<div class="news"><small>${gclock(x.t)}</small><span class="${x.q>0?'up':'dn'}">${x.q>0?'매수':x.auto?'🤖 자동 '+x.auto:'매도'}</span> ${s.name} ${Math.abs(x.q).toLocaleString()}주 @ ${fp(x.px,s.coin)}</div>`}).join(''):'<div class="empty">거래 내역 없음</div>';
+}
+function renderGrow(){
+  const need=needXP(MT.lv);
+  $('#gtitle').textContent=`Lv.${MT.lv} ${title()}`; $('#gsp').textContent=`스킬 포인트 ${MT.sp}`;
+  $('#gxp').style.width=(MT.xp/need*100)+'%'; $('#gxpt').textContent=`${MT.xp} / ${need} XP`;
+  const nx=TITLES.find(([l])=>l>MT.lv); $('#gnext').textContent=nx?`${nx[1]} (Lv.${nx[0]})`:'최고 칭호';
+  $('#gskills').innerHTML=SKILLS.map(k=>{const l=MT.sk[k.id],mx=l>=k.max,req=mx?0:k.req[l],lock=!mx&&MT.lv<req;
+    const btn=mx?'<button class="sbtn" disabled>최대</button>':lock?`<button class="sbtn" disabled>Lv.${req} 필요</button>`:`<button class="sbtn" data-sk="${k.id}" ${MT.sp<1?'disabled':''}>배우기 · SP 1</button>`;
+    return `<div class="card skill"><div class="sic">${k.ic}</div><div class="nm"><b>${k.name} <small>${l}/${k.max}</small></b><small>${k.desc}</small><small>현재: ${k.eff(l)}${mx?'':' → 다음: '+k.eff(l+1)}</small></div>${btn}</div>`}).join('');
+}
+function showLevelUp(){
+  if(!lvQueue.length)return; const lv=lvQueue[lvQueue.length-1]; lvQueue=[];
+  const t=TITLES.find(([l])=>l===lv);
+  $('#mbox').innerHTML=`<h3>🎉 레벨 업! Lv.${lv}</h3><p style="color:var(--sub);font-size:14px;margin:8px 0">${t?`새 칭호 <b style="color:var(--acc)">${t[1]}</b> 획득!<br>`:''}스킬 포인트 +1 · 마이 → 성장에서 스킬을 배워봐</p><button class="go">확인</button>`;
+  $('#modal').classList.add('on');
+}
+let lastDP=null;
+function renderDetailLive(){
+  if(det<0)return; const i=det,s=STOCKS[i],c=dchg(i),p=px(i);
+  const pe=$('#dprice');
+  if(p!==lastDP||pe.dataset.i!==String(i)){pe.textContent=fp(p,s.coin);pe.className=cls(c);if(lastDP!==null&&pe.dataset.i===String(i))pe.classList.add(p>lastDP?'fu':'fd');pe.dataset.i=i}
+  lastDP=p;
+  const ce=$('#dchg'); ce.textContent=`${pct(c)} (전일 ${fp(rp(m.open[i],s.coin),s.coin)})`; ce.className=cls(c);
+  const k=liveCandle(i);
+  if(cmode==='day') drawCandles($('#dcv'),m.days[i].slice(-39).concat([k]));
+  else drawLine($('#dcv'),liveIntra(i),m.open[i],TPD+1);
+  $('#dinfo').innerHTML=`<span>고 ${fp(rp(k.h,s.coin),s.coin)} · 저 ${fp(rp(k.l,s.coin),s.coin)}</span><span>거래량 ${k.v.toLocaleString()}</span>`;
+  const h=P.hold[i]; const q=h?h.q:0;
+  $('#dhold').innerHTML=q?`보유 <b style="color:var(--tx)">${q.toLocaleString()}주</b> · 평단 ${fp(h.avg,s.coin)} · 손익 <span class="${cls(p-h.avg)}">${pct(p/h.avg-1)}</span><br>주문 가능 현금 ${won(P.cash)}`:`보유 없음<br>주문 가능 현금 ${won(P.cash)}`;
+  updEst();
+}
+function renderDetail(){
+  if(det<0)return; const i=det,s=STOCKS[i];
+  $('#dname').textContent=s.name; $('#dtag').textContent=`${TYPE[s.type].label} · ${SECT[s.sec]}${s.coin?' · 가격제한 없음':' · 상하한가 ±30%'}`;
+  const h=P.hold[i], ac=$('#autocard');
+  if(MT.sk.auto&&h&&h.q>0){ac.style.display='';$('#asl').value=String(h.sl||0);$('#atp').value=String(h.tp||0)}else ac.style.display='none';
+  renderDetailLive();
+  const rel=visNews().filter(e=>(e.kind==='stock'&&e.i===i)||(e.kind==='sector'&&e.sec===s.sec)||e.kind==='market').slice(-8).reverse();
+  $('#dnews').innerHTML=newsHtml(rel);
+}
+function updEst(){
+  if(det<0)return; const q=Math.max(0,Math.floor(+$('#qin').value||0)); const p=tpx(det); const amt=q*p, fee=Math.ceil(amt*feeRate());
+  $('#dest').textContent=q?(tmode==='buy'?`필요 금액 ${won(amt+fee)} (수수료 ${won(fee)})`:`받을 금액 ${won(amt-fee)} (수수료 ${won(fee)})`):'';
+  const g=$('#dgo'); g.textContent=tmode==='buy'?'매수하기':'매도하기'; g.className='go '+tmode;
+  const held=P.hold[det]?P.hold[det].q:0;
+  g.disabled=!q||(tmode==='buy'?amt+fee>P.cash:q>held)||m.t>=SEASON_TICKS;
+}
+// 0.2초마다: 화면에 떠 있는 가격·차트만 갱신 (목록은 다시 그리지 않아서 터치가 안 끊김)
+function liveUpdate(){
+  renderHeader();
+  document.querySelectorAll('[data-lp]').forEach(e=>{
+    const i=+e.dataset.lp, v=px(i), t=fp(v,STOCKS[i].coin);
+    if(e.textContent!==t){const o=e._v;e.textContent=t;e.className=cls(dchg(i));if(o!==undefined)e.classList.add(v>o?'fu':'fd')}
+    e._v=v;
+  });
+  document.querySelectorAll('[data-lc]').forEach(e=>{const c=dchg(+e.dataset.lc);e.textContent=pct(c);e.className=cls(c)});
+  if(view==='home')renderIdx();
+  renderDetailLive();
+}
+function render(){
+  renderHeader();
+  if(view==='home')renderHome();else if(view==='market')renderMarket();else if(view==='acct')renderAcct();else if(view==='my')renderMy();else renderRank();
+  renderDetail();
+}
+
+// ===== 거래 =====
+function trade(){
+  const i=det, q=Math.floor(+$('#qin').value||0); if(i<0||q<=0)return;
+  // 체결은 틱 가격 기준 (온라인 버전에서 서버가 가진 가격과 맞추기 위함). 0.2초 움직임은 화면 연출.
+  const s=STOCKS[i], p=rp(m.p[i],s.coin), amt=q*p, fee=Math.ceil(amt*feeRate());
+  if(tmode==='buy'){
+    if(amt+fee>P.cash)return toast('현금이 부족해');
+    const h=P.hold[i]||{q:0,avg:0}; h.avg=(h.avg*h.q+amt)/(h.q+q); h.q+=q; P.hold[i]=h; P.cash-=amt+fee;
+    P.trades.push({t:m.t,s:subIdx(),i,q,px:p}); tradeXP(); toast(`${s.name} ${q.toLocaleString()}주 매수 체결 @ ${fp(p,s.coin)}`);
+  } else {
+    const h=P.hold[i]; if(!h||h.q<q)return toast('보유 수량이 부족해');
+    const x=sellAt(i,q); toast(`${s.name} ${q.toLocaleString()}주 매도 체결 @ ${fp(p,s.coin)} (${x.profit>=0?'+':''}${won(x.profit)})`);
+  }
+  if(P.trades.length>500)P.trades=P.trades.slice(-500);
+  saveP(); $('#qin').value=0; render(); showLevelUp();
+}
+let tt; function toast(msg){const e=$('#toast');e.textContent=msg;e.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>e.classList.remove('on'),1800)}
+
+// ===== 이벤트 바인딩 =====
+document.addEventListener('click',e=>{
+  const nv=e.target.closest('nav button'); if(nv){view=nv.dataset.v;document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b===nv));document.querySelectorAll('main section').forEach(s=>s.classList.toggle('on',s.id==='v-'+view));window.scrollTo(0,0);render();return}
+  const ch=e.target.closest('#fchips .chip'); if(ch){filt=ch.dataset.f;document.querySelectorAll('#fchips .chip').forEach(b=>b.classList.toggle('on',b===ch));renderMarket();return}
+  const cm=e.target.closest('[data-cm]'); if(cm){cmode=cm.dataset.cm;document.querySelectorAll('[data-cm]').forEach(b=>b.classList.toggle('on',b===cm));renderDetail();return}
+  const tm=e.target.closest('[data-tm]'); if(tm){tmode=tm.dataset.tm;document.querySelectorAll('[data-tm]').forEach(b=>b.classList.toggle('on',b===tm));$('#qin').value=0;updEst();return}
+  const pc=e.target.closest('[data-p]'); if(pc&&det>=0){const f=+pc.dataset.p;const p=tpx(det);let q;
+    if(tmode==='buy')q=Math.floor(P.cash*f/(p*(1+feeRate())));else q=Math.floor((P.hold[det]?P.hold[det].q:0)*f);
+    $('#qin').value=Math.max(0,q);updEst();return}
+  const gs=e.target.closest('[data-gsel]'); if(gs){gSel=gs.dataset.gsel||null;gErr='';gRows=[];gLastLoad=0;renderRank();return}
+  const ga=e.target.closest('[data-gact]'); if(ga){const a=ga.dataset.gact;if(a==='create')gCreate($('#gname').value);if(a==='join')gJoin($('#gcode').value);if(a==='invite')gCopy(gSel);if(a==='leave')gLeave(gSel);return}
+  const gj=e.target.closest('[data-gjoin]'); if(gj){$('#modal').classList.remove('on');goView('rank');gJoin(gj.dataset.gjoin);return}
+  const gd=e.target.closest('[data-guide]'); if(gd){guideNext(+gd.dataset.guide);return}
+  const st=e.target.closest('[data-set]'); if(st){const a=st.dataset.set;if(a==='guide')showGuide(0);if(a==='wipe')askWipe();if(a==='wipe2'){try{['sg_player_v1','sg_meta_v1','sg_dev'].forEach(k=>localStorage.removeItem(k))}catch(_){}location.reload()}return}
+  const cb=e.target.closest('[data-cbuy]'); if(cb){$('#modal').classList.remove('on');doBuy(cb.dataset.cbuy);return}
+  const mt=e.target.closest('[data-my]'); if(mt){myTab=mt.dataset.my;renderMy();return}
+  const so=e.target.closest('[data-slot]'); if(so){mySlot[myTab]=so.dataset.slot;renderMy();return}
+  const ic=e.target.closest('[data-item]'); if(ic){tapItem(ic.dataset.item);return}
+  const rm=e.target.closest('[data-rmode]'); if(rm){rankMode=rm.dataset.rmode;renderRank();return}
+  if(e.target.closest('#mycar')){const cars=myPr().cars;if(cars.length>1){const k=cars.indexOf(MT.eq.car);MT.eq.car=cars[(k+1)%cars.length];saveM();renderMy();toast(`${IT[MT.eq.car].name} 탑승 🚗`)}return}
+  const vs=e.target.closest('[data-visit]'); if(vs){openVisit(+vs.dataset.visit);return}
+  const sk=e.target.closest('[data-sk]'); if(sk){const k=SKILLS.find(x=>x.id===sk.dataset.sk);if(MT.sp>0&&MT.sk[k.id]<k.max&&MT.lv>=k.req[MT.sk[k.id]]){MT.sp--;MT.sk[k.id]++;saveM();toast(`${k.name} Lv.${MT.sk[k.id]} 습득!`);render()}return}
+  const dv=e.target.closest('[data-dev]'); if(dv){const a=dv.dataset.dev;
+    if(a==='xp'){gainXP(500);render();showLevelUp();return}
+    if(a==='cash'){P.cash+=1e9;saveP();render();toast('테스트용 현금 +10억');return}
+    if(a==='mreset'){MT={xp:0,lv:1,sp:0,sk:{info:0,fee:0,radar:0,auto:0},tday:-1,tdx:0,eq:Object.assign({},DEF_EQ),inv:{},multi:{acc:[],aura:[],lux:[],wdeco:[]},cm:{},nick:MT.nick};saveM();render();toast('성장 초기화');return}
+    if(a==='reset'){P={season:SS.id,cash:START_CASH,hold:{},trades:[],last:m.t};saveP();render();toast('계좌 초기화');return}
+    if(a==='clear'){devOff=0}else devOff+=+a;
+    try{localStorage.setItem('sg_dev',devOff)}catch(_){}
+    if(seasonOf(now()).id!==SS.id||curTick()<m.t){location.reload();return}
+    toast('시간 이동 중…');return}
+  const row=e.target.closest('[data-i]'); if(row&&!e.target.closest('#detail')){openDetail(+row.dataset.i);return}
+  if(e.target.closest('#modal .go')){$('#modal').classList.remove('on');return}
+});
+$('#msort').addEventListener('change',renderMarket);
+const setAuto=()=>{const h=P.hold[det];if(!h)return;h.sl=+$('#asl').value||0;h.tp=+$('#atp').value||0;saveP();toast('자동 감시 주문 설정됨')};
+$('#asl').addEventListener('change',setAuto);$('#atp').addEventListener('change',setAuto);
+$('#dback').onclick=()=>{det=-1;$('#detail').classList.remove('on')};
+$('#vback').onclick=()=>$('#visit').classList.remove('on');
+$('#mynick').addEventListener('change',e=>{const v=e.target.value.trim().slice(0,12);if(v){MT.nick=v;saveM();toast('닉네임 변경 완료')}else e.target.value=MT.nick});
+$('#myvisit').onclick=()=>{renderRank();openVisit(rankRows.findIndex(r=>r.me))};
+$('#qin').addEventListener('input',updEst);
+$('#qm').onclick=()=>{$('#qin').value=Math.max(0,(+$('#qin').value||0)-1);updEst()};
+$('#qp').onclick=()=>{$('#qin').value=(+$('#qin').value||0)+1;updEst()};
+$('#dgo').onclick=trade;
+function openDetail(i){det=i;$('#qin').value=0;$('#detail').classList.add('on');$('#detail').scrollTop=0;requestAnimationFrame(renderDetail)}
+window.addEventListener('resize',render);
+
+// ===== 자리 비운 사이 =====
+function showAway(){
+  if(!lastSeen||!snap||m.t-lastSeen<TPD)return;
+  const days=Math.floor((m.t-lastSeen)/TPD);
+  let before=P.cash; for(const i in P.hold)before+=P.hold[i].q*rp(snap[i],STOCKS[i].coin);
+  const after=total(), d=after-before;
+  const mv=STOCKS.map(s=>({i:s.i,c:m.p[s.i]/snap[s.i]-1})).sort((a,b)=>b.c-a.c);
+  const nn=m.news.filter(e=>e.t>lastSeen).length;
+  const au=autoMsgs.splice(0);
+  const li=x=>`<div class="kv"><span>${STOCKS[x.i].name}</span><b class="${cls(x.c)}">${pct(x.c)}</b></div>`;
+  $('#mbox').innerHTML=`<h3>😴 자는 동안 ${days}일이 지났어</h3>
+   <p style="color:var(--sub);font-size:13px;margin-bottom:12px">그사이 뉴스 ${nn}건이 터졌어</p>
+   <div class="kv"><span>내 자산 변화</span><b class="${cls(d)}">${d>0?'+':''}${won(d)}</b></div>
+   <div class="ct" style="margin-top:12px">가장 많이 오른 종목</div>${mv.slice(0,3).map(li).join('')}
+   <div class="ct" style="margin-top:12px">가장 많이 내린 종목</div>${mv.slice(-3).reverse().map(li).join('')}
+   ${au.length?`<div class="ct" style="margin-top:12px">자동 감시 주문</div>${au.map(x=>`<div class="kv"><span>${x}</span></div>`).join('')}`:''}
+   <button class="go">확인</button>`;
+  $('#modal').classList.add('on');
+}
+
+// ===== 상점 데이터 =====
+// 산 물건은 시즌이 바뀌어도 유지. 가격은 이번 시즌 현금에서 빠짐(랭킹 자산 감소).
+const RAW=[
+ // ---- 캐릭터 ----
+ ['skin','s1','밝은 피부',0,'#ffe0c7'],['skin','s2','보통 피부',0,'#f3c6a0'],['skin','s3','구릿빛 피부',0,'#d39b74'],['skin','s4','갈색 피부',0,'#a8714f'],['skin','s5','짙은 피부',0,'#74492f'],
+ ['hair','hr_short','짧은 머리',0,'short:#2a1f1a'],['hair','hr_bob','단발',0,'bob:#4a2e1e'],['hair','hr_two','투블럭',150000,'two:#161616'],['hair','hr_long','긴 생머리',200000,'long:#3a2418'],['hair','hr_pony','포니테일',200000,'pony:#5a3a22'],
+ ['hair','hr_blond','금발 펌',600000,'curly:#e8c35a'],['hair','hr_pink','핑크 단발',1000000,'bob:#ff7eb6'],['hair','hr_spike','네온 스파이크',3000000,'spike:#2bd9ff'],['hair','hr_silver','은발 장발',5000000,'long:#d8dde3'],['hair','hr_gold','24K 황금 올백',50000000,'slick:gold'],
+ ['outfit','o_tee','흰 티셔츠',0,'tee:#f2f2f2'],['outfit','o_hood','회색 후드',100000,'hood:#8d96a0'],['outfit','o_hoodb','검정 후드',150000,'hood:#26292e'],['outfit','o_track','트레이닝복',300000,'track:#2a5bd7'],['outfit','o_hawaii','하와이안 셔츠',500000,'hawaii:#1fa89e'],
+ ['outfit','o_leather','가죽 재킷',2000000,'leather:#2a2a2e'],['outfit','o_suit','네이비 정장',3000000,'suit:#1f2a44'],['outfit','o_suitb','명품 블랙 정장',10000000,'suit:#161616'],['outfit','o_fur','모피 코트',30000000,'fur:#6b4a32'],
+ ['outfit','o_suitg','황금 정장',60000000,'suit:gold'],['outfit','o_dia','다이아 박힌 정장',300000000,'suit:diamond'],
+ ['hat','h_none','없음',0,''],['hat','h_cap','빨간 캡',80000,'cap'],['hat','h_beanie','비니',120000,'beanie'],['hat','h_headset','트레이더 헤드셋',500000,'headset'],['hat','h_cowboy','카우보이 모자',1500000,'cowboy'],
+ ['hat','h_top','실크햇',5000000,'top'],['hat','h_crown','황금 왕관',80000000,'crown'],['hat','h_dcrown','다이아 왕관',400000000,'dcrown'],
+ ['glasses','g_none','없음',0,''],['glasses','g_round','뿔테 안경',150000,'round'],['glasses','g_sun','선글라스',400000,'sun'],['glasses','g_heart','하트 선글라스',800000,'heart'],['glasses','g_mono','외알 안경',3000000,'mono'],
+ ['glasses','g_gold','금테 선글라스',15000000,'goldsun'],['glasses','g_dia','다이아 선글라스',80000000,'diasun'],
+ ['shoes','sh_white','흰 운동화',0,'white'],['shoes','sh_sneak','한정판 스니커즈',2000000,'sneak'],['shoes','sh_loafer','명품 로퍼',6000000,'loafer'],['shoes','sh_gold','황금 부츠',40000000,'goldboot'],
+ ['held','hd_none','없음',0,''],['held','hd_coffee','아이스 아메리카노',4500,'coffee'],['held','hd_phone','최신 폰',1500000,'phone'],['held','hd_bag','명품 쇼핑백',8000000,'bag'],
+ ['held','hd_cash','돈다발',10000000,'cash'],['held','hd_case','현금 가방',50000000,'case'],['held','hd_trophy','황금 트로피',150000000,'trophy'],
+ ['acc','a_tie','빨간 넥타이',200000,'tie'],['acc','a_bow','나비넥타이',300000,'bow'],['acc','a_gteeth','금니',1000000,'gteeth'],['acc','a_ring','금반지',3000000,'ring'],['acc','a_chain','금목걸이',5000000,'chain'],
+ ['acc','a_watch','명품 금시계',12000000,'watch'],['acc','a_bigchain','굵은 금체인',20000000,'bigchain'],['acc','a_ear','다이아 귀걸이',25000000,'ear'],['acc','a_grill','다이아 그릴',30000000,'grill'],
+ ['acc','a_dchain','다이아 목걸이',60000000,'dchain'],['acc','a_dwatch','다이아 시계',90000000,'dwatch'],
+ ['pet','pt_none','없음',0,''],['pet','pt_cat','고양이',500000,'cat'],['pet','pt_shiba','시바견',1500000,'shiba'],['pet','pt_parrot','앵무새',4000000,'parrot'],['pet','pt_gold','황금 리트리버',50000000,'goldret'],['pet','pt_dragon','아기 드래곤',500000000,'dragon'],
+ ['aura','au_spark','반짝이',5000000,'spark'],['aura','au_gold','금빛 오라',40000000,'gold'],['aura','au_money','돈비',100000000,'money'],['aura','au_dia','다이아 오라',250000000,'dia'],['aura','au_rainbow','무지개 오라',700000000,'rainbow'],
+ // ---- 집 ----
+ ['house','goshi','고시원',0,0],['house','banjiha','반지하 원룸',3000000,1],['house','officetel','오피스텔',8000000,2],['house','apt','아파트',25000000,3],['house','river','리버뷰 아파트',60000000,4],['house','pent','펜트하우스',180000000,5],['house','mansion','대저택',600000000,6],
+ ['bed','bed_mat','매트리스',0,'mat'],['bed','bed_single','싱글 침대',300000,'single'],['bed','bed_double','더블 침대',1200000,'double'],['bed','bed_king','킹 침대',5000000,'king'],['bed','bed_canopy','캐노피 침대',20000000,'canopy'],
+ ['desk','desk_fold','접이식 책상',0,'fold'],['desk','desk_dual','듀얼 모니터 책상',1500000,'dual'],['desk','desk_six','6모니터 트레이딩 데스크',8000000,'six'],
+ ['lamp','lamp_bulb','알전구',0,'bulb'],['lamp','lamp_stand','스탠드',200000,'stand'],['lamp','lamp_neon','네온 사인 「떡상」',1500000,'neon'],['lamp','lamp_chand','샹들리에',12000000,'chand'],
+ ['frame','fr_none','없음',0,''],['frame','fr_poster','차트 포스터',50000,'poster'],['frame','fr_art','풍경화',3000000,'art'],['frame','fr_gold','금테 다이아 액자',15000000,'gold'],
+ ['plant','pl_none','없음',0,''],['plant','pl_small','작은 화분',50000,'small'],['plant','pl_mon','몬스테라',400000,'monstera'],['plant','pl_bonsai','분재',5000000,'bonsai'],
+ ['rug','rug_none','없음',0,''],['rug','rug_basic','러그',100000,'basic'],['rug','rug_leo','호피 러그',2000000,'leo'],['rug','rug_persian','페르시안 러그',9000000,'persian'],
+ ['tv','tv_none','없음',0,''],['tv','tv_small','TV',500000,'small'],['tv','tv_big','85인치 TV',4000000,'big'],['tv','tv_theater','홈시어터',18000000,'theater'],
+ ['sofa','so_none','없음',0,''],['sofa','so_basic','2인 소파',800000,'basic'],['sofa','so_leather','가죽 소파',6000000,'leather'],['sofa','so_design','디자이너 소파',25000000,'design'],
+ ['lux','sp_safe','금고',3000000,'safe'],['lux','lx_cash','돈다발 탑',10000000,'cashtower'],['lux','sp_aqua','대형 수족관',15000000,'aqua'],['lux','lx_wine','와인셀러',20000000,'wine'],
+ ['lux','lx_piano','그랜드 피아노',40000000,'piano'],['lux','sp_gold','금괴 더미',80000000,'goldbars'],['lux','lx_toilet','황금 변기',120000000,'toilet'],['lux','sp_bull','황금 황소 동상',200000000,'bull'],
+ // ---- 차 ----
+ ['car','car_none','뚜벅이',0,''],['car','car_compact','경차',1500000,'compact'],['car','car_sedan','세단',6000000,'sedan'],['car','car_suv','SUV',15000000,'suv'],['car','car_pickup','오프로드 픽업',25000000,'pickup'],
+ ['car','car_muscle','머슬카',35000000,'muscle'],['car','car_sports','스포츠카',45000000,'sports'],['car','car_super','슈퍼카',150000000,'super'],['car','car_limo','리무진',250000000,'limo'],['car','car_hyper','하이퍼카',500000000,'hyper'],
+ ['paint','p_white','화이트',0,'#f4f5f7'],['paint','p_black','블랙',200000,'#1b1d22'],['paint','p_red','레드',300000,'#d7262f'],['paint','p_blue','블루',300000,'#2563eb'],['paint','p_lime','라임',400000,'#9be22d'],['paint','p_orange','오렌지',400000,'#ff7a1a'],
+ ['paint','p_candy','캔디 퍼플',2000000,'#8e2bd6'],['paint','p_pearl','펄 화이트',3000000,'pearl'],['paint','p_matte','무광 블랙',1500000,'matte'],['paint','p_chrome','크롬',8000000,'chrome'],['paint','p_gold','24K 골드 랩',40000000,'gold'],['paint','p_dia','다이아 코팅',200000000,'diamond'],
+ ['wheel','w_basic','기본 휠',0,'basic'],['wheel','w_sport','스포츠 휠',800000,'sport'],['wheel','w_black','블랙 휠',1200000,'black'],['wheel','w_gold','골드 휠',10000000,'gold'],['wheel','w_dia','다이아 휠',80000000,'diamond'],
+ ['spoiler','s_none','없음',0,''],['spoiler','s_lip','립 스포일러',600000,'lip'],['spoiler','s_wing','GT 윙',3000000,'wing'],['spoiler','s_mega','초대형 윙',15000000,'mega'],
+ ['kit','k_none','없음',0,''],['kit','k_skirt','사이드 스커트',1000000,'skirt'],['kit','k_wide','와이드 바디킷',8000000,'wide'],
+ ['low','lo_none','기본 높이',0,0],['low','lo_low','로워드',500000,1],['low','lo_slam','슬램드',2000000,2],
+ ['tint','t_none','기본 유리',0,''],['tint','t_30','틴팅 30%',200000,'30'],['tint','t_black','풀 블랙 틴팅',600000,'black'],
+ ['decal','d_none','없음',0,''],['decal','d_stripe','레이싱 스트라이프',400000,'stripe'],['decal','d_flame','불꽃 데칼',900000,'flame'],['decal','d_chart','떡상 차트 데칼',2000000,'chart'],
+ ['glow','gl_none','없음',0,''],['glow','gl_blue','언더글로우 블루',1500000,'#3da5ff'],['glow','gl_pink','언더글로우 핑크',1500000,'#ff4fd8'],['glow','gl_rainbow','레인보우 언더글로우',6000000,'rainbow'],
+ ['exhaust','ex_none','기본 머플러',0,''],['exhaust','ex_dual','듀얼 머플러',700000,'dual'],['exhaust','ex_fire','불 뿜는 머플러',12000000,'fire'],
+ ['roof','rf_none','없음',0,''],['roof','rf_box','루프박스',800000,'box'],['roof','rf_emblem','황금 엠블럼',20000000,'emblem'],['roof','rf_crown','루프 위 왕관',100000000,'crown'],
+
+ // ---- 추가 아이템 ----
+ ['hair','hr_red','레드 울프컷',800000,'two:#c8243a'],['hair','hr_purple','보라 장발',1200000,'long:#8e5bd6'],
+ ['outfit','o_hanbok','한복',3000000,'hanbok:#e5484d'],['outfit','o_racing','레이싱 슈트',5000000,'racing:#ff7a1a'],['outfit','o_space','우주복',50000000,'space:#eef2f6'],['outfit','o_king','왕의 예복',200000000,'king:#a8182c'],
+ ['hat','h_bunny','토끼 머리띠',300000,'bunny'],['hat','h_santa','산타 모자',500000,'santa'],['hat','h_pirate','해적 선장 모자',2000000,'pirate'],['hat','h_halo','천사 링',120000000,'halo'],
+ ['glasses','g_star','별 선글라스',1000000,'star'],['glasses','g_vr','VR 고글',2000000,'vr'],
+ ['shoes','sh_roller','롤러스케이트',800000,'roller'],['shoes','sh_neon','네온 하이탑',1500000,'neonhi'],
+ ['held','hd_wine','와인잔',300000,'wine'],['held','hd_mic','골드 마이크',6000000,'mic'],['held','hd_fan','돈 부채',30000000,'fan'],['held','hd_scepter','황금 지팡이',250000000,'scepter'],
+ ['back','bk_none','없음',0,''],['back','bk_cape','빨간 망토',2000000,'cape'],['back','bk_angel','천사 날개',30000000,'angel'],['back','bk_devil','악마 날개',30000000,'devil'],['back','bk_jet','제트팩',80000000,'jet'],['back','bk_gold','황금 날개',300000000,'goldwing'],
+ ['pet','pt_penguin','펭귄',3000000,'penguin'],['pet','pt_panda','판다',20000000,'panda'],['pet','pt_tiger','백호',80000000,'tiger'],['pet','pt_unicorn','미니 유니콘',400000000,'unicorn'],
+ ['aura','au_heart','하트 오라',3000000,'heart'],['aura','au_fire','불꽃 오라',60000000,'fire'],['aura','au_bolt','번개 오라',150000000,'bolt'],
+ ['house','castle','성',1500000000,7],
+ ['lux','lx_arcade','오락기',2000000,'arcade'],['lux','lx_fridge','스마트 냉장고',5000000,'fridge'],['lux','lx_massage','안마의자',8000000,'massage'],['lux','lx_pool','당구대',15000000,'pool'],['lux','lx_jacuzzi','자쿠지',60000000,'jacuzzi'],
+ ['wdeco','wd_clock','벽시계',300000,'clock'],['wdeco','wd_chart','차트 화이트보드',500000,'chart'],['wdeco','wd_neon','$ 네온사인',2000000,'dneon'],['wdeco','wd_disc','골드 디스크',10000000,'disc'],['wdeco','wd_shelf','트로피 선반',25000000,'shelf'],['wdeco','wd_ticker','LED 시세 전광판',50000000,'ticker'],
+ ['car','car_camper','캠핑카',40000000,'camper'],['car','car_classic','클래식 로드스터',70000000,'classic'],['car','car_monster','몬스터 트럭',120000000,'monster'],['car','car_formula','포뮬러 레이싱카',800000000,'formula'],
+ ['hl','hl_none','기본 라이트',0,''],['hl','hl_blue','블루 라이트',500000,'#8fd3ff'],['hl','hl_purple','퍼플 라이트',800000,'#c79bff'],['hl','hl_gold','골드 라이트',5000000,'#ffd23d'],
+];
+const IT={}, BY_SLOT={};
+RAW.forEach(([slot,id,name,price,v])=>{const it={slot,id,name,price,v};IT[id]=it;(BY_SLOT[slot]=BY_SLOT[slot]||[]).push(it)});
+const MULTI={acc:1,aura:1,lux:1,wdeco:1};
+const CARMOD=['paint','wheel','spoiler','kit','low','tint','decal','glow','exhaust','roof','hl'];
+const DEF_EQ={skin:'s2',hair:'hr_short',outfit:'o_tee',hat:'h_none',glasses:'g_none',shoes:'sh_white',held:'hd_none',back:'bk_none',pet:'pt_none',house:'goshi',bed:'bed_mat',desk:'desk_fold',lamp:'lamp_bulb',frame:'fr_none',plant:'pl_none',rug:'rug_none',tv:'tv_none',sofa:'so_none',car:'car_none'};
+const DEF_CM={paint:'p_white',wheel:'w_basic',spoiler:'s_none',kit:'k_none',low:'lo_none',tint:'t_none',decal:'d_none',glow:'gl_none',exhaust:'ex_none',roof:'rf_none',hl:'hl_none'};
+const SLOT_TIER={bed:0,desk:0,lamp:0,frame:0,plant:1,rug:1,tv:2,sofa:3,lux:2,wdeco:2};
+const HOUSE_BY_TIER=BY_SLOT.house.map(h=>h.id);
+// 이전 버전 저장 데이터 옮기기
+(function(){
+  const old=MT.eq||{}; const eq=Object.assign({},DEF_EQ);
+  for(const k in DEF_EQ) if(old[k]&&IT[old[k]]&&IT[old[k]].slot===k) eq[k]=old[k];
+  MT.inv=MT.inv||{};
+  if(MT.multi&&!MT.multi.wdeco)MT.multi.wdeco=[];
+  if(!MT.multi){MT.multi={acc:[],aura:[],lux:[],wdeco:[]};
+    if(old.acc&&IT[old.acc]&&IT[old.acc].slot==='acc')MT.multi.acc.push(old.acc);
+    if(old.special&&IT[old.special]&&IT[old.special].slot==='lux')MT.multi.lux.push(old.special);}
+  if(MT.cm)for(const c in MT.cm)MT.cm[c]=Object.assign({},DEF_CM,MT.cm[c]);
+  if(!MT.cm){MT.cm={}; if(eq.car!=='car_none'){const m=Object.assign({},DEF_CM);for(const k of CARMOD)if(old[k]&&IT[old[k]]&&IT[old[k]].slot===k)m[k]=old[k];MT.cm[eq.car]=m}}
+  MT.eq=eq; if(!MT.nick)MT.nick='트레이더'+(1000+Math.floor(Math.random()*9000)); saveM();
+})();
+const V=(eq,slot)=>IT[eq[slot]]?IT[eq[slot]].v:'';
+const owned=id=>IT[id].price===0||!!MT.inv[id];
+const kwon=n=>n>=1e8?(+(n/1e8).toFixed(1))+'억':n>=1e4?Math.round(n/1e4).toLocaleString('ko-KR')+'만':n+'원';
+const myPr=()=>({eq:MT.eq,multi:MT.multi,cm:MT.cm[MT.eq.car]||DEF_CM,cars:Object.keys(MT.cm).filter(c=>MT.inv[c]),allcm:MT.cm});
+const RAR=p=>p>=1e8?3:p>=1e7?2:p>=1e6?1:0;
+const RAR_NAME=['일반','레어','에픽','전설'];
+function flexScore(inv){let t=0;for(const id in inv)if(IT[id])t+=IT[id].price;return t}
+const FLEX_TIERS=[[0,'🌱','새싹'],[1e6,'🥉','브론즈'],[1e7,'🥈','실버'],[5e7,'🥇','골드'],[2e8,'💎','다이아'],[1e9,'👑','플렉스 킹'],[3e9,'🌌','플렉스 갓']];
+const flexTier=sc=>{let t=FLEX_TIERS[0];for(const f of FLEX_TIERS)if(sc>=f[0])t=f;return t};
+
+// ===== 고퀄 픽셀 렌더러 =====
+const OUTLINE=[24,16,34];
+function hx(h){h=h.replace('#','');if(h.length===3)h=h.split('').map(c=>c+c).join('');const n=parseInt(h,16);return[n>>16,n>>8&255,n&255]}
+function sh(h,f){let[r,g,b]=hx(h);if(f>0){r+=(255-r)*f;g+=(255-g)*f;b+=(255-b)*f}else{r*=1+f;g*=1+f;b*=1+f}return'#'+[r,g,b].map(v=>Math.max(0,Math.min(255,Math.round(v))).toString(16).padStart(2,'0')).join('')}
+function mat(c){
+  if(c==='gold')return{b:'#f2c230',l:'#fff0a0',d:'#c08a18',dd:'#7a5208'};
+  if(c==='chrome')return{b:'#c3ccd6',l:'#ffffff',d:'#7b8592',dd:'#4e5762'};
+  if(c==='matte')return{b:'#2a2c31',l:'#33363c',d:'#222428',dd:'#18191c'};
+  if(c==='diamond')return{b:'#bfeaf7',l:'#ffffff',d:'#7cc3dc',dd:'#4a8fab'};
+  if(c==='pearl')return{b:'#f3efe8',l:'#ffffff',d:'#d6cfdf',dd:'#a99fb8'};
+  return{b:c,l:sh(c,.3),d:sh(c,-.22),dd:sh(c,-.45)};
+}
+function PX(w,h){
+  const c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d');
+  const o={c,x,w,h,
+    r(a,b,ww,hh,col){x.fillStyle=col;x.fillRect(Math.round(a),Math.round(b),Math.round(ww),Math.round(hh))},
+    p(a,b,col){x.fillStyle=col;x.fillRect(Math.round(a),Math.round(b),1,1)},
+    ps(list,col){x.fillStyle=col;for(const[a,b]of list)x.fillRect(a,b,1,1)},
+    clr(list){for(const[a,b]of list)x.clearRect(a,b,1,1)},
+    ell(cx,cy,rx,ry,col,y0=-1e9,y1=1e9){x.fillStyle=col;for(let j=Math.floor(cy-ry);j<=cy+ry;j++){if(j<y0||j>y1)continue;for(let i=Math.floor(cx-rx);i<=cx+rx;i++){const dx=(i+.5-cx)/rx,dy=(j+.5-cy)/ry;if(dx*dx+dy*dy<=1)x.fillRect(i,j,1,1)}}},
+    poly(pts,col,y0=-1e9,y1=1e9){let mnx=1e9,mxx=-1e9,mny=1e9,mxy=-1e9;for(const[a,b]of pts){mnx=Math.min(mnx,a);mxx=Math.max(mxx,a);mny=Math.min(mny,b);mxy=Math.max(mxy,b)}
+      x.fillStyle=col;for(let j=Math.floor(Math.max(mny,y0));j<=Math.min(mxy,y1);j++)for(let i=Math.floor(mnx);i<=mxx;i++){const px=i+.5,py=j+.5;let ins=false;for(let k=0,l=pts.length-1;k<pts.length;l=k++){const[xi,yi]=pts[k],[xj,yj]=pts[l];if((yi>py)!==(yj>py)&&px<(xj-xi)*(py-yi)/(yj-yi)+xi)ins=!ins}if(ins)x.fillRect(i,j,1,1)}},
+    line(x0,y0,x1,y1,col){x0=Math.round(x0);y0=Math.round(y0);x1=Math.round(x1);y1=Math.round(y1);x.fillStyle=col;let dx=Math.abs(x1-x0),dy=-Math.abs(y1-y0),sx=x0<x1?1:-1,sy=y0<y1?1:-1,e=dx+dy;for(let n=0;n<500;n++){x.fillRect(x0,y0,1,1);if(x0===x1&&y0===y1)break;const e2=2*e;if(e2>=dy){e+=dy;x0+=sx}if(e2<=dx){e+=dx;y0+=sy}}},
+    dith(a,b,ww,hh,col,ph=0){x.fillStyle=col;for(let j=b;j<b+hh;j++)for(let i=a;i<a+ww;i++)if((i+j+ph)%2===0)x.fillRect(i,j,1,1)},
+    alpha(a,fn){const g=x.globalAlpha;x.globalAlpha=a;fn();x.globalAlpha=g},
+    atop(fn){x.globalCompositeOperation='source-atop';fn();x.globalCompositeOperation='source-over'},
+    star(cx,cy,c1='#ffffff',c2='#ffe680',big=false){o.p(cx,cy,c1);o.ps([[cx-1,cy],[cx+1,cy],[cx,cy-1],[cx,cy+1]],c2);if(big)o.ps([[cx-2,cy],[cx+2,cy],[cx,cy-2],[cx,cy+2]],c2)},
+    // 셀아웃 외곽선: 인접 색을 어둡게 섞은 색으로 테두리 (고퀄 픽셀아트 기법)
+    outline(){const id=x.getImageData(0,0,w,h),d=id.data,src=new Uint8ClampedArray(d);const op=(i,j)=>i>=0&&j>=0&&i<w&&j<h&&src[(j*w+i)*4+3]>60;
+      for(let j=0;j<h;j++)for(let i=0;i<w;i++){const k=(j*w+i)*4;if(src[k+3]>60)continue;let n=-1;
+        if(op(i-1,j))n=(j*w+i-1)*4;else if(op(i+1,j))n=(j*w+i+1)*4;else if(op(i,j-1))n=((j-1)*w+i)*4;else if(op(i,j+1))n=((j+1)*w+i)*4;
+        if(n<0)continue;d[k]=src[n]*.28+OUTLINE[0]*.72;d[k+1]=src[n+1]*.28+OUTLINE[1]*.72;d[k+2]=src[n+2]*.28+OUTLINE[2]*.72;d[k+3]=255}
+      x.putImageData(id,0,0);return o},
+    put(src,a=0,b=0){x.drawImage(src.c,a,b);return o},
+  };
+  return o;
+}
+function sprite(w,h,fn,ol=true){const s=PX(w,h);fn(s);if(ol)s.outline();return s}
+const FONT={B:['110','101','110','101','110'],U:['101','101','101','101','111'],S:['111','100','111','001','111'],V:['101','101','101','101','010'],I:['111','010','010','010','111'],P:['110','101','110','100','100'],'$':['011','110','010','011','110']};
+function ptext(s,str,x0,y0,col){[...str].forEach((ch,k)=>{const g=FONT[ch];if(!g)return;g.forEach((row,j)=>[...row].forEach((v,i)=>{if(v==='1')s.p(x0+k*4+i,y0+j,col)}))})}
+const IMGC=new Map();
+function toImg(s,scale,key,cls='px'){if(key&&IMGC.has(key))return IMGC.get(key);const b=document.createElement('canvas');b.width=s.w*scale;b.height=s.h*scale;const bx=b.getContext('2d');bx.imageSmoothingEnabled=false;bx.drawImage(s.c,0,0,b.width,b.height);
+  const html=`<img class="${cls}" src="${b.toDataURL()}" alt="">`;if(IMGC.size>600)IMGC.clear();if(key)IMGC.set(key,html);return html}
+
+// ===== 사람 (36x58 스프라이트) =====
+function charSprite(pr){
+  const eq=pr.eq, acc=new Set((pr.multi.acc||[]).map(id=>IT[id]&&IT[id].v));
+  const sk=V(eq,'skin'),S=mat(sk),[hs,hcr]=V(eq,'hair').split(':'),H=mat(hcr),[ot,ocr]=V(eq,'outfit').split(':'),O=mat(ocr);
+  const h=V(eq,'hat'),g=V(eq,'glasses'),shoe=V(eq,'shoes'),held=V(eq,'held');
+  const G=mat('gold'),D=mat('diamond');
+  return sprite(36,58,s=>{
+    // 뒷머리
+    if(hs==='long'){s.r(9,13,18,27,H.d);s.r(9,13,2,27,H.dd);s.r(25,13,2,27,H.dd)}
+    if(hs==='bob'){s.r(9,12,18,15,H.d)}
+    if(hs==='pony'){s.r(26,13,4,15,H.b);s.r(28,13,2,15,H.d);s.r(26,13,1,15,H.l);s.r(27,28,3,3,H.d);s.r(26,12,2,2,'#e5484d')}
+    if(hs==='curly'){s.ell(18,18,11.5,11,H.d)}
+    // 다리
+    const PA=ot==='space'?mat('#e3e8ee'):ot==='racing'?mat(ocr):ot==='king'?mat('#5a0e18'):ot==='hanbok'?mat('#2b3a67'):(ot==='suit'||ot==='leather'||ot==='fur')?mat(ocr==='diamond'?'#cfe6f0':ocr==='gold'?'gold':ocr==='#6b4a32'?'#2b2420':O.d):mat('#2b3140');
+    s.r(11,41,7,11,PA.b);s.r(18,41,7,11,PA.b);s.r(17,41,2,11,PA.d);s.r(11,41,1,11,PA.l);s.r(24,41,1,11,PA.d);s.r(12,47,4,1,PA.d);s.r(20,47,4,1,PA.d);
+    // 신발
+    if(shoe==='white'){[[10,51],[18,51]].forEach(([x,y])=>{s.r(x,y,8,3,'#ececec');s.r(x,y,8,1,'#ffffff');s.r(x,y+3,8,1,'#9a9a9a');s.p(x+3,y,'#c8c8c8')})}
+    if(shoe==='sneak'){[[10,51],[18,51]].forEach(([x,y])=>{s.r(x,y,8,3,'#f2f2f2');s.r(x,y,4,2,'#d7262f');s.r(x+4,y+1,4,1,'#111');s.r(x,y+3,8,1,'#d7262f')})}
+    if(shoe==='loafer'){[[10,51],[18,51]].forEach(([x,y])=>{s.r(x,y,8,3,'#3a2410');s.r(x+1,y,5,1,'#6a4428');s.p(x+4,y+1,G.b);s.r(x,y+3,8,1,'#1f130a')})}
+    if(shoe==='goldboot'){[[10,46],[18,46]].forEach(([x,y])=>{s.r(x,y,8,8,G.b);s.r(x,y,2,8,G.l);s.r(x+6,y,2,8,G.d);s.r(x,y+8,8,1,G.dd);s.p(x+4,y+2,'#fff')})}
+    if(shoe==='roller'){[[10,51],[18,51]].forEach(([x,y])=>{s.r(x,y-1,8,3,'#ff7eb6');s.r(x,y-1,8,1,'#ffb3d1');s.r(x,y+2,8,1,'#888');s.r(x+1,y+3,2,2,'#ffd23d');s.r(x+5,y+3,2,2,'#ffd23d')})}
+    if(shoe==='neonhi'){[[10,49],[18,49]].forEach(([x,y])=>{s.r(x,y,8,5,'#1b1d22');s.r(x,y+4,8,1,'#2bd9ff');s.r(x+1,y+1,6,1,'#ff4fd8');s.p(x+3,y+2,'#9dffc9')})}
+    // 팔
+    const shortS=(ot==='tee'||ot==='hawaii');
+    s.r(7,27,3,shortS?5:11,O.b);s.r(7,27,1,shortS?5:11,O.l);s.r(26,27,3,shortS?5:11,O.d);
+    if(shortS){s.r(7,32,3,6,S.b);s.r(26,32,3,6,S.d)}
+    s.r(7,38,3,3,S.b);s.r(26,38,3,3,S.d);s.p(9,40,S.d);
+    if(ot==='fur'){s.r(6,36,5,3,'#efe3cf');s.r(25,36,5,3,'#e2d2b8')}
+    // 몸통
+    s.r(10,26,16,15,O.b);s.clr([[10,26],[25,26]]);s.r(10,27,2,13,O.l);s.r(23,26,3,15,O.d);s.r(10,40,16,1,O.dd);s.ps([[14,34],[15,35],[21,33],[20,34]],O.d);
+    if(ot==='tee'){s.r(15,26,6,1,S.d);s.r(16,27,4,1,S.b);s.r(14,26,1,1,O.d);s.r(21,26,1,1,O.d)}
+    if(ot==='hood'){s.r(12,26,12,2,O.d);s.r(12,26,12,1,O.dd);s.r(15,28,1,4,'#f2f2f2');s.r(20,28,1,4,'#f2f2f2');s.r(13,35,10,3,O.d);s.r(13,35,10,1,O.dd)}
+    if(ot==='track'){s.r(17,26,2,15,'#e9e9e9');s.p(17,30,'#bbb');s.r(7,27,1,11,'#fff');s.r(28,27,1,11,'#fff');s.r(10,27,1,13,'#fff');s.r(25,27,1,13,'#fff');s.r(15,26,6,1,O.dd)}
+    if(ot==='hawaii'){const r=mulberry32(3);for(let k=0;k<16;k++){const x=10+(r()*16|0),y=27+(r()*13|0);s.p(x,y,k%2?'#ff8fb3':'#ffe066');s.p(x+1,y,'#ffffff')}s.r(16,26,4,1,S.b);s.p(16,27,S.b);s.p(19,27,S.b);s.p(17,28,S.b);s.p(18,28,S.b)}
+    if(ot==='leather'){s.line(19,27,15,40,'#c9d1da');s.r(12,26,4,3,O.l);s.r(20,26,4,3,O.l);s.ps([[24,31],[24,32]],'#c9d1da')}
+    if(ot==='suit'){s.r(16,26,4,1,'#ffffff');s.r(16,27,4,2,'#ffffff');s.r(17,29,2,2,'#ffffff');s.ps([[14,26],[15,27],[15,28],[16,29],[16,30],[21,26],[20,27],[20,28],[19,29],[19,30]],O.dd);s.p(18,33,O.dd);s.p(18,36,O.dd);s.r(12,29,2,1,'#e5484d');
+      if(ocr==='diamond'){const r=mulberry32(8);for(let k=0;k<22;k++){const x=10+(r()*16|0),y=27+(r()*24|0);if(y<41||(y>=41&&y<52))s.p(x,y,k%3?'#ffffff':'#7fe7ff')}}
+      if(ocr==='gold'){s.ps([[11,30],[12,36],[23,29],[22,38]],'#ffffff')}}
+    if(ot==='fur'){s.ell(18,27,8,3,'#efe3cf');s.ell(18,27,6,2,'#fff8ec');s.r(12,29,3,11,'#efe3cf');s.r(21,29,3,11,'#e2d2b8');s.ps([[13,31],[22,33],[13,36],[22,38]],'#d4c2a4')}
+    if(ot==='hanbok'){s.r(10,26,16,9,'#f2c230');s.r(10,26,2,9,'#ffe680');s.r(23,26,3,9,'#c08a18');s.poly([[14,26],[18,31],[22,26],[20,26],[18,29],[16,26]],'#ffffff');s.r(17,31,2,6,'#e5484d');s.r(15,32,2,4,'#e5484d');['#e5484d','#2f6fd6','#f2c230','#2fa35a','#ff8fb3'].forEach((c,k)=>{s.r(7,28+k*2,3,2,c);s.r(26,28+k*2,3,2,c)});s.r(10,35,16,6,'#2b3a67')}
+    if(ot==='racing'){s.r(10,28,16,2,'#ffffff');s.r(7,30,3,2,'#ffffff');s.r(26,30,3,2,'#ffffff');s.r(12,33,4,3,'#ffffff');s.r(13,34,2,1,'#e5484d');s.r(20,33,4,2,'#2f6fd6');s.r(15,26,6,1,'#111');s.r(17,27,2,13,'#111')}
+    if(ot==='space'){s.r(13,25,10,2,'#9aa3ad');s.r(13,25,10,1,'#c3ccd6');s.r(12,30,5,4,'#2f6fd6');s.p(13,31,'#ffffff');s.p(15,32,'#ffffff');s.r(19,30,5,3,'#e5484d');s.r(19,31,5,1,'#ffffff');s.r(15,36,6,3,'#c3ccd6');s.p(16,37,'#2be07a');s.p(18,37,'#e5484d');s.r(7,33,3,1,'#2f6fd6');s.r(26,33,3,1,'#2f6fd6')}
+    if(ot==='king'){const G=mat('gold');s.r(10,26,16,15,'#a8182c');s.r(10,26,2,15,'#d6334a');s.r(23,26,3,15,'#7a0e1c');s.ell(18,27,9,3.5,'#f6f2ea');[[12,27],[16,28],[20,28],[24,27]].forEach(([x,y])=>s.p(x,y,'#111'));s.r(16,29,4,12,'#f6f2ea');s.ps([[17,31],[18,34],[17,37]],'#111');s.r(6,36,5,3,'#f6f2ea');s.r(25,36,5,3,'#f6f2ea');s.ps([[13,30],[14,31],[15,32],[21,32],[22,31],[23,30]],G.b);s.r(17,33,2,2,G.l)}
+    if(acc.has('tie'))   {s.r(17,26,2,1,'#a01a22');s.r(17,27,2,8,'#d7262f');s.p(17,35,'#a01a22');s.p(18,27,'#ff5a62')}
+    if(acc.has('bow'))   {s.ps([[14,26],[15,26],[14,27],[15,27],[16,26],[19,26],[20,26],[21,26],[20,27],[21,27]],'#d7262f');s.r(17,26,2,2,'#a01a22')}
+    if(acc.has('chain')) {s.ps([[13,27],[14,28],[15,29],[16,29],[17,30],[18,30],[19,29],[20,29],[21,28],[22,27]],G.b);s.r(17,31,2,2,G.l);s.p(18,32,G.d)}
+    if(acc.has('bigchain')){for(const[x,y]of[[12,27],[13,29],[14,30],[16,31],[18,31],[20,31],[22,30],[23,29],[24,27]]){s.r(x,y,2,2,G.b);s.p(x,y,G.l)}s.r(16,32,4,5,G.b);s.r(16,32,4,1,G.l);s.r(16,36,4,1,G.dd);ptext(s,'$',16,32,G.dd)}
+    if(acc.has('dchain')){[[12,27],[13,28],[14,29],[15,30],[16,31],[17,31],[18,31],[19,31],[20,30],[21,29],[22,28],[23,27]].forEach(([x,y],k)=>s.p(x,y,k%2?'#ffffff':'#7fe7ff'));s.poly([[16,32],[20,32],[21,33],[18,37],[15,33]],'#7fe7ff');s.p(17,33,'#ffffff');s.p(18,34,'#ffffff');s.r(15,33,6,1,'#4ab8d8')}
+    if(acc.has('watch')) {s.r(7,37,3,2,G.b);s.p(8,37,'#ffffff')}
+    if(acc.has('dwatch')){s.r(26,37,3,2,D.b);s.p(27,37,'#ffffff');s.p(28,38,'#7fe7ff')}
+    if(acc.has('ring'))  {s.p(9,40,G.l);s.p(8,40,G.b)}
+    // 목·머리
+    s.r(15,24,6,3,S.d);s.r(15,26,6,1,S.dd);
+    s.r(10,17,1,4,S.b);s.r(25,17,1,4,S.d);s.p(25,18,S.dd);s.p(10,18,S.d);
+    s.r(11,12,14,13,S.b);s.clr([[11,12],[12,12],[11,13],[24,12],[23,12],[24,13],[11,24],[24,24]]);
+    s.r(23,14,2,10,S.d);s.r(12,24,12,1,S.d);s.r(12,14,1,8,S.l);
+    s.r(13,18,1,3,'#ffffff');s.r(14,18,2,3,'#2b3a67');s.p(14,18,'#5b78c7');s.p(15,18,'#ffffff');
+    s.r(22,18,1,3,'#ffffff');s.r(20,18,2,3,'#2b3a67');s.p(20,18,'#5b78c7');s.p(21,18,'#ffffff');
+    s.r(13,16,3,1,H.dd);s.r(20,16,3,1,H.dd);
+    s.p(18,21,S.d);s.r(16,23,4,1,sh(sk,-.45));s.p(15,22,sh(sk,-.3));s.p(20,22,sh(sk,-.3));
+    s.r(12,21,2,1,'#f2a0a0');s.r(22,21,2,1,'#f2a0a0');
+    if(acc.has('gteeth')){s.r(16,23,4,1,G.b);s.p(17,23,G.l)}
+    if(acc.has('grill')){s.r(16,23,4,1,'#7fe7ff');s.p(17,23,'#ffffff');s.p(19,23,'#ffffff')}
+    if(acc.has('ear')){s.p(10,21,'#7fe7ff');s.p(10,22,'#ffffff');s.p(25,21,'#7fe7ff');s.p(25,22,'#ffffff')}
+    // 앞머리
+    const top=()=>{s.r(10,9,16,5,H.b);s.r(11,8,14,1,H.b);s.r(13,8,6,1,H.l);s.r(12,9,8,1,H.l);s.r(14,10,3,1,H.l);s.r(10,13,16,1,H.d);s.r(23,9,3,4,H.d)};
+    if(hs==='short'){top();s.r(10,14,1,4,H.b);s.r(25,14,1,4,H.d);s.r(11,14,5,1,H.b);s.r(11,15,2,1,H.b);s.r(19,14,5,1,H.b);s.p(23,15,H.d)}
+    if(hs==='two'){s.r(10,14,1,5,H.dd);s.r(25,14,1,5,H.dd);s.r(11,7,15,7,H.b);s.r(21,5,5,3,H.b);s.r(24,4,2,2,H.b);s.r(13,7,8,1,H.l);s.r(15,8,6,1,H.l);s.r(11,12,15,1,H.d);s.r(17,13,8,2,H.b);s.r(17,14,3,1,H.d)}
+    if(hs==='bob'){top();s.r(9,12,3,15,H.b);s.r(9,12,1,15,H.l);s.r(24,12,3,15,H.d);s.r(11,14,14,2,H.b);s.r(11,15,14,1,H.d);s.clr([[13,16]]);s.r(9,26,3,1,H.d)}
+    if(hs==='long'){top();s.r(10,14,2,16,H.b);s.r(10,14,1,16,H.l);s.r(24,14,2,16,H.d);s.r(17,8,2,4,H.dd);s.r(12,14,4,1,H.b);s.r(20,14,4,1,H.b)}
+    if(hs==='pony'){top();s.r(11,14,6,1,H.b);s.r(11,15,2,1,H.b);s.r(10,14,1,3,H.b);s.r(25,14,1,3,H.d)}
+    if(hs==='curly'){s.r(10,10,16,4,H.b);[[12,9],[16,8],[20,8],[24,10],[10,12],[26,12]].forEach(([x,y])=>s.ell(x,y,2.8,2.6,H.b));[[12,8],[16,7],[20,7]].forEach(([x,y])=>s.p(x,y,H.l));s.r(9,14,3,7,H.b);s.r(24,14,3,7,H.d);s.r(12,14,3,1,H.b);s.r(21,14,3,1,H.b);s.p(16,14,H.b)}
+    if(hs==='spike'){s.r(10,9,16,5,H.b);[[10,9,12,3],[13,9,15,2],[17,9,19,1],[21,9,23,3],[24,9,26,5]].forEach(([a,b,c,d])=>s.poly([[a,b+1],[c,b+1],[(a+c)/2+.5,d]],H.b));s.r(12,9,10,1,H.l);s.r(10,13,16,1,H.d);s.r(10,14,1,3,H.b);s.r(25,14,1,3,H.d)}
+    if(hs==='slick'){s.r(10,8,16,6,H.b);s.r(11,7,14,1,H.b);s.r(12,8,11,1,H.l);s.r(11,10,13,1,H.l);s.r(12,12,11,1,H.l);s.r(10,13,16,1,H.d);s.r(10,14,1,3,H.d);s.r(25,14,1,3,H.d);s.ps([[13,7],[20,9]],'#ffffff')}
+    // 안경
+    if(g==='round'){const f='#3a2a1a';[[12,17],[19,17]].forEach(([a,b])=>{s.r(a,b,5,1,f);s.r(a,b+4,5,1,f);s.r(a,b,1,5,f);s.r(a+4,b,1,5,f)});s.r(17,18,2,1,f)}
+    if(g==='sun'){s.r(12,17,5,4,'#111');s.r(19,17,5,4,'#111');s.r(17,18,2,1,'#111');s.p(13,18,'#5a5a5a');s.p(20,18,'#5a5a5a');s.p(11,18,'#111');s.p(24,18,'#111')}
+    if(g==='heart'){const hp=(a)=>{s.ps([[a,17],[a+1,17],[a+3,17],[a+4,17],[a,18],[a+1,18],[a+2,18],[a+3,18],[a+4,18],[a+1,19],[a+2,19],[a+3,19],[a+2,20]],'#ff3d8b');s.p(a+1,17,'#ff9ac4')};hp(12);hp(19);s.r(17,18,2,1,'#ff3d8b')}
+    if(g==='mono'){s.r(19,17,5,1,G.b);s.r(19,21,5,1,G.d);s.r(19,17,1,5,G.b);s.r(23,17,1,5,G.d);s.ps([[24,22],[24,23],[25,24],[25,25]],G.d)}
+    if(g==='goldsun'){[[12,17],[19,17]].forEach(([a,b])=>{s.r(a,b,5,4,G.b);s.r(a+1,b+1,3,2,'#2a1a00');s.p(a+1,b+1,'#6b4a00')});s.r(17,18,2,1,G.b)}
+    if(g==='diasun'){[[12,17],[19,17]].forEach(([a,b])=>{s.r(a,b,5,4,'#e8f6ff');s.r(a+1,b+1,3,2,'#4ab8d8');s.p(a+1,b+1,'#ffffff')});s.r(17,18,2,1,'#e8f6ff');s.p(12,17,'#7fe7ff');s.p(23,17,'#7fe7ff')}
+    if(g==='star'){const st=(a)=>{s.ps([[a+2,16],[a+1,17],[a+2,17],[a+3,17],[a,18],[a+1,18],[a+2,18],[a+3,18],[a+4,18],[a+1,19],[a+3,19],[a+1,20],[a+3,20]],'#ffd23d');s.p(a+2,17,'#fff6c2')};st(12);st(19);s.r(17,18,2,1,'#ffd23d')}
+    if(g==='vr'){s.r(11,16,14,6,'#1c1e24');s.r(11,16,14,1,'#3a3f47');s.r(12,17,12,3,'#2a6bd6');s.r(12,17,12,1,'#8fd3ff');s.p(22,20,'#2be07a');s.r(10,17,1,3,'#111');s.r(25,17,1,3,'#111')}
+    // 모자
+    if(h==='cap'){s.r(10,6,16,7,'#d7262f');s.r(11,5,14,1,'#d7262f');s.r(12,6,6,1,'#ff6a72');s.r(8,12,20,2,'#a51b22');s.r(8,12,20,1,'#c42530');s.r(17,4,2,1,'#a51b22');s.r(16,8,4,2,'#ffffff')}
+    if(h==='beanie'){s.r(10,5,16,7,'#2f8f6a');for(let x=11;x<26;x+=2)s.r(x,5,1,7,'#287a5a');s.r(12,6,1,5,'#3aa87d');s.r(9,11,18,3,'#256f52');s.r(9,11,18,1,'#2f8f6a');s.ell(18,3.5,3,2.5,'#f2f2f2');s.p(17,2,'#ffffff')}
+    if(h==='headset'){s.r(11,6,14,1,'#2a2a2a');s.ps([[10,7],[25,7],[9,8],[26,8],[8,9],[27,9],[8,10],[27,10],[8,11],[27,11],[8,12],[27,12],[8,13],[27,13]],'#2a2a2a');s.r(6,14,4,8,'#3a3a3a');s.r(26,14,4,8,'#3a3a3a');s.p(7,16,'#e5484d');s.p(28,16,'#2be07a');s.ps([[8,22],[9,23],[10,24],[11,24],[12,24],[13,24]],'#3a3a3a');s.r(14,23,2,2,'#555')}
+    if(h==='cowboy'){s.r(11,3,14,9,'#8b5a2b');s.r(12,3,3,8,'#a5703d');s.r(16,3,4,1,'#6b4420');s.r(11,9,14,2,'#3a2410');s.r(4,11,28,2,'#8b5a2b');s.r(4,11,28,1,'#a5703d');s.ps([[3,10],[4,10],[31,10],[32,10],[3,9],[32,9]],'#8b5a2b')}
+    if(h==='top'){s.r(12,0,12,11,'#17171c');s.r(13,0,2,10,'#2c2c34');s.r(12,8,12,2,'#b3202a');s.r(8,11,20,2,'#17171c');s.r(9,11,18,1,'#2c2c34')}
+    if(h==='crown'){s.r(11,6,14,6,G.b);s.r(11,11,14,1,G.d);s.r(11,6,14,1,G.l);for(const[x,t]of[[11,2],[14,3],[17,0],[18,0],[21,3],[24,2]])s.r(x,t,1,6-t,G.b);s.ps([[11,2],[17,0],[18,0],[24,2]],G.l);s.p(14,8,'#e0245e');s.r(17,7,2,3,'#2bb3ff');s.p(17,7,'#bfeaff');s.p(21,8,'#2be07a');s.ps([[13,10],[16,10],[19,10],[22,10]],G.dd)}
+    if(h==='dcrown'){s.r(10,5,16,7,'#e8f6ff');s.r(10,11,16,1,'#9cc8dc');for(const[x,t]of[[10,1],[13,2],[16,0],[19,0],[22,2],[25,1]])s.r(x,t,2,6-t,'#e8f6ff');s.r(16,6,4,4,'#7fe7ff');s.p(17,6,'#ffffff');s.r(12,7,2,2,'#ff3d8b');s.r(22,7,2,2,'#8e5bd6');s.ps([[11,9],[14,10],[21,10],[24,9],[16,0],[25,1]],'#ffffff')}
+    if(h==='bunny'){s.r(10,10,16,2,'#f2f2f2');[[12,0],[20,0]].forEach(([x,y])=>{s.r(x,y,4,10,'#f2f2f2');s.r(x+1,y+2,2,7,'#ffb3d1');s.r(x+3,y,1,10,'#d8d8d8')})}
+    if(h==='santa'){s.poly([[10,11],[26,11],[22,3],[14,5]],'#d7262f');s.poly([[22,3],[27,6],[26,9]],'#d7262f');s.r(9,10,18,3,'#f6f6f6');s.ell(27,9,2,2,'#f6f6f6');s.p(14,6,'#ff5a62')}
+    if(h==='pirate'){s.poly([[6,12],[30,12],[26,6],[18,3],[10,6]],'#1b1b1f');s.r(6,11,24,2,'#1b1b1f');s.poly([[8,10],[28,10],[26,8],[10,8]],'#2c2c34');s.r(16,6,4,3,'#f2f2f2');s.ps([[16,9],[19,9]],'#f2f2f2');s.ps([[17,7],[18,7]],'#111');s.r(6,12,24,1,'#f2c230')}
+    if(h==='halo'){const G=mat('gold');s.alpha(.35,()=>s.ell(18,3,9,3,'#fff0a0'));s.ell(18,3,7,2.2,G.b);s.ell(18,3,5,1.2,'#00000000');s.x.clearRect(13,3,10,1);s.r(13,2,10,1,G.l)}
+    // 손에 든 것 (오른손 x26..28,y38..41)
+    if(held==='coffee'){s.r(28,33,5,8,'#cfeaf7');s.r(28,36,5,5,'#6b3e1e');s.r(29,37,2,2,'#e9f6ff');s.r(28,33,5,1,'#ffffff');s.r(31,29,1,4,'#2be07a')}
+    if(held==='phone'){s.r(28,32,4,8,'#111');s.r(29,33,2,6,'#0b1a22');s.ps([[29,37],[29,36],[30,35],[30,34]],'#2be07a')}
+    if(held==='bag'){s.r(27,41,8,9,'#121212');s.r(27,41,8,1,'#2c2c2c');s.r(27,44,8,1,G.b);s.ps([[28,40],[29,39],[32,39],[33,40]],G.d);s.p(31,46,G.l)}
+    if(held==='cash'){for(let k=0;k<3;k++)s.r(27+k,36-k*2,8,4,['#2f8a4a','#3fa35a','#58c172'][k]);s.r(30,32,2,4,G.b);s.r(29,32,4,1,G.l);s.ps([[33,32],[34,33]],'#a9e2b4')}
+    if(held==='case'){s.r(26,41,11,9,'#c3ccd6');s.r(26,41,11,1,'#ffffff');s.r(26,49,11,1,'#7b8592');s.r(30,39,3,2,'#555');s.r(27,44,9,1,'#3fa35a');s.r(27,43,9,1,'#58c172');s.p(31,46,G.b)}
+    if(held==='trophy'){s.ell(31,30,4,4,G.b,-1e9,30);s.r(27,27,9,4,G.b);s.r(28,27,2,4,G.l);s.ps([[26,28],[25,29],[26,30],[36,28],[37,29],[36,30]],G.d);s.r(30,31,3,4,G.d);s.r(28,35,7,2,G.b);s.r(28,36,7,1,G.dd);s.star(29,26)}
+    if(held==='wine'){s.r(29,30,4,4,'#e8f4ff');s.r(29,32,4,2,'#8b1e2d');s.r(30,34,2,4,'#e8f4ff');s.r(29,38,4,1,'#e8f4ff');s.p(29,30,'#ffffff')}
+    if(held==='mic'){const G=mat('gold');s.r(29,35,2,6,'#1c1e22');s.ell(30,33,2.5,2.5,G.b);s.p(29,32,G.l);s.r(29,36,2,1,G.b)}
+    if(held==='fan'){for(let k=0;k<6;k++){const a=-1.9+k*0.35;s.line(28,40,Math.round(28+Math.cos(a)*9),Math.round(40+Math.sin(a)*9),k%2?'#3fa35a':'#58c172');s.line(29,40,Math.round(29+Math.cos(a)*9),Math.round(40+Math.sin(a)*9),k%2?'#2f8a4a':'#3fa35a')}s.r(27,39,3,2,'#f2c230')}
+    if(held==='scepter'){const G=mat('gold');s.r(30,22,2,24,G.b);s.r(30,22,1,24,G.l);s.ell(31,20,3.2,3.2,G.b);s.r(30,18,2,3,'#e0245e');s.p(30,18,'#ff8fb3');s.star(33,16,'#ffffff','#fff0a0');s.r(29,30,4,1,G.d)}
+  });
+}
+// 펫
+function petSprite(v){
+  const G=mat('gold');
+  return sprite(22,18,s=>{
+    if(v==='cat'){const c='#f0a050',d='#c87830';s.ell(11,12,6,4.5,c);s.r(15,6,6,6,c);s.ps([[15,5],[15,4],[20,5],[20,4]],c);s.r(15,6,1,6,d);s.ps([[16,8],[19,8]],'#2b2b2b');s.p(17,10,'#ff8fb3');s.ps([[8,10],[10,9],[12,10]],d);s.r(4,8,2,6,c);s.p(4,7,c);s.r(7,15,2,2,c);s.r(13,15,2,2,c)}
+    if(v==='shiba'){const c='#e09a4a',w='#fff4e6';s.ell(10,12,6.5,4.5,c);s.r(14,5,7,7,c);s.ps([[14,4],[15,3],[20,4],[19,3]],c);s.r(16,9,5,3,w);s.ps([[16,7],[19,7]],'#2b2b2b');s.p(20,9,'#2b2b2b');s.ell(4,8,2.5,2.5,c);s.p(4,8,w);s.r(6,15,2,2,c);s.r(13,15,2,2,c);s.r(9,12,4,3,w)}
+    if(v==='parrot'){s.r(4,15,14,1,'#8b5a2b');s.ell(11,10,4,5,'#2fbf4f');s.r(9,3,6,5,'#e5484d');s.p(14,5,'#111');s.ps([[15,5],[16,6],[15,6]],'#ffd23d');s.r(8,9,3,5,'#2f7ae5');s.r(10,14,2,1,'#ffd23d');s.ps([[11,15],[13,15]],'#8b5a2b')}
+    if(v==='goldret'){s.ell(10,12,7,4.5,G.b);s.ell(10,11,5,2,G.l,-1e9,11);s.r(14,4,7,7,G.b);s.r(14,4,7,1,G.l);s.r(14,6,2,5,G.d);s.ps([[17,7],[20,7]],'#2b2b2b');s.p(20,9,'#2b2b2b');s.r(4,8,2,5,G.d);s.r(6,15,2,2,G.d);s.r(13,15,2,2,G.d);s.star(3,3,'#ffffff','#fff0a0');s.star(19,1,'#ffffff','#fff0a0')}
+    if(v==='penguin'){s.ell(11,11,5,6,'#1c1e24');s.ell(11,12,3.5,4.5,'#f6f6f6');s.ps([[10,8],[12,8]],'#111');s.ps([[9,8],[13,8]],'#f6f6f6');s.r(10,10,3,1,'#ffb02e');s.r(8,17,3,1,'#ffb02e');s.r(12,17,3,1,'#ffb02e');s.r(5,10,2,5,'#1c1e24');s.r(16,10,2,5,'#1c1e24')}
+    if(v==='panda'){s.ell(11,12,7,5,'#f6f6f6');s.ell(11,13,5,3,'#1c1e24',13);s.r(12,3,8,7,'#f6f6f6');s.r(11,3,2,2,'#1c1e24');s.r(19,3,2,2,'#1c1e24');s.r(13,5,2,2,'#1c1e24');s.r(17,5,2,2,'#1c1e24');s.p(14,5,'#ffffff');s.p(18,5,'#ffffff');s.r(15,8,2,1,'#1c1e24');s.r(5,15,3,2,'#1c1e24');s.r(14,15,3,2,'#1c1e24');s.r(4,9,3,4,'#1c1e24')}
+    if(v==='tiger'){const c='#f6f6f6';s.ell(10,12,7,4.5,c);s.r(14,4,7,7,c);s.ps([[14,3],[20,3]],c);[[7,9],[9,10],[11,9],[13,10],[15,5],[18,5],[16,4]].forEach(([x,y])=>{s.p(x,y,'#2a2a2a');s.p(x,y+1,'#2a2a2a')});s.ps([[16,7],[19,7]],'#2bb3ff');s.p(20,9,'#ff8fb3');s.r(2,10,3,1,c);s.r(1,9,2,1,'#2a2a2a');s.r(5,15,2,2,c);s.r(13,15,2,2,c)}
+    if(v==='unicorn'){s.ell(10,11,6,4,'#fbf7ff');s.r(14,4,6,6,'#fbf7ff');s.r(17,0,1,4,'#f2c230');s.p(17,0,'#fff0a0');['#ff4d4d','#ffd84d','#4dff88','#4dc3ff','#c34dff'].forEach((c,k)=>{s.p(13,4+k,c);s.p(12,5+k,c);s.p(4-k%2,9+k,c)});s.p(18,6,'#2b2b2b');s.p(19,8,'#ff8fb3');s.r(6,14,2,3,'#e8dff5');s.r(13,14,2,3,'#e8dff5');s.star(20,2,'#ffffff','#ffd6f5')}
+    if(v==='dragon'){const c='#8e5bd6',d='#5d36a3';s.poly([[3,3],[9,7],[7,11]],'#b78cff');s.poly([[19,2],[13,7],[16,10]],'#b78cff');s.ell(11,10,5,4,c);s.r(13,4,6,5,c);s.ps([[14,3],[17,3],[14,2],[18,2]],G.b);s.p(17,6,'#ffd23d');s.r(14,10,4,2,'#d9c3ff');s.ps([[6,12],[4,13],[3,15],[2,16]],d);s.p(20,7,'#ff7a1a');s.p(21,6,'#ffd23d')}
+  });
+}
+function auraDraw(s,list,layer){
+  const has=new Set(list.map(id=>IT[id]&&IT[id].v));
+  if(layer==='back'){
+    if(has.has('gold')){s.alpha(.18,()=>s.ell(32,34,24,30,'#ffd84d'));s.alpha(.22,()=>s.ell(32,34,18,26,'#ffe680'));for(const x of[10,18,46,54])s.alpha(.25,()=>s.r(x,4,1,50,'#fff0a0'))}
+    if(has.has('dia'))s.alpha(.18,()=>s.ell(32,34,24,30,'#7fe7ff'));
+    if(has.has('fire')){s.alpha(.22,()=>s.ell(32,40,22,24,'#ff7a1a'));for(const[x,h]of[[12,22],[18,30],[26,36],[38,34],[46,28],[52,20]]){s.alpha(.75,()=>s.poly([[x-4,62],[x+4,62],[x+1,62-h],[x-1,62-h+6]],'#ff7a1a'));s.alpha(.85,()=>s.poly([[x-2,62],[x+2,62],[x,64-h*.6]],'#ffd23d'))}}
+  }else{
+    if(has.has('spark'))[[8,10],[56,14],[6,40],[58,34],[32,2],[48,4]].forEach(([x,y],k)=>s.star(x,y,'#ffffff','#ffe680',k%2===0));
+    if(has.has('money'))[[6,6],[16,2],[50,8],[58,22],[4,28],[56,46],[10,50],[40,1]].forEach(([x,y],k)=>{if(k%2){s.r(x,y,5,3,'#3fa35a');s.p(x+2,y+1,'#a9e2b4')}else{s.r(x,y,3,5,'#3fa35a');s.p(x+1,y+2,'#a9e2b4')}});
+    if(has.has('bolt'))[[6,4],[52,8]].forEach(([x,y])=>{s.poly([[x+4,y],[x,y+9],[x+3,y+9],[x,y+18],[x+7,y+7],[x+4,y+7],[x+7,y]],'#ffe14d');s.poly([[x+4,y+1],[x+2,y+7],[x+4,y+7]],'#ffffff')});
+    if(has.has('heart'))[[6,12],[54,18],[8,44],[52,42],[30,0]].forEach(([x,y])=>{s.ps([[x,y],[x+1,y],[x+3,y],[x+4,y],[x,y+1],[x+1,y+1],[x+2,y+1],[x+3,y+1],[x+4,y+1],[x+1,y+2],[x+2,y+2],[x+3,y+2],[x+2,y+3]],'#ff4f8b');s.p(x,y,'#ffb3cf')});
+    if(has.has('dia'))[[7,16],[56,10],[54,40],[8,44]].forEach(([x,y])=>{s.poly([[x,y],[x+4,y],[x+5,y+1],[x+2,y+4],[x-1,y+1]],'#7fe7ff');s.p(x+1,y+1,'#ffffff')});
+  }
+}
+function backSprite(v){
+  return sprite(64,64,s=>{
+    const G=mat('gold');
+    if(v==='cape'){s.poly([[24,31],[40,31],[46,61],[18,61]],'#c8243a');s.poly([[24,31],[29,31],[24,61],[18,61]],'#a01a2c');s.r(20,58,24,3,'#8a1424');s.r(25,30,14,2,G.b)}
+    const wing=(c1,c2,c3,mir,bat)=>{const f=x=>mir?64-x:x;
+      if(bat){s.poly([[f(26),f(26)===26?32:32],[f(6),18],[f(9),26],[f(4),30],[f(10),36],[f(6),42],[f(26),40]].map(([x,y])=>[x,y]),c1);s.line(f(26),33,f(6),18,c2);s.line(f(26),36,f(4),30,c2);s.line(f(26),38,f(6),42,c2)}
+      else{s.poly([[f(27),32],[f(14),18],[f(4),20],[f(2),28],[f(6),36],[f(12),42],[f(26),42]],c1);for(let k=0;k<4;k++)s.line(f(26),34+k*2,f(4+k*2),24+k*5,c2);s.poly([[f(27),32],[f(14),18],[f(9),22],[f(22),34]],c3)}};
+    if(v==='angel'){wing('#f6f8fc','#cfd8e6','#ffffff',false);wing('#f6f8fc','#cfd8e6','#ffffff',true)}
+    if(v==='devil'){wing('#4a1f5a','#2a0f36','#6b2f82',false,true);wing('#4a1f5a','#2a0f36','#6b2f82',true,true)}
+    if(v==='goldwing'){wing(G.b,G.d,G.l,false);wing(G.b,G.d,G.l,true);s.star(6,20,'#ffffff','#fff0a0',true);s.star(58,22,'#ffffff','#fff0a0',true)}
+    if(v==='jet'){[[19,31],[41,31]].forEach(([x,y])=>{s.r(x,y,5,15,'#9aa3ad');s.r(x,y,5,1,'#e6ebf0');s.r(x,y,1,15,'#c3ccd6');s.r(x+1,y+15,3,2,'#4e5762');s.poly([[x,y+17],[x+5,y+17],[x+3,y+25],[x+2,y+25]],'#ff7a1a');s.r(x+1,y+17,3,3,'#ffe066')});s.r(23,33,18,3,'#4e5762')}
+  });
+}
+function rainbowBack(s){['#ff4d4d','#ffa94d','#ffe14d','#4dff88','#4dc3ff','#8e5bd6'].forEach((c,k)=>{s.alpha(.6,()=>s.ell(32,46,31-k*2.2,40-k*2.2,c,-1e9,46))});s.x.globalCompositeOperation='destination-out';s.ell(32,46,18,27,'#000',-1e9,46);s.x.globalCompositeOperation='source-over'}
+function charIMG(pr,opt={}){
+  const pet=opt.pet!==false, aura=opt.aura!==false;
+  const key='C'+['skin','hair','outfit','hat','glasses','shoes','held','back',pet?'pet':''].map(k=>k&&pr.eq[k]).join('|')+'|'+(pr.multi.acc||[]).slice().sort().join(',')+'|'+(aura?(pr.multi.aura||[]).slice().sort().join(','):'');
+  if(IMGC.has(key))return IMGC.get(key);
+  const s=PX(64,64), au=aura?(pr.multi.aura||[]):[];
+  if(au.some(id=>IT[id].v==='rainbow'))rainbowBack(s);
+  auraDraw(s,au,'back');
+  s.alpha(.35,()=>s.ell(32,62,14,2,'#000'));
+  const bk=V(pr.eq,'back'); if(bk)s.put(backSprite(bk));
+  s.put(charSprite(pr),14,5);
+  const pv=pet?V(pr.eq,'pet'):'';
+  if(pv){const p=petSprite(pv);if(pv==='dragon')s.put(p,42,4);else if(pv==='parrot')s.put(p,42,46);else s.put(p,42,47)}
+  auraDraw(s,au,'front');
+  return toImg(s,6,key);
+}
+
+// ===== 집 =====
+const FURN={
+  bed:{mat:s=>{s.r(4,61,30,5,'#e9e4d8');s.r(4,65,30,1,'#cfc8b8');s.r(6,59,8,3,'#ffffff');s.r(16,60,18,5,'#8aa1b8');s.r(16,60,18,1,'#a6bacd')},
+    single:s=>{s.r(3,48,3,18,'#8b5a2b');s.r(3,48,1,18,'#a5703d');s.r(4,60,30,5,'#8b5a2b');s.r(4,57,30,3,'#f4f1ea');s.r(13,56,21,5,'#5b8def');s.r(13,56,21,1,'#86aaf5');s.r(6,54,7,3,'#ffffff');s.r(32,65,2,1,'#5a3a1a')},
+    double:s=>{s.r(2,44,4,22,'#a0522d');s.r(2,44,4,1,'#c06a3e');s.r(3,60,38,5,'#a0522d');s.r(3,56,38,4,'#faf7f0');s.r(15,55,26,6,'#d65a6a');s.r(15,55,26,1,'#eb8592');s.r(6,52,8,3,'#ffffff');s.r(6,56,7,2,'#ffffff')},
+    king:s=>{const G=mat('gold');s.r(1,40,7,26,'#3b3f55');s.r(1,40,7,1,'#555a75');[44,49,54,59].forEach(y=>{s.p(3,y,'#262938');s.p(5,y+2,'#262938')});s.r(2,59,42,6,'#3b3f55');s.r(2,54,42,5,'#fbf8f2');s.r(16,52,28,7,'#ece5d6');s.r(16,55,28,1,G.b);s.r(9,49,8,4,'#ffffff')}},
+  sofa:{basic:s=>{s.r(48,53,30,8,'#6b8fb3');s.r(48,53,30,1,'#8eb0d0');s.r(46,60,34,5,'#7fa3c7');s.r(44,56,4,10,'#5c7fa3');s.r(78,56,4,10,'#5c7fa3');s.r(48,65,2,1,'#333');s.r(76,65,2,1,'#333')},
+    leather:s=>{s.r(47,51,32,10,'#5a3420');s.r(47,51,32,1,'#7a4a30');[51,57,63,69,75].forEach(x=>{s.p(x,54,'#3a2010');s.p(x-3,57,'#3a2010')});s.r(46,60,34,5,'#6e4029');s.r(43,54,4,12,'#4d2c1a');s.r(79,54,4,12,'#4d2c1a')},
+    design:s=>{const G=mat('gold');s.ell(53,58,9,7,'#e86f4f');s.ell(73,58,9,7,'#e86f4f');s.r(46,58,34,7,'#f08a66');s.r(46,58,34,1,'#ffab8a');s.ell(53,55,5,2,'#ff9d7d');s.r(48,65,1,2,G.d);s.r(77,65,1,2,G.d)}},
+  desk:{fold:s=>{s.r(85,56,31,2,'#c8b48e');s.line(87,58,113,66,'#9b8a6a');s.line(113,58,87,66,'#9b8a6a');s.r(94,52,13,4,'#555');s.r(95,52,11,3,'#9cc6e8')},
+    dual:s=>{s.r(84,55,33,2,'#2f2f33');s.r(86,57,2,9,'#2f2f33');s.r(113,57,2,9,'#2f2f33');monPx(s,86,43,14,10,0);monPx(s,101,43,14,10,2);s.r(99,53,3,2,'#222');s.r(92,53,18,1,'#555')},
+    six:s=>{s.r(84,55,34,2,'#1f1f24');s.r(86,57,2,9,'#1f1f24');s.r(114,57,2,9,'#1f1f24');[0,1,2].forEach(c=>{monPx(s,87+c*10,31,10,8,c);monPx(s,87+c*10,40,10,8,c+4)});s.r(100,48,3,7,'#222');['#ff4d4d','#ffd84d','#4dff88','#4dc3ff','#c34dff'].forEach((c,k)=>s.r(92+k*4,53,4,1,c))}},
+  tv:{small:s=>{s.r(56,37,18,12,'#111');s.r(57,38,16,10,'#203040');s.ps([[59,45],[61,44],[63,45],[65,42],[67,41],[69,40],[70,39]],'#2be07a');s.r(62,49,6,3,'#333')},
+    big:s=>{s.r(48,27,34,20,'#0d0d0f');s.r(49,28,32,18,'#0f1d2b');candles(s,51,29,30,16)},
+    theater:s=>{s.r(48,27,34,20,'#0d0d0f');s.r(49,28,32,18,'#0f1d2b');candles(s,51,29,30,16);s.r(42,28,5,24,'#1a1a1d');s.r(43,30,3,3,'#333');s.r(43,40,3,4,'#333');s.r(83,28,4,24,'#1a1a1d');s.r(84,30,2,3,'#333');s.r(84,40,2,4,'#333');s.r(51,48,28,2,'#1a1a1d')}},
+  frame:{poster:s=>{s.r(6,5,20,15,'#ffffff');s.ps([[8,17],[10,15],[12,16],[14,13],[16,14],[18,11],[20,9],[22,8],[23,7]],'#1fbf63');s.ps([[21,7],[22,7],[23,8]],'#1fbf63')},
+    art:s=>{s.r(4,4,24,17,'#b8862f');s.r(5,5,22,15,'#9ed0f0');s.ell(22,9,2,2,'#ffd66b');s.poly([[5,20],[5,15],[11,10],[16,15],[20,12],[27,17],[27,20]],'#5f9e5a');s.r(4,4,24,1,'#d9a64a')},
+    gold:s=>{const G=mat('gold');s.r(3,3,26,19,G.b);s.r(3,3,26,1,G.l);s.r(3,21,26,1,G.d);s.r(5,5,22,15,'#141414');s.poly([[12,10],[20,10],[22,12],[16,18],[10,12]],'#7fe7ff');s.ps([[12,11],[14,11],[13,12]],'#e8fbff');s.r(10,12,12,1,'#44b8d8')}},
+  lamp:{bulb:s=>{s.alpha(.18,()=>s.ell(63,12,9,8,'#fff3b0'));s.r(63,0,1,10,'#333');s.r(62,10,3,3,'#ffe680');s.p(62,10,'#fffbe0')},
+    stand:s=>{s.alpha(.2,()=>s.ell(42,38,10,8,'#fff3b0'));s.poly([[38,38],[46,38],[45,34],[39,34]],'#f2e6c9');s.r(41,38,1,27,'#333');s.r(39,65,5,1,'#333')},
+    neon:s=>{const P='#ff4fd8',pts=[[52,16],[57,11],[61,14],[66,8],[70,11],[76,5]];s.alpha(.25,()=>{for(let k=0;k<pts.length-1;k++){s.x.lineWidth=1;for(let d=-1;d<=1;d++)s.line(pts[k][0],pts[k][1]+d,pts[k+1][0],pts[k+1][1]+d,P)}});for(let k=0;k<pts.length-1;k++)s.line(pts[k][0],pts[k][1],pts[k+1][0],pts[k+1][1],'#ffd1f5');s.ps([[73,5],[74,5],[75,5],[76,6],[76,7],[76,8]],'#ffd1f5')},
+    chand:s=>{const G=mat('gold');s.alpha(.18,()=>s.ell(63,11,14,10,'#fff3b0'));s.r(63,0,1,5,G.d);s.r(54,8,19,1,G.b);s.r(57,5,13,1,G.b);[54,58,63,68,72].forEach((x,k)=>{s.r(x,k%2?3:6,1,2,'#fff');s.p(x,k%2?2:5,'#ffd66b')});[56,60,63,66,70].forEach(x=>{s.p(x,10,'#d9f1ff');s.p(x,11,'#a9dcff')})}},
+  plant:{small:s=>{s.r(81,61,6,5,'#c8693c');s.r(81,61,6,1,'#de8455');s.ps([[83,60],[82,59],[81,58],[85,60],[86,59],[87,58],[84,59],[84,58],[84,57]],'#4f9a4f')},
+    monstera:s=>{s.r(80,59,8,7,'#e8e1d4');s.r(80,59,8,1,'#fffaf0');[[76,52],[87,51],[82,47],[75,57],[89,56]].forEach(([x,y])=>{s.ell(x,y,4,2.6,'#3b9a4a');s.p(x,y,'#2a7a38')});s.line(84,58,80,50,'#2f7a3a');s.line(84,58,87,52,'#2f7a3a')},
+    bonsai:s=>{s.r(78,62,12,3,'#5a3a2a');s.r(78,62,12,1,'#7a5440');s.ps([[84,61],[83,60],[83,59],[84,58],[85,57],[85,56],[84,55]],'#6b4a2f');[[80,54],[87,53],[84,51],[88,57]].forEach(([x,y])=>s.ell(x,y,3.5,2,'#2f7a3a'))}},
+  rug:{basic:s=>s.ell(62,68,30,3,'#c9b8a3'),
+    leo:s=>{s.ell(62,68,30,3,'#d9a441');[[40,68],[50,67],[58,69],[66,67],[74,69],[82,68]].forEach(([x,y])=>s.r(x,y,2,1,'#3a2a10'))},
+    persian:s=>{const G=mat('gold');s.ell(62,68,32,3.5,'#8b1e2d');s.ell(62,68,27,2.4,G.d);s.ell(62,68,25,1.8,'#8b1e2d');s.r(56,68,12,1,'#1e3a6b')}},
+  _old_special:{safe:s=>{s.r(55,58,14,13,'#4a4f57');s.r(55,58,14,1,'#6b7079');s.r(56,59,12,11,'#5b616a');s.ell(62,64.5,3,3,'#2f3339');s.p(62,62,'#c9d1da');s.r(67,63,1,3,'#9aa3ad')},
+    aqua:s=>{s.r(46,58,30,13,'#2a8fd0');s.r(46,58,30,1,'#cfe9ff');s.r(46,68,30,3,'#e5d29b');[[51,62,'#ff8a3d'],[60,65,'#ffd23d'],[69,61,'#ff5d8a']].forEach(([x,y,c])=>{s.r(x,y,3,2,c);s.p(x+3,y,c);s.p(x+3,y+1,c);s.p(x,y,'#111')});s.ps([[49,67],[49,66],[50,65],[50,64],[72,67],[73,66],[73,65]],'#3aa35a');s.alpha(.4,()=>s.r(47,59,2,8,'#ffffff'))},
+    goldbars:s=>{const G=mat('gold');const bar=(x,y)=>{s.r(x,y,7,3,G.b);s.r(x,y,7,1,G.l);s.r(x,y+2,7,1,G.d)};[[47,68],[54,68],[61,68],[68,68],[50,65],[57,65],[64,65],[54,62],[61,62],[57,59]].forEach(([x,y])=>bar(x,y))},
+    bull:s=>{const G=mat('gold');s.r(51,66,24,5,'#2a2a2e');s.r(51,66,24,1,'#44444a');s.poly([[53,65],[54,56],[57,52],[68,51],[72,54],[72,65],[69,65],[69,59],[57,59],[56,65]],G.b);s.poly([[70,53],[74,50],[78,52],[76,56],[72,57]],G.b);s.ps([[74,49],[75,48],[76,47],[72,50],[71,49],[70,48]],G.l);s.r(56,52,10,1,G.l);s.r(54,60,2,5,G.d);s.r(70,60,2,5,G.d);s.p(76,52,'#3a2a00')}},
+};
+function monPx(s,x,y,w,h,k){s.r(x,y,w,h,'#111');s.r(x+1,y+1,w-2,h-2,'#0b1a22');const up=k%3!==2,c=up?'#2be07a':'#ff4d55';let py=y+h-3;for(let i=x+1;i<x+w-1;i++){s.p(i,py,c);py+=(((i*7+k*3)%5)<2?1:-1)*(up?-1:1)*(((i+k)%3)?1:0);py=Math.max(y+2,Math.min(y+h-2,py))}}
+function candles(s,x,y,w,h){for(let k=0;k<7;k++){const up=(k*5)%3!==0,hh=3+(k*7)%6,cx=x+2+k*4,cy=y+h-3-k*1.6-(up?hh:0);s.r(cx,cy,2,hh,up?'#ff4d55':'#3d8bff');s.r(cx,cy-1,1,hh+2,up?'#ff4d55':'#3d8bff')}}
+
+// ===== 럭셔리 (여러 개 동시 배치, 앞줄) =====
+const LUX={
+  safe:s=>{s.r(1,69,12,14,'#4a4f57');s.r(1,69,12,1,'#7b818a');s.r(2,70,10,12,'#5b616a');s.r(2,70,1,12,'#6b717a');s.ell(7,76,2.6,2.6,'#2f3339');s.p(7,74,'#c9d1da');s.r(10,74,1,4,'#9aa3ad');s.r(1,82,12,1,'#2f3339')},
+  cashtower:s=>{for(let k=0;k<6;k++){const y=80-k*3;s.r(27,y,8,3,k%2?'#3fa35a':'#35914e');s.r(27,y,8,1,'#7fd497');s.r(30,y,2,3,'#f2c230')}s.star(34,60,'#ffffff','#a9e2b4')},
+  aqua:s=>{s.r(36,69,23,14,'#2a8fd0');s.r(36,69,23,1,'#e6f6ff');s.r(36,79,23,4,'#e5d29b');s.r(36,82,23,1,'#b8a46a');[[39,72,'#ff8a3d'],[47,75,'#ffd23d'],[53,71,'#ff5d8a']].forEach(([x,y,c])=>{s.r(x,y,3,2,c);s.p(x+3,y,c);s.p(x+3,y+1,c);s.p(x,y,'#111')});s.ps([[38,78],[38,77],[39,76],[39,75],[56,78],[57,77],[57,76]],'#3aa35a');s.alpha(.45,()=>s.r(37,70,1,8,'#ffffff'));s.ps([[44,71],[45,70],[50,73]],'#bfe6ff')},
+  wine:s=>{s.r(60,62,10,21,'#4a2c1a');s.r(60,62,10,1,'#6b4428');s.r(61,63,8,18,'#24140c');for(let y=64;y<80;y+=3)for(let x=62;x<68;x+=2)s.p(x,y,(x+y)%3?'#8b1e2d':'#2f6b3a');s.p(68,72,'#f2c230')},
+  piano:s=>{s.poly([[71,71],[93,71],[93,74],[88,77],[71,77]],'#111216');s.poly([[72,70],[90,60],[92,62],[76,71]],'#1c1d22');s.line(80,70,88,62,'#3a3c44');s.r(71,71,8,1,'#f4f4f4');for(let x=72;x<79;x+=2)s.p(x,71,'#111');s.r(73,77,1,6,'#111216');s.r(90,77,1,6,'#111216');s.r(76,79,8,1,'#2a1a10');s.r(77,80,1,3,'#2a1a10');s.r(82,80,1,3,'#2a1a10');s.p(72,72,'#f2c230')},
+  goldbars:s=>{const G=mat('gold');const bar=(x,y)=>{s.r(x,y,6,2,G.b);s.r(x,y,6,1,G.l);s.p(x+5,y+1,G.d)};[[94,81],[100,81],[97,79],[103,79],[100,77],[94,79]].forEach(([x,y])=>bar(x,y));s.star(104,74)},
+  toilet:s=>{const G=mat('gold');s.r(20,66,6,10,G.b);s.r(20,66,6,1,G.l);s.r(20,66,1,10,G.l);s.r(25,66,1,10,G.d);s.ell(18,76,6,2.5,G.b);s.r(12,75,12,1,G.l);s.r(15,78,6,5,G.d);s.r(15,78,2,5,G.b);s.r(22,67,2,1,'#ffffff');s.star(13,70)},
+  bull:s=>{const G=mat('gold');s.r(106,79,14,4,'#2a2a2e');s.r(106,79,14,1,'#44444a');s.poly([[107,78],[108,71],[110,69],[116,68],[118,70],[118,78],[116,78],[116,74],[110,74],[109,78]],G.b);s.r(110,69,6,1,G.l);s.poly([[117,69],[120,67],[121,70],[119,72]],G.b);s.ps([[119,66],[120,65],[117,67],[116,66]],G.l);s.p(120,69,'#3a2a00')},
+};
+const WALLS=[
+  {w:'#8f897a',f:['#6f6250','#64584a'],pat:'block'},
+  {w:'#c9c0aa',f:['#8f7a5e','#836f55'],pat:'speck'},
+  {w:'#dcd9d2',f:['#b5875a','#a87c52'],pat:'panel'},
+  {w:'#e8dfcf',f:['#c4945f','#b78955'],pat:'stripe'},
+  {w:'#dfe6ec',f:['#d2b088','#c5a37c'],pat:'plain'},
+  {w:'#262c38',f:['#d8d8de','#cfd0d6'],pat:'dark'},
+  {w:'#e9d9b5',f:['#f2efe8','#3a3a3a'],pat:'mansion'},
+  {w:'#8a8f99',f:['#7d8088','#6f727a'],pat:'castle'},
+];
+// 집 단계별 방 크기: 비쌀수록 넓고 천장이 높아짐 → 캐릭터·가구가 상대적으로 작아 보임
+const ROOMW=[110,120,140,165,195,230,280,340];
+const roomDims=t=>{const W=ROOMW[t],H=Math.round(W*.7);return{W,H,F:H-32}};
+function roomBg(s,tier,W,H,F){
+  const Wd=WALLS[tier],r=mulberry32(11+tier);
+  s.r(0,0,W,F,Wd.w);
+  if(Wd.pat==='block'){for(let y=0;y<F;y+=5){s.r(0,y,W,1,sh(Wd.w,-.15));for(let x=((y/5)%2)*6;x<W;x+=12)s.r(x,y,1,5,sh(Wd.w,-.15))}for(let k=0;k<W*F/90;k++)s.p(r()*W|0,r()*F|0,sh(Wd.w,-.25));s.r(W-24,6,9,6,'#6f6a5e');s.r(W-23,8,7,1,'#4f4b42');s.r(W-23,10,7,1,'#4f4b42')}
+  if(Wd.pat==='speck'){for(let k=0;k<W*F/50;k++)s.p(r()*W|0,r()*F|0,sh(Wd.w,r()<.5?-.07:.07))}
+  if(Wd.pat==='panel'){for(let x=0;x<W;x+=15)s.r(x,0,1,F,sh(Wd.w,-.07))}
+  if(Wd.pat==='stripe'){for(let x=0;x<W;x+=4)s.r(x,0,1,F,sh(Wd.w,-.05))}
+  if(Wd.pat==='plain'){s.r(0,F-10,W,1,sh(Wd.w,-.08))}
+  if(Wd.pat==='dark'){for(let x=0;x<W;x+=20){s.r(x,0,1,F,'#1c212b');s.r(x+1,0,1,F,'#323a49')}}
+  if(Wd.pat==='mansion'){for(let y=2;y<F-18;y+=6)for(let x=(y/6%2)*3;x<W;x+=6)s.p(x,y,'#d6c193');s.r(0,F-18,W,18,'#8a5a34');s.r(0,F-18,W,1,'#a8724a');for(let x=4;x<W;x+=20){s.r(x,F-15,14,12,'#7a4e2c');s.r(x,F-15,14,1,'#5f3c21');s.r(x,F-15,1,12,'#5f3c21')}
+    for(let x=30;x<W-20;x+=90){s.r(x,6,6,F-24,'#f3ead6');s.r(x,6,6,2,'#d8c9a8');s.r(x+1,8,1,F-28,'#e2d6bb')}}
+  if(Wd.pat==='castle'){for(let y=0,k=0;y<F;y+=6,k++){s.r(0,y,W,1,'#6c7079');for(let x=(k%2)*7;x<W;x+=14){s.r(x,y,1,6,'#6c7079');if(r()<.3)s.r(x+2,y+2,9,3,sh(Wd.w,r()<.5?.06:-.08))}}
+    for(let x=24;x<W-10;x+=60){s.r(x,4,14,30,'#a8182c');s.r(x,4,14,1,'#d6334a');s.poly([[x,34],[x+14,34],[x+7,40]],'#a8182c');s.ell(x+7,16,4,4,'#f2c230');s.p(x+7,15,'#fff0a0');s.r(x-2,3,18,2,'#5a3a1a')}
+    for(let x=54;x<W-10;x+=60){s.r(x,F-34,2,8,'#4a3020');s.ell(x+1,F-37,2.4,3.5,'#ff9f1a');s.p(x+1,F-38,'#fff0a0');s.alpha(.15,()=>s.ell(x+1,F-36,10,10,'#ffb84d'))}}
+  s.r(0,0,W,2,sh(Wd.w,-.2));
+  if(Wd.pat==='mansion'){for(let y=F;y<H;y+=5)for(let x=0;x<W;x+=8)s.r(x,y,8,5,((x/8+(y-F)/5)%2)?Wd.f[0]:Wd.f[1])}
+  else if(Wd.pat==='dark'){s.r(0,F,W,H-F,Wd.f[0]);for(let k=0;k<W/12;k++){let x=r()*W|0,y=F+1+(r()*(H-F-2)|0);for(let j=0;j<10;j++){s.p(x,y,'#b9bac2');x+=1;y+=r()<.5?0:1}}for(let x=0;x<W;x+=20)s.r(x,F,1,H-F,'#c2c3ca')}
+  else if(Wd.pat==='castle'){for(let y=F,k=0;y<H;y+=5,k++){s.r(0,y,W,5,Wd.f[k%2]);for(let x=(k%2)*8;x<W;x+=16)s.r(x,y,1,5,'#5e6168')}const c0=Math.round(W*.3),c1=Math.round(W*.7);s.r(c0,F,c1-c0,H-F,'#9a1a2c');s.r(c0,F,2,H-F,'#f2c230');s.r(c1-2,F,2,H-F,'#f2c230')}
+  else{for(let y=F,k=0;y<H;y+=4,k++){s.r(0,y,W,4,Wd.f[k%2]);s.r(0,y+3,W,1,sh(Wd.f[0],-.18));for(let x=(k*7)%22;x<W;x+=22)s.r(x,y,1,3,sh(Wd.f[0],-.18))}}
+  s.r(0,F-2,W,2,sh(Wd.w,-.35));
+}
+function winBox(s,x0,y0,w,h,fn){s.r(x0-2,y0-2,w+4,h+4,'#f1f1ee');s.r(x0-2,y0+h+1,w+4,1,'#c9c9c4');const v=PX(w,h);fn(v);s.put(v,x0,y0);s.r(x0+(w>>1),y0,1,h,'#f1f1ee')}
+function roomWindowNative(s,tier){
+  const r=mulberry32(99+tier);
+  if(tier===1){winBox(s,46,4,28,12,v=>{v.r(0,0,28,12,'#cfd8df');v.r(0,9,28,3,'#8c9399');v.r(5,0,2,9,'#2e3442');v.r(8,0,2,8,'#2e3442');v.r(4,9,4,1,'#111');v.r(8,8,3,1,'#111');v.r(19,0,2,9,'#7a3b3b');v.r(19,9,3,1,'#d14')});for(let x=48;x<74;x+=4)s.r(x,2,1,16,'#555')}
+  if(tier===2)winBox(s,80,8,34,28,v=>{v.r(0,0,34,28,'#bfe3ff');[[0,12,7],[8,7,6],[15,15,7],[23,9,5],[29,13,5]].forEach(([x,y,w])=>{v.r(x,y,w,28-y,'#7f93ad');for(let j=y+2;j<28;j+=3)for(let i=x+1;i<x+w-1;i+=2)v.p(i,j,'#c9d6e6')});v.r(28,3,3,3,'#fff6c2')});
+  if(tier===3)winBox(s,76,6,38,32,v=>{v.r(0,0,38,32,'#cfeaff');v.ell(6,6,3,3,'#ffe27a');[[2,14,5],[12,16,4],[22,12,6],[31,15,5]].forEach(([x,y,w])=>v.r(x,y,w,32-y,'#a9b6c6'));[[4,27],[13,25],[22,28],[31,26]].forEach(([x,y])=>{v.ell(x,y,6,5,'#4f9a4f');v.ell(x-1,y-1,3,2,'#6bbb6b')})});
+  if(tier===4)winBox(s,64,4,52,38,v=>{for(let y=0;y<26;y++)v.r(0,y,52,1,sh('#ff9a6b',y/40));v.ell(38,17,5,5,'#fff1c8');[[0,17,5],[6,14,4],[11,19,5],[42,17,5],[47,14,5]].forEach(([x,y,w])=>v.r(x,y,w,26-y,'#8c6f86'));v.r(0,26,52,12,'#4f86c6');for(let k=0;k<10;k++)v.r(r()*48|0,27+(r()*10|0),3,1,'#8fb6e6');for(let i=0;i<52;i++){const y=Math.round(22-4*Math.abs(Math.sin(i/52*Math.PI*2)));v.p(i,y,'#e8e8e8')}[6,19,32,45].forEach(x=>v.r(x,19,1,7,'#e8e8e8'))});
+  if(tier===5){winBox(s,6,3,108,45,v=>{v.r(0,0,108,45,'#0d1430');for(let k=0;k<40;k++)v.p(r()*108|0,r()*20|0,r()<.3?'#ffffff':'#8f9bc9');v.ell(92,8,4,4,'#f4f1d0');[[0,24,10],[11,19,8],[20,27,9],[30,16,7],[38,23,10],[49,18,8],[58,26,10],[69,14,9],[79,21,10],[90,25,9],[100,20,8]].forEach(([x,y,w])=>{v.r(x,y,w,45-y,'#1b2342');for(let j=y+2;j<45;j+=3)for(let i=x+1;i<x+w-1;i+=2)if(r()<.45)v.p(i,j,'#ffd66b')})});s.r(42,3,1,45,'#f1f1ee');s.r(78,3,1,45,'#f1f1ee')}
+  if(tier===6){const x0=70,y0=4;s.ell(90,16,22,14,'#f1f1ee',-1e9,16);s.r(68,16,44,30,'#f1f1ee');const v=PX(40,40);v.r(0,0,40,40,'#9fd5ff');v.ell(30,8,3,3,'#fff3b0');v.r(0,26,40,14,'#6dbb5e');v.r(8,31,22,5,'#4fc3f7');v.r(9,31,20,1,'#9fe3ff');[[4,25],[12,24],[28,24],[36,25]].forEach(([x,y])=>v.ell(x,y,4,4,'#3d8b3d'));
+    const m=PX(40,40);m.ell(20,14,20,13,'#000',-1e9,14);m.r(0,14,40,26,'#000');m.x.globalCompositeOperation='source-in';m.x.drawImage(v.c,0,0);s.put(m,x0,y0+2);s.r(89,4,1,42,'#f1f1ee')}
+  if(tier===7){const x0=96,w=16,h=40;s.ell(x0+w/2,8,w/2+2,8,'#5a5e66',-1e9,8);s.r(x0-2,8,w+4,h,'#5a5e66');const v=PX(w,h+8);
+    const cols=['#c8243a','#2f6fd6','#f2c230','#2fa35a','#8e5bd6'];for(let j=0;j<h+8;j+=4)for(let i=0;i<w;i+=4)v.r(i,j,4,4,cols[(i/4+j/4)%5]);v.r(0,0,w,h+8,'#00000000');
+    for(let j=0;j<h+8;j+=4)v.r(0,j,w,1,'#2a2a2a');for(let i=0;i<w;i+=4)v.r(i,0,1,h+8,'#2a2a2a');const m=PX(w,h+8);m.ell(w/2,8,w/2,8,'#000',-1e9,8);m.r(0,8,w,h,'#000');m.x.globalCompositeOperation='source-in';m.x.drawImage(v.c,0,0);s.put(m,x0,0+2);s.r(x0+w/2,4,1,h+4,'#2a2a2a')}
+}
+function windowOffsets(t,W){
+  if(t===0)return[];if(t===1)return[Math.round(W/2-60)];if(t===2||t===3)return[W-120];
+  if(t===4)return W>=180?[W-120,W-178]:[W-120];
+  if(t===5){const o=[];for(let x=0;x+112<=W+4;x+=110)o.push(x);return o}
+  if(t===6){const o=[];for(let k=0;k<3;k++)o.push(W-120-k*56);return o}
+  if(t===7){const o=[];for(let x=W-130;x>-100;x-=60)o.push(x);return o}
+  return[];
+}
+// 럭셔리: 고른 것들을 바닥 앞줄에 자동으로 고르게 배치 (넓은 집일수록 여유 있게)
+const LUXM={
+  safe:{x:1,w:13},toilet:{x:12,w:15},cashtower:{x:27,w:9},aqua:{x:36,w:23},wine:{x:60,w:10},piano:{x:71,w:23},goldbars:{x:94,w:15},bull:{x:106,w:16},
+  arcade:{x:0,w:11},massage:{x:0,w:17},fridge:{x:0,w:12},pool:{x:0,w:31},jacuzzi:{x:0,w:30},
+};
+const LUX2={
+  arcade:s=>{s.r(0,65,11,18,'#2a1f5a');s.r(0,65,11,1,'#4a3a9a');s.r(1,67,9,6,'#111');s.r(2,68,7,4,'#0b2a3a');s.ps([[3,70],[4,69],[5,70],[6,69],[7,70]],'#2be07a');s.r(1,75,9,2,'#3a2f7a');s.p(3,75,'#e5484d');s.p(6,75,'#ffd23d');s.p(7,76,'#2bb3ff');s.r(0,63,11,2,'#ff4fd8')},
+  massage:s=>{s.r(2,64,8,14,'#3a3a42');s.r(2,64,8,1,'#55555f');s.r(0,74,17,5,'#2c2c33');s.r(12,72,5,7,'#2c2c33');s.r(3,66,6,10,'#4a4a55');s.ps([[5,68],[5,71],[5,74]],'#2be07a');s.r(2,79,13,4,'#1d1d22')},
+  fridge:s=>{s.r(0,61,12,22,'#d8dde3');s.r(0,61,12,1,'#ffffff');s.r(0,70,12,1,'#9aa2ab');s.r(10,63,1,5,'#7b8592');s.r(10,72,1,8,'#7b8592');s.r(2,63,5,3,'#1b2230');s.ps([[3,64],[4,64],[5,63]],'#2be07a')},
+  pool:s=>{s.r(0,70,31,6,'#1f6b3a');s.r(1,71,29,4,'#2f8a4a');s.r(0,70,31,1,'#7a4a2a');s.r(0,75,31,1,'#5a3420');s.r(2,76,2,7,'#5a3420');s.r(27,76,2,7,'#5a3420');s.p(8,72,'#fff');s.p(14,73,'#e5484d');s.p(20,72,'#ffd23d');s.p(17,74,'#111');s.line(4,69,13,73,'#c8a26a')},
+  jacuzzi:s=>{s.r(0,74,30,9,'#e8e1d4');s.r(0,74,30,1,'#ffffff');s.r(2,75,26,4,'#4fc3f7');s.r(2,75,26,1,'#9fe3ff');[[5,74],[10,73],[16,74],[22,73]].forEach(([x,y])=>{s.p(x,y,'#ffffff');s.p(x+1,y-1,'#dff6ff')});s.r(0,82,30,1,'#b8b0a0')},
+};
+// 벽 장식 (여러 개)
+const WDECO={
+  clock:{w:10,h:10,f:s=>{s.ell(5,5,5,5,'#3a2a1a');s.ell(5,5,4,4,'#f4f1ea');s.line(5,5,5,2,'#111');s.line(5,5,7,6,'#111');s.p(5,5,'#e5484d')}},
+  chart:{w:24,h:16,f:s=>{s.r(0,0,24,16,'#f4f4f4');s.r(0,0,24,1,'#cfcfcf');s.r(0,15,24,1,'#9a9a9a');[[2,12],[6,10],[9,11],[13,6],[16,8],[20,3],[22,2]].reduce((a,b)=>(s.line(a[0],a[1],b[0],b[1],'#1fbf63'),b));s.r(2,2,4,1,'#2f6fd6');s.r(2,4,7,1,'#e5484d')}},
+  dneon:{w:14,h:14,f:s=>{s.alpha(.3,()=>s.ell(7,7,7,7,'#2be07a'));s.r(6,1,2,12,'#9dffc9');s.r(3,3,8,2,'#9dffc9');s.r(3,6,2,1,'#9dffc9');s.r(3,6,8,2,'#9dffc9');s.r(9,8,2,1,'#9dffc9');s.r(3,9,8,2,'#9dffc9')}},
+  disc:{w:14,h:16,f:s=>{const G=mat('gold');s.r(0,0,14,16,'#1a1a1a');s.r(0,0,14,1,'#3a3a3a');s.ell(7,7,5,5,G.b);s.ell(7,7,4,4,G.d);s.ell(7,7,1.5,1.5,G.l);s.r(2,13,10,1,G.l)}},
+  shelf:{w:26,h:12,f:s=>{const G=mat('gold');s.r(0,10,26,2,'#6b4a2f');s.r(0,10,26,1,'#8b6a4a');[[3,4],[11,2],[19,4]].forEach(([x,y])=>{s.r(x,y,5,4,G.b);s.r(x,y,5,1,G.l);s.r(x+1,y+4,3,2,G.d);s.r(x,y+6-(y===2?0:0),5,1,G.d)});s.star(13,1,'#ffffff','#fff0a0')}},
+  ticker:{w:44,h:8,f:s=>{s.r(0,0,44,8,'#0b0f14');s.r(0,0,44,1,'#2a3340');const t=[['#2be07a',6],['#ff4d55',5],['#2be07a',7],['#2be07a',4],['#ff4d55',6]];let x=2;t.forEach(([c,w])=>{s.r(x,3,w,2,c);s.p(x,2,c);x+=w+3})}},
+};
+const WDECO_TIER=2;
+function roomIMG(pr){
+  const eq=pr.eq, tier=IT[eq.house].v, {W,H,F}=roomDims(tier), slots=['frame','tv','lamp','rug','bed','sofa','plant','desk'];
+  const lux=tier>=SLOT_TIER.lux?(pr.multi.lux||[]):[], wd=tier>=WDECO_TIER?(pr.multi.wdeco||[]):[];
+  const key='R'+eq.house+'|'+slots.map(k=>tier>=SLOT_TIER[k]?eq[k]:'').join('|')+'|'+lux.join(',')+'|'+wd.join(',');
+  if(IMGC.has(key))return IMGC.get(key);
+  const s=PX(W,H); roomBg(s,tier,W,H,F);
+  const dy=F-52, wy=Math.max(0,Math.round(dy*.45)), cx=Math.round(W*.5-63), rx=W-120-Math.round(W*.02), lx=Math.round(W*.02);
+  const wl=PX(120,58); roomWindowNative(wl,tier);
+  const wo=windowOffsets(tier,W); wo.forEach(o=>s.put(wl,o,tier===7?Math.max(0,wy-4):wy));
+  if([2,3,4,6].includes(tier)&&wo.length){const o=wo[0],wx={2:80,3:76,4:64,6:70}[tier]+o,ww={2:34,3:38,4:52,6:40}[tier];s.alpha(.09,()=>s.poly([[wx,40+wy],[wx+ww,40+wy],[wx+ww-14,H],[wx-30,H]],'#fff6c8'))}
+  // 벽 장식: 벽 위쪽 띠에 고르게
+  if(wd.length){const y0=Math.max(3,F-64);const items=wd.map(id=>WDECO[IT[id].v]).filter(Boolean);const tot=items.reduce((a,b)=>a+b.w,0);const gap=Math.max(3,(W*.55-tot)/(items.length+1));let x=Math.round(W*.04+gap);
+    for(const it of items){const sp=sprite(it.w+2,it.h+2,t=>{const v=PX(it.w,it.h);it.f(v);t.put(v,1,1)});s.put(sp,x,y0+(it.h<12?4:0));x+=Math.round(it.w+gap)}}
+  const off={frame:[lx,Math.max(0,dy)],tv:[cx,dy],rug:[cx,dy],bed:[lx,dy],sofa:[cx,dy],plant:[rx,dy],desk:[rx,dy]};
+  for(const sl of slots){if(tier<SLOT_TIER[sl])continue;const v=V(eq,sl);if(!v)continue;
+    let [ox,oy]=off[sl]||[cx,dy]; if(sl==='lamp'){oy=(v==='bulb'||v==='chand')?0:dy;if(v==='bulb'||v==='chand'){const L=PX(120,40);FURN.lamp[v](L);if(dy>0)s.r(cx+63,0,1,Math.round(dy*.5),v==='chand'?'#c08a18':'#333');s.put(L,cx,Math.round(dy*.5));continue}}
+    if(sl==='bed'&&v==='canopy'){s.put(sprite(120,84,t=>{const G=mat('gold');t.r(1,18,2,48,G.b);t.r(1,18,1,48,G.l);t.r(44,18,2,48,G.b);t.r(0,17,47,4,'#b72a4c');t.r(0,17,47,1,'#d6466a');for(let x=0;x<47;x+=6)t.ell(x+3,21,3,1.6,'#b72a4c');t.alpha(.6,()=>{t.r(3,22,3,30,'#b72a4c');t.r(41,22,3,30,'#b72a4c')})}),ox,oy);s.put(sprite(120,84,FURN.bed.king),ox,oy);continue}
+    const fn=FURN[sl][v]; if(fn) s.put(sprite(120,84,fn,!(sl==='rug'||(sl==='lamp'&&v!=='stand'))),ox,oy);
+  }
+  if(lux.length){const items=lux.map(id=>IT[id].v).filter(v=>LUXM[v]);const tot=items.reduce((a,v)=>a+LUXM[v].w,0);const gap=Math.max(-4,(W-tot)/(items.length+1));let x=gap;
+    for(const v of items){const m=LUXM[v];const fn=LUX[v]||LUX2[v];s.put(sprite(130,84,fn),Math.round(x-m.x),H-84);x+=m.w+gap}}
+  if(tier===0) s.alpha(.14,()=>s.r(0,0,W,H,'#1a1405'));
+  if(tier===5) s.alpha(.06,()=>s.r(0,0,W,H,'#2a3a8a'));
+  if(tier===7) s.alpha(.08,()=>s.r(0,0,W,H,'#ff9f1a'));
+  s.alpha(.18,()=>{s.r(0,0,W,2,'#000');s.r(0,H-2,W,2,'#000');s.r(0,0,2,H,'#000');s.r(W-2,0,2,H,'#000')});
+  return toImg(s,tier>=5?3:4,key);
+}
+
+// ===== 자동차 =====
+const CARDEF={
+  compact:{body:[[30,34],[30,22],[33,15],[38,10],[68,10],[78,18],[92,21],[95,24],[95,34]],belt:20,win:[[[35,19],[37,14],[41,12],[54,12],[54,19]],[[56,12],[67,12],[75,19],[56,19]]],w:[[41,32],[85,32]],r:6,door:55,head:[92,22],tail:[30,22]},
+  sedan:{body:[[18,33],[18,24],[22,21],[36,20],[46,12],[74,12],[86,21],[106,23],[110,27],[110,33]],belt:22,win:[[[40,20],[48,14],[59,14],[59,20]],[[61,14],[73,14],[82,20],[61,20]]],w:[[34,32],[94,32]],r:6,door:60,head:[106,24],tail:[18,24]},
+  suv:{body:[[16,32],[16,14],[19,8],[80,8],[92,17],[108,19],[112,23],[112,32]],belt:18,win:[[[20,16],[22,10],[44,10],[44,16]],[[46,10],[64,10],[64,16],[46,16]],[[66,10],[79,10],[88,16],[66,16]]],w:[[34,30],[96,30]],r:8,door:65,head:[108,20],tail:[16,15]},
+  pickup:{body:[[12,31],[12,20],[50,20],[52,10],[78,10],[88,18],[110,20],[114,23],[114,31]],belt:21,win:[[[55,18],[57,12],[70,12],[70,18]],[[72,12],[78,12],[85,18],[72,18]]],w:[[30,29],[96,29]],r:9,door:70,head:[110,21],tail:[12,21],bed:true},
+  muscle:{body:[[12,33],[12,24],[16,21],[34,21],[46,14],[66,14],[76,21],[110,22],[114,25],[114,33]],belt:23,win:[[[44,20],[49,16],[60,16],[60,20]],[[62,16],[66,16],[73,20],[62,20]]],w:[[32,31],[96,31]],r:7,door:58,head:[110,23],tail:[12,24],scoop:[[86,21],[93,18],[99,21]]},
+  sports:{body:[[13,33],[13,26],[17,22],[30,21],[43,14],[58,13],[70,20],[106,23],[113,26],[115,30],[115,33]],belt:23,win:[[[40,20],[46,15],[56,15],[56,20]],[[58,15],[60,15],[67,20],[58,20]]],w:[[31,30],[98,30]],r:8,door:57,head:[110,24],tail:[13,26]},
+  super:{body:[[12,33],[12,26],[15,22],[30,21],[44,19],[52,14],[60,13],[70,14],[80,21],[104,24],[114,27],[117,30],[117,33]],belt:24,win:[[[52,19],[56,15],[66,15],[76,20]]],w:[[30,30],[98,30]],r:8,door:62,head:[113,26],tail:[12,26],intake:[[36,23],[48,22],[45,30],[38,30]]},
+  limo:{body:[[4,33],[4,24],[8,21],[20,20],[28,13],[96,13],[104,21],[120,23],[124,27],[124,33]],belt:22,win:[[[22,20],[29,15],[44,15],[44,20]],[[46,15],[62,15],[62,20],[46,20]],[[64,15],[80,15],[80,20],[64,20]],[[82,15],[95,15],[101,20],[82,20]]],w:[[20,32],[108,32]],r:6,door:63,head:[120,24],tail:[4,24]},
+  camper:{body:[[10,32],[10,6],[84,6],[94,13],[110,17],[114,21],[114,32]],belt:20,win:[[[14,11],[30,11],[30,17],[14,17]],[[36,11],[56,11],[56,17],[36,17]],[[86,9],[92,13],[100,18],[86,18]]],w:[[28,30],[94,30]],r:8,door:76,head:[110,21],tail:[10,20],camper:true},
+  classic:{body:[[14,33],[14,25],[20,22],[38,21],[50,20],[66,20],[72,21],[104,22],[112,25],[114,33]],belt:23,win:[[[64,20],[67,14],[68,14],[71,20]]],w:[[32,31],[96,31]],r:7,door:56,head:[110,24],tail:[14,25],classic:true},
+  monster:{body:[[12,22],[12,11],[50,11],[52,2],[78,2],[88,9],[110,11],[114,14],[114,22]],belt:12,win:[[[55,9],[57,4],[70,4],[70,9]],[[72,4],[78,4],[85,9],[72,9]]],w:[[30,26],[96,26]],r:12,door:70,head:[110,12],tail:[12,12],bed:true},
+  formula:{body:[[14,30],[14,25],[30,24],[44,23],[52,19],[62,18],[68,22],[104,26],[118,29],[118,31],[14,31]],belt:26,win:[],w:[[28,31],[102,31]],r:8,door:-9,head:[116,28],tail:[14,25],open:true},
+  hyper:{body:[[6,33],[6,25],[10,21],[30,20],[44,18],[52,13],[62,12],[72,14],[82,20],[110,25],[120,29],[122,33]],belt:23,win:[[[54,18],[58,14],[67,14],[77,19]]],w:[[28,30],[102,30]],r:8,door:60,head:[117,27],tail:[6,25],intake:[[32,23],[46,22],[42,30],[30,30]],fin:[[24,20],[44,13],[48,13],[34,20]]},
+};
+function carIMG(carId,cm,bg=true){
+  cm=cm||DEF_CM; const type=IT[carId]?IT[carId].v:'';
+  const key='V'+carId+'|'+CARMOD.map(k=>cm[k]).join('|')+bg; if(IMGC.has(key))return IMGC.get(key);
+  const s=PX(128,48), r=mulberry32(5), MV=k=>IT[cm[k]]?IT[cm[k]].v:'';
+  if(bg){for(let y=0;y<38;y++)s.r(0,y,128,1,sh('#0f1422',y/120));[[2,10,12],[16,4,10],[28,14,14],[44,8,9],[56,16,12],[70,6,11],[83,12,13],[98,3,10],[110,10,16]].forEach(([x,y,w])=>{s.r(x,y,w,38-y,'#1e2636');s.r(x,y,w,1,'#2a3448');for(let j=y+2;j<38;j+=3)for(let i=x+1;i<x+w-1;i+=2)if(r()<.35)s.p(i,j,'#e8c86a')});
+    s.r(0,38,128,10,'#2b313b');s.r(0,38,128,1,'#4a525e');for(let x=4;x<128;x+=14)s.r(x,43,7,1,'#e8e0a0');s.dith(0,46,128,2,'#23282f')}
+  if(!type){s.r(84,12,2,26,'#9aa3ad');s.put(sprite(128,48,t=>{t.r(78,5,14,9,'#2f7ae5');t.r(78,5,14,1,'#6aa4ff');ptext(t,'BUS',79,7,'#ffffff')}));s.put(sprite(128,48,t=>{t.r(38,30,24,2,'#8b6a4a');t.r(38,30,24,1,'#a8865f');t.r(40,32,1,6,'#555');t.r(59,32,1,6,'#555');t.r(39,24,2,6,'#8b6a4a')}));
+    s.put(sprite(128,48,t=>{const S=mat('#f3c6a0');t.r(66,25,4,5,S.b);t.r(65,24,6,2,'#2a1f1a');t.r(66,30,4,5,'#5b8def');t.r(66,35,1,3,'#2b3140');t.r(69,35,1,3,'#2b3140')}));return toImg(s,4,key)}
+  const D=CARDEF[type], pt=MV('paint'), M=mat(pt), gl=MV('glow'), sp=MV('spoiler'), dc=MV('decal'), wh=MV('wheel'), kit=MV('kit'), low=+MV('low')||0, tint=MV('tint'), ex=MV('exhaust'), rf=MV('roof');
+  const sy=p=>p.map(([a,b])=>[a,b+low]);
+  const body=sy(D.body), xs=body.map(p=>p[0]), x0=Math.min(...xs), x1=Math.max(...xs), bot=Math.max(...body.map(p=>p[1])), belt=D.belt+low, top=Math.min(...body.map(p=>p[1]));
+  if(gl){const cols=gl==='rainbow'?['#ff4d4d','#ffd84d','#4dff88','#4dc3ff','#c34dff']:[gl];for(let x=x0-4;x<x1+4;x++){const c=cols[Math.max(0,Math.floor((x-x0)/((x1-x0)/cols.length)))%cols.length];s.alpha(.85,()=>s.p(x,38,c));s.alpha(.45,()=>{s.p(x,39,c);s.p(x,37,c)});s.alpha(.2,()=>{s.p(x,40,c);s.p(x,36,c)})}}
+  s.alpha(.5,()=>s.r(x0+2,38,x1-x0-4,1,'#000'));
+  if(ex==='fire'){const fy=bot-3;s.put(sprite(128,48,t=>{t.poly([[x0-1,fy-1],[x0-10,fy-3],[x0-7,fy],[x0-12,fy+2],[x0-1,fy+2]],'#ff7a1a');t.poly([[x0-1,fy],[x0-6,fy-1],[x0-5,fy+1],[x0-1,fy+1]],'#ffe066')},false))}
+  const car=sprite(128,48,t=>{
+    if(sp==='wing'){t.r(x0+3,belt-7,1,6,'#222');t.r(x0+9,belt-7,1,6,'#222');t.r(x0-2,belt-9,16,2,'#16181c');t.r(x0-2,belt-9,16,1,'#3a3f47')}
+    if(sp==='mega'){t.r(x0+3,belt-13,2,12,'#222');t.r(x0+11,belt-13,2,12,'#222');t.r(x0-5,belt-16,24,3,'#16181c');t.r(x0-5,belt-16,24,1,'#4a505a');t.r(x0-5,belt-18,2,5,'#16181c');t.r(x0+17,belt-18,2,5,'#16181c')}
+    if(D.fin)t.poly(sy(D.fin),M.d);
+    // 차체: 별도 레이어에 칠하고 source-atop으로 명암·데칼 클리핑
+    const B=PX(128,48); B.poly(body,M.b);
+    if(D.scoop)B.poly(sy(D.scoop),M.d);
+    B.atop(()=>{
+      for(let y=top;y<=bot;y++){const f=(y-top)/(bot-top+1);if(f>.72)B.r(0,y,128,1,M.d);if(f>.9)B.r(0,y,128,1,M.dd)}
+      B.dith(0,Math.round(top+(bot-top)*.72)-1,128,1,M.d);
+      B.r(0,belt,128,1,M.l);B.r(0,top,128,2,M.l);
+      if(!['matte'].includes(pt)){for(let k=0;k<3;k++)B.line(x0+18+k*30,bot-2,x0+28+k*30,top,M.l);B.alpha(.35,()=>{for(let k=0;k<3;k++)B.line(x0+19+k*30,bot-2,x0+29+k*30,top,'#ffffff')})}
+      if(pt==='pearl'){B.alpha(.35,()=>{B.r(0,belt+2,128,1,'#ffc6e6');B.r(0,belt+3,128,1,'#c6f0ff')})}
+      if(pt==='diamond'||pt==='chrome'){const rr=mulberry32(4);for(let k=0;k<26;k++)B.p(x0+(rr()*(x1-x0)|0),top+(rr()*(bot-top)|0),pt==='diamond'?(k%2?'#ffffff':'#7fe7ff'):'#ffffff')}
+      if(pt==='gold'){B.alpha(.6,()=>B.r(0,belt+3,128,1,'#fff6c8'))}
+      const my=belt+4;
+      if(dc==='stripe'){const c=['#1b1d22','matte','#2563eb','#d7262f','#8e2bd6'].includes(pt)?'#f2f2f2':'#151515';B.r(0,my,128,1,c);B.r(0,my+2,128,1,c)}
+      if(dc==='flame'){const fx=D.head[0];for(let k=0;k<30;k++){const x=fx-k,amp=Math.max(0,4-Math.abs(((k*7)%9)-4))*(1-k/34);for(let y=Math.round(my-amp);y<=my+2+amp*.5;y++)B.p(x,y,k%5<2||y===my?'#ffd23d':'#ff7a1a')}}
+      if(dc==='chart'){let y=bot-5;for(let x=x0+12;x<x1-14;x++){B.p(x,y,'#22e07a');B.p(x,y+1,'#139a52');if(x%5===0)y+=((x*13)%7<2)?1:-1;y=Math.max(belt+2,Math.min(bot-3,y))}}
+      const wc=tint==='black'?'#14161b':tint==='30'?'#3a5d7a':'#5c8fb8', wl=tint==='black'?'#2a2f38':tint==='30'?'#6a8fae':'#9fc8e6';
+      for(const w0 of D.win){const w=sy(w0);B.poly(w,wc);const ty=Math.min(...w.map(p=>p[1]));B.poly(w,wl,ty,ty);const wx=Math.min(...w.map(p=>p[0]));B.ps([[wx+3,ty+2],[wx+4,ty+3],[wx+5,ty+4]],tint==='black'?'#3a404a':'#e2f2fd')}
+      if(D.door>0){B.r(D.door,belt+1,1,bot-belt-4,M.dd);B.r(D.door-6,belt+2,3,1,M.dd);B.p(D.door-6,belt+2,M.l)}
+      if(D.camper){B.r(x0+4,top+2,70,2,M.d);B.r(40,belt+2,10,8,M.d);B.r(41,belt+3,8,6,'#5c8fb8')}
+      if(kit==='skirt'||kit==='wide')B.r(0,bot-1,128,2,'#15171b');
+    });
+    if(D.intake)B.poly(sy(D.intake),'#0d0f12');
+    if(D.bed){B.r(x0+1,belt-2+low*0,36,2,M.dd);B.r(x0,belt-3,38,1,'#2a2c31')}
+    t.put(B);
+    if(kit==='wide')for(const[cx,cy]of D.w){t.ell(cx,cy+low*0,D.r+3,D.r+3,M.d,-1e9,cy-D.r+1);t.ell(cx,cy,D.r+3,D.r+3,M.b,-1e9,cy-D.r-1);t.p(cx-D.r,cy-D.r+1,'#c3ccd6');t.p(cx+D.r,cy-D.r+1,'#c3ccd6')}
+    if(sp==='lip')t.r(x0,D.tail[1]+low-2,6,2,'#16181c');
+    const hlc=MV('hl')||'#fff6c2';t.r(D.head[0]-3,D.head[1]+low,3,2,hlc);t.p(D.head[0]-1,D.head[1]+low,'#ffffff');t.alpha(.45,()=>t.r(D.head[0],D.head[1]+low,6,2,hlc));
+    t.r(D.tail[0],D.tail[1]+low,2,3,'#ff3344');t.p(D.tail[0],D.tail[1]+low,'#ff9aa2');
+    if(ex==='dual'||ex==='fire'){t.r(x0-2,bot-4,3,1,'#c3ccd6');t.r(x0-2,bot-2,3,1,'#c3ccd6');t.p(x0-2,bot-4,'#ffffff')}
+    if(rf==='box')t.r(Math.round((x0+x1)/2)-14,top-3,22,3,'#1c1e22'),t.r(Math.round((x0+x1)/2)-14,top-3,22,1,'#3a3f47');
+    if(rf==='emblem'){const G=mat('gold'),hx0=D.head[0]-12,hy=Math.min(...body.filter(p=>p[0]>D.head[0]-20).map(p=>p[1]));t.r(hx0,hy-3,2,3,G.b);t.p(hx0+2,hy-3,G.l);t.p(hx0+1,hy-4,G.l)}
+    if(rf==='crown'){const G=mat('gold'),cx=Math.round(D.win[0][0][0]+12);t.r(cx-6,top-5+low,13,4,G.b);t.r(cx-6,top-5+low,13,1,G.l);for(const dx of[-6,-3,0,3,6])t.r(cx+dx,top-8+low,1,3,G.b);t.p(cx,top-4+low,'#e0245e');t.p(cx-3,top-3+low,'#2bb3ff');t.p(cx+3,top-3+low,'#2bb3ff')}
+    if(D.open){t.r(108,30,14,2,M.d);t.r(116,26,6,5,M.dd);t.r(4,17,14,3,M.d);t.r(4,17,14,1,M.l);t.r(9,20,2,6,'#222');t.ell(57,17,4,4,'#f2f2f2',-1e9,18);t.r(54,17,7,2,'#1b1d22');t.r(55,15,5,1,'#2bb3ff');t.r(60,22,22,2,'#111');ptext(t,'VIP',72,26,'#ffffff')}
+    if(D.classic){t.r(40,18,24,3,'#3a2a1a');t.r(40,18,24,1,'#6a4a2a');t.r(44,15,6,3,'#f3c6a0');t.r(43,14,8,2,'#2a1f1a')}
+    if(D.monster)for(const[cx,cy]of D.w){t.r(cx-2,cy-D.r-1,4,8,'#3a3f47')}
+    for(const[cx,cy]of D.w){if(!D.open)t.ell(cx,cy,D.r+1.6,D.r+1.6,'#0b0e14',-1e9,cy-1);t.ell(cx,cy,D.r,D.r,'#16171b');t.ell(cx,cy,D.r-1,D.r-1,'#24262c');if(D.classic)t.ell(cx,cy,D.r-1.4,D.r-1.4,'#f2f2f2');t.ell(cx,cy,D.r-1,D.r-1,'#30333a',-1e9,cy-D.r+1);
+      const RM=wh==='gold'?mat('gold'):wh==='diamond'?mat('diamond'):wh==='black'?{b:'#2c2f35',l:'#4a4f57',d:'#1c1e22',dd:'#111'}:wh==='sport'?{b:'#e3e7eb',l:'#ffffff',d:'#9aa2ab',dd:'#5e6670'}:{b:'#b9c0c8',l:'#dfe4e9',d:'#7d858e',dd:'#555b63'};
+      const rr=D.r*.64;t.ell(cx,cy,rr,rr,RM.d);t.ell(cx,cy,rr-.6,rr-.6,RM.b);t.ell(cx,cy,rr-.6,rr-.6,RM.l,-1e9,cy-rr+1.2);
+      const n=wh==='sport'?8:wh==='gold'||wh==='diamond'?6:5;for(let k=0;k<n;k++){const a=k/n*Math.PI*2+.3;t.line(cx,cy,cx+Math.cos(a)*(rr-.5),cy+Math.sin(a)*(rr-.5),RM.dd)}t.p(cx,cy,RM.l);
+      if(['sports','super','hyper','muscle'].includes(type))t.r(cx+Math.round(rr)-1,cy-2,1,3,'#e5484d');
+      if(wh==='diamond'){t.p(cx-1,cy-2,'#ffffff');t.p(cx+2,cy+1,'#ffffff')}}
+  });
+  s.put(car);
+  if(pt==='diamond'||wh==='diamond'||pt==='gold'||rf==='crown'){s.star(x0+20,top-2,'#ffffff','#fff0a0');s.star(x1-12,top+4,'#ffffff','#bfeaff')}
+  if(!bg){const c=PX(128,42);c.x.drawImage(s.c,0,-3);return toImg(c,4,key)}
+  return toImg(s,4,key);
+}
+
+// ===== 마이 탭 UI =====
+const SHOP={
+  char:[['hair','💇','헤어'],['outfit','👔','옷'],['hat','🎩','모자'],['glasses','🕶️','안경'],['acc','💍','액세서리'],['shoes','👟','신발'],['held','💰','손'],['back','🪽','등'],['pet','🐶','펫'],['aura','✨','오라'],['skin','🎨','피부']],
+  house:[['house','🏠','집'],['lux','💎','럭셔리'],['wdeco','🖼️','벽 장식'],['bed','🛏️','침대'],['desk','🖥️','책상'],['lamp','💡','조명'],['tv','📺','TV'],['sofa','🛋️','소파'],['frame','🖼️','액자'],['rug','🟫','러그'],['plant','🪴','화분']],
+  car:[['car','🚗','차고'],['paint','🎨','도색'],['wheel','🛞','휠'],['spoiler','🪽','스포일러'],['kit','🔧','바디킷'],['low','⬇️','차고 높이'],['tint','🪟','틴팅'],['decal','🔥','데칼'],['glow','🌈','언더글로우'],['exhaust','💨','머플러'],['roof','👑','장식'],['hl','💡','라이트']],
+};
+let myTab='char'; const mySlot={char:'hair',house:'house',car:'car'};
+function isOn(sl,id){if(MULTI[sl])return (MT.multi[sl]||[]).includes(id);if(CARMOD.includes(sl))return (MT.cm[MT.eq.car]||DEF_CM)[sl]===id;return MT.eq[sl]===id}
+function thumbOf(sl,id){
+  const pr=myPr();
+  if(myTab==='char'){const p={eq:Object.assign({},pr.eq),multi:{acc:[...pr.multi.acc],aura:[...pr.multi.aura],lux:pr.multi.lux}};
+    if(MULTI[sl]){if(!p.multi[sl].includes(id))p.multi[sl].push(id)}else p.eq[sl]=id;
+    if(sl==='aura')p.multi.aura=[id];
+    return charIMG(p,{pet:sl==='pet',aura:sl==='aura'})}
+  if(myTab==='house'){const p={eq:Object.assign({},pr.eq),multi:{lux:[...pr.multi.lux],wdeco:[...(pr.multi.wdeco||[])]}};
+    if(MULTI[sl]){p.multi={lux:[],wdeco:[]};p.multi[sl]=[id];p.eq=Object.assign({},p.eq,{house:IT[p.eq.house].v>=2?p.eq.house:'officetel'})}else p.eq[sl]=id;return roomIMG(p)}
+  if(sl==='car')return carIMG(id,MT.cm[id]||DEF_CM,false);
+  const c=MT.eq.car!=='car_none'?MT.eq.car:'car_sedan';return carIMG(c,Object.assign({},MT.cm[c]||DEF_CM,{[sl]:id}),false);
+}
+const chH=pr=>Math.round(68*Math.min(1.05,ROOMW[1]/ROOMW[IT[pr.eq.house].v]));
+function renderStage(){
+  const pr=myPr(), sc=flexScore(MT.inv), ft=flexTier(sc);
+  $('#mystage').innerHTML=`<div class="stage">${roomIMG(pr)}<div class="ch" style="height:${chH(pr)}%">${charIMG(pr)}</div><div class="flexb">${ft[1]} ${ft[2]} · 플렉스 ${kwon(sc)}</div><div class="roomtag">${IT[pr.eq.house].name}</div></div>`;
+  const cars=pr.cars.length;
+  $('#mycar').innerHTML=`${carIMG(MT.eq.car,MT.cm[MT.eq.car],true)}<div class="garage">🚘 차고 ${cars}대${cars>1?' · 탭해서 바꿔 타기':''}</div>`;
+}
+function renderMy(){
+  $('#myavatar').innerHTML=charIMG(myPr(),{aura:false});
+  if(document.activeElement!==$('#mynick'))$('#mynick').value=MT.nick;
+  $('#mytitle').textContent=`Lv.${MT.lv} ${title()}`;
+  document.querySelectorAll('[data-my]').forEach(b=>b.classList.toggle('on',b.dataset.my===myTab));
+  const grow=myTab==='grow'; $('#my-shop').style.display=grow?'none':''; $('#my-grow').style.display=grow?'':'none';
+  renderStage();
+  if(grow){renderGrow();return}
+  $('#mycash').innerHTML=`💵 <b>${won(P.cash)}</b>`;
+  $('#myslots').innerHTML=SHOP[myTab].map(([sl,ic,n])=>`<button class="chip${mySlot[myTab]===sl?' on':''}" data-slot="${sl}">${ic} ${n}${MULTI[sl]?' <i>여러 개</i>':''}</button>`).join('');
+  const sl=mySlot[myTab], tier=IT[MT.eq.house].v;
+  let note='';
+  if(myTab==='house'&&sl!=='house'&&tier<SLOT_TIER[sl])note=`🔒 ${IT[HOUSE_BY_TIER[SLOT_TIER[sl]]].name} 이상으로 이사하면 놓을 수 있어 (미리 사둘 수는 있어)`;
+  if(myTab==='car'&&sl!=='car'&&MT.eq.car==='car_none')note='🚗 차부터 사야 튜닝할 수 있어';
+  if(myTab==='car'&&sl!=='car'&&MT.eq.car!=='car_none')note=`🔧 지금 타는 <b>${IT[MT.eq.car].name}</b>에 적용돼. 산 부품은 다른 차에도 쓸 수 있어`;
+  if(MULTI[sl])note=(note?note+'<br>':'')+'✅ 여러 개를 동시에 착용할 수 있어. 다시 누르면 벗어';
+  $('#mynote').innerHTML=note; $('#mynote').style.display=note?'':'none';
+  if(myTab==='car'&&sl!=='car'&&MT.eq.car==='car_none'){$('#myitems').innerHTML='';return}
+  $('#myitems').innerHTML=BY_SLOT[sl].map(it=>{const on=isOn(sl,it.id), own=owned(it.id), rr=RAR(it.price);
+    const lab=on?'<span class="st on">착용 중</span>':own?'<span class="st own">보유</span>':`<span class="st buy${P.cash<it.price?' no':''}">${it.price?kwon(it.price):'무료'}</span>`;
+    return `<div class="icard r${rr}${on?' on':''}" data-item="${it.id}"><div class="rar">${RAR_NAME[rr]}</div><div class="th th-${myTab}">${thumbOf(sl,it.id)}</div><div class="iname">${it.name}</div>${lab}</div>`}).join('');
+}
+function tapItem(id){
+  const it=IT[id], sl=it.slot;
+  if(!owned(id))return askBuy(id);
+  if(myTab==='car'&&sl!=='car'&&MT.eq.car==='car_none')return toast('차부터 사야 해');
+  if(MULTI[sl]){const a=MT.multi[sl];const k=a.indexOf(id);if(k>=0)a.splice(k,1);else a.push(id)}
+  else if(CARMOD.includes(sl)){const c=MT.eq.car;MT.cm[c]=Object.assign({},DEF_CM,MT.cm[c]);MT.cm[c][sl]=id}
+  else{MT.eq[sl]=id;if(sl==='car'&&id!=='car_none'&&!MT.cm[id])MT.cm[id]=Object.assign({},DEF_CM)}
+  saveM();renderMy();
+}
+function askBuy(id){
+  const it=IT[id], rr=RAR(it.price); if(P.cash<it.price)return toast('현금이 부족해 😢');
+  $('#mbox').innerHTML=`<div class="buybox r${rr}"><div class="rar big">${RAR_NAME[rr]}</div><div class="th th-${myTab} bigth">${thumbOf(it.slot,id)}</div><h3>${it.name}</h3>
+    <div class="bprice">${won(it.price)}</div><p class="bnote">이번 시즌 현금에서 빠져서 랭킹 자산이 줄어. 대신 영원히 내 거야.</p>
+    <div class="grid2"><button class="go cancel">다음에</button><button class="go flexgo" data-cbuy="${id}">FLEX 💸</button></div></div>`;
+  $('#modal').classList.add('on');
+}
+function doBuy(id){
+  const it=IT[id]; if(P.cash<it.price)return toast('현금이 부족해 😢');
+  P.cash-=it.price; MT.inv[id]=1;
+  if(it.slot==='car'){MT.cm[id]=MT.cm[id]||Object.assign({},DEF_CM)}
+  saveP();saveM();tapItem(id);
+  burst(RAR(it.price)>=2?['💎','💰','✨','👑','💸']:['💸','✨','💵']);
+  toast(`${it.name} GET! ${RAR(it.price)>=3?'🔥 전설급 플렉스 🔥':''}`); renderHeader();
+}
+function burst(em){
+  const host=document.body;for(let k=0;k<18;k++){const e=document.createElement('span');e.className='burst';e.textContent=em[k%em.length];
+    const a=Math.random()*Math.PI*2,d=90+Math.random()*140;e.style.setProperty('--dx',Math.cos(a)*d+'px');e.style.setProperty('--dy',(Math.sin(a)*d-60)+'px');e.style.animationDelay=(Math.random()*.15)+'s';host.appendChild(e);setTimeout(()=>e.remove(),1400)}
+}
+
+// ===== 다른 사람 (봇 프로필 자동 생성) =====
+function hashStr(str){let h=2166136261;for(const c of str){h^=c.charCodeAt(0);h=Math.imul(h,16777619)}return h>>>0}
+const BOTP=new Map();
+function botProfile(b){
+  const r=mulberry32(hashStr(b.name)), wealth=START_CASH*(1+r()*14)*(1+r()*3);
+  const k=b.name+'|'+Math.round(Math.log2(wealth)); if(BOTP.has(k))return BOTP.get(k);
+  const eq=Object.assign({},DEF_EQ), inv={}, multi={acc:[],aura:[],lux:[],wdeco:[]}, cm={};
+  const pickAff=(sl,budget)=>{const ok=BY_SLOT[sl].filter(it=>it.price<=budget);return ok.length?ok[Math.max(0,ok.length-1-Math.floor(r()*3))]:null};
+  for(const sl in DEF_EQ){if(sl==='car')continue;const it=pickAff(sl,wealth*(.04+r()*.3));if(it){eq[sl]=it.id;if(it.price)inv[it.id]=1}}
+  eq.skin=pick(r,BY_SLOT.skin).id;eq.hair=pick(r,BY_SLOT.hair.filter(h=>h.price<=wealth*.3)).id;
+  for(const sl of['acc','aura','lux','wdeco']){const n=Math.floor(r()*(sl==='acc'?5:3));for(let i=0;i<n;i++){const it=pickAff(sl,wealth*(.05+r()*.3));if(it&&!multi[sl].includes(it.id)){multi[sl].push(it.id);inv[it.id]=1}}}
+  const nc=1+Math.floor(r()*3);for(let i=0;i<nc;i++){const it=pickAff('car',wealth*(.1+r()*.5));if(!it||it.id==='car_none')continue;inv[it.id]=1;const m=Object.assign({},DEF_CM);for(const sl of CARMOD){if(r()<.6){const p=pickAff(sl,wealth*(.01+r()*.08));if(p){m[sl]=p.id;if(p.price)inv[p.id]=1}}}cm[it.id]=m;eq.car=it.id}
+  const pr={eq,multi,cm:cm[eq.car]||DEF_CM,allcm:cm,cars:Object.keys(cm),inv,lv:1+Math.floor(r()*22),flex:flexScore(inv)};
+  BOTP.set(k,pr);return pr;
+}
+let rankRows=[], rankMode='asset';
+let gLastLoad=0;
+function renderRank(){
+  const rn=$('#rnote');if(rn)rn.style.display=rankMode==='group'?'none':'';
+  if(rankMode==='group'){document.querySelectorAll('[data-rmode]').forEach(b=>b.classList.toggle('on',b.dataset.rmode==='group'));if(!gSel&&MT.groups.length)gSel=MT.groups[0].code;renderGroup();if(gSel&&!gBusy&&Date.now()-gLastLoad>30000){gLastLoad=Date.now();gLoad()}return}
+  const rows=bots.map(b=>{const pr=botProfile(b);return{name:b.name,v:botVal(b),me:false,bot:b,pr,flex:pr.flex}});
+  const mp=Object.assign(myPr(),{lv:MT.lv});rows.push({name:MT.nick,v:total(),me:true,pr:mp,flex:flexScore(MT.inv)});
+  rows.sort((a,b)=>rankMode==='asset'?b.v-a.v:b.flex-a.flex); rankRows=rows;
+  document.querySelectorAll('[data-rmode]').forEach(b=>b.classList.toggle('on',b.dataset.rmode===rankMode));
+  $('#rlist').innerHTML=rows.map((r,k)=>{const ret=r.v/START_CASH-1, ft=flexTier(r.flex), medal=['🥇','🥈','🥉'][k]||(k+1);
+    const right=rankMode==='asset'?`<b>${won(r.v)}</b><small class="${cls(ret)}">${pct(ret)}</small>`:`<b>${kwon(r.flex)}</b><small>${ft[2]}</small>`;
+    return `<div class="row rrow${r.me?' me':''}" data-visit="${k}"><div class="rank">${medal}</div><div class="rav">${charIMG(r.pr,{aura:false,pet:false})}</div><div class="nm"><b>${r.name}${r.me?' (나)':''}</b><small>${ft[1]} ${ft[2]} · ${IT[r.pr.eq.car].name}</small></div><div class="pr">${right}</div></div>`}).join('');
+}
+function openVisit(k){
+  const row=rankRows[k]; if(!row)return; const pr=row.pr, ft=flexTier(row.flex);
+  $('#vname').textContent=row.name+(row.me?' (나)':''); $('#vsub').textContent=`Lv.${pr.lv||MT.lv} ${title(pr.lv||MT.lv)} · ${ft[1]} ${ft[2]}`;
+  const ret=row.v/START_CASH-1;
+  $('#vstage').innerHTML=`<div class="stage">${roomIMG(pr)}<div class="ch" style="height:${chH(pr)}%">${charIMG(pr)}</div><div class="flexb">${ft[1]} 플렉스 ${kwon(row.flex)}</div><div class="roomtag">${IT[pr.eq.house].name}</div></div>`;
+  $('#vstats').innerHTML=`<div class="vst"><span>순위</span><b>${k+1}위</b></div><div class="vst"><span>총자산</span><b>${kwon(row.v)}</b></div><div class="vst"><span>수익률</span><b class="${cls(ret)}">${pct(ret)}</b></div><div class="vst"><span>집</span><b>${IT[pr.eq.house].name}</b></div>`;
+  const cars=(pr.cars||[]).filter(c=>c!==pr.eq.car);
+  $('#vcar').innerHTML=carIMG(pr.eq.car,(pr.allcm||{})[pr.eq.car]||pr.cm,true)+`<div class="garage">🚘 ${IT[pr.eq.car].name}${cars.length?` 외 ${cars.length}대`:''}</div>`+(cars.length?`<div class="gar">${cars.map(c=>`<div>${carIMG(c,pr.allcm[c],false)}<small>${IT[c].name}</small></div>`).join('')}</div>`:'');
+  const bling=[...(pr.multi.acc||[]),...(pr.multi.aura||[]),...(pr.multi.lux||[]),...(pr.multi.wdeco||[])].map(id=>IT[id].name);
+  $('#vbling').innerHTML=bling.length?bling.map(n=>`<span class="pill">${n}</span>`).join(''):'<span class="pill">아직 소박하게 사는 중</span>';
+  $('#visit').classList.add('on'); $('#visit').scrollTop=0;
+}
+
+// ===== 첫 실행 안내 =====
+const GUIDE=[
+  {ic:'📈',t:'오르락내리락에 온 걸 환영해!',d:'<b>500만 원</b> 들고 가상 주식이랑 코인 사고팔면서 노는 게임이야. 진짜 돈은 하나도 안 들어! 일단 이름부터 정하자.',nick:true},
+  {ic:'📰',t:'뉴스 보고 눈치껏',d:'가격은 5초마다 오르락내리락해. 뉴스가 뜨면 크게 출렁이고, <b>[찌라시]</b>는 맞을 때도 틀릴 때도 있어. 코인은 제한이 없어서 롤러코스터야 🎢'},
+  {ic:'🏆',t:'매주 새 판',d:'매주 월요일마다 다 같이 500만 원으로 새로 시작해. 망해도 괜찮아, 다음 주에 또 하면 돼! 순위가 높으면 경험치를 더 받고, 레벨은 계속 남아.'},
+  {ic:'💎',t:'번 돈으로 꾸미기',d:'마이 탭에서 옷, 펫, 집, 차를 살 수 있어. 산 건 계속 내 거야. 대신 이번 주 랭킹 자산은 그만큼 줄어. <b>랭킹이냐, 플렉스냐!</b>'},
+];
+function showGuide(k){
+  const g=GUIDE[k], last=k===GUIDE.length-1;
+  $('#mbox').innerHTML=`<div class="guide"><div class="gic">${g.ic}</div><h3>${g.t}</h3><p>${g.d}</p>${g.nick?`<input id="gnick" maxlength="12" value="${MT.nick}" placeholder="닉네임">`:''}
+    <div class="gdots">${GUIDE.map((_,i)=>`<i class="${i===k?'on':''}"></i>`).join('')}</div>
+    <button class="go flexgo" data-guide="${k+1}">${last?'시작하기 🚀':'다음'}</button></div>`;
+  $('#modal').classList.add('on');
+}
+function guideNext(k){
+  const n=$('#gnick'); if(n){const v=n.value.trim().slice(0,12);if(v)MT.nick=v}
+  if(k<GUIDE.length){showGuide(k);return}
+  MT.onboarded=1;saveM();$('#modal').classList.remove('on');render();if(PENDING_G)setTimeout(()=>showInvite(PENDING_G),300);toast(`${MT.nick}, 가볍게 한 판 가보자! 🎢`);
+}
+// ===== 지난 시즌 결산 =====
+function showSeasonResult(){
+  const r=PREV, ret=r.total/START_CASH-1, xp=r.rank===1?600:r.rank<=3?350:r.rank<=6?200:100, bonus=Math.max(0,Math.round(ret*100));
+  gainXP(xp+bonus); lvQueue=[]; MT.best=Math.max(MT.best||0,r.total); MT.seasons=(MT.seasons||0)+1; if(r.rank===1)MT.wins=(MT.wins||0)+1; saveM();
+  const medal=['🥇','🥈','🥉'][r.rank-1]||'🎖️';
+  $('#mbox').innerHTML=`<div class="guide"><div class="gic">${medal}</div><h3>시즌 ${r.season-SS.id+SEASON_NO} 결산</h3>
+    <div class="kv"><span>최종 순위</span><b>${r.rank}위</b></div><div class="kv"><span>최종 자산</span><b>${won(r.total)}</b></div><div class="kv"><span>수익률</span><b class="${cls(ret)}">${pct(ret)}</b></div>
+    <div class="kv"><span>보상</span><b style="color:var(--acc)">+${xp+bonus} XP</b></div>
+    <p>새 시즌이 시작됐어. 계좌는 500만 원으로 돌아갔고, 산 물건과 레벨은 그대로야.</p><button class="go flexgo">새 시즌 시작 🔥</button></div>`;
+  $('#modal').classList.add('on'); PREV=null;
+}
+function askWipe(){
+  $('#mbox').innerHTML=`<div class="guide"><div class="gic">⚠️</div><h3>정말 전부 지울까?</h3><p>계좌, 레벨, 산 물건, 닉네임이 모두 사라지고 되돌릴 수 없어.</p><div class="grid2"><button class="go cancel">취소</button><button class="go" style="background:var(--up);color:#fff" data-set="wipe2">전부 지우기</button></div></div>`;
+  $('#modal').classList.add('on');
+}
+
+// ===== 그룹 (친구끼리 같은 시장에서 경쟁) =====
+// 모든 플레이어가 같은 시드의 같은 시장을 보므로, 서버는 서로의 기록만 공유하면 됨.
+// ▼ Supabase 프로젝트 주소와 anon 키를 여기에 넣으면 그룹 기능이 켜짐 (README 참고)
+const SB_URL = window.ORAK_SB_URL || 'https://uxewnbjogeatmwzfjdjk.supabase.co';
+const SB_KEY = window.ORAK_SB_KEY || 'sb_publishable_4t0FQy3viYWAg_acoiafMQ_EkmqtT0i';
+let sb=null, sbUid=null, gSel=null, gRows=[], gBusy=false, gLastSync=0, gErr='';
+MT.groups=MT.groups||[];
+const PENDING_G=(location.hash.match(/^#g-([A-Z0-9]{6})$/)||[])[1]||null;
+async function sbInit(){
+  if(!SB_URL||!SB_KEY)return false; if(sb&&sbUid)return true;
+  if(!window.supabase){await new Promise((res,rej)=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';s.onload=res;s.onerror=()=>rej(new Error('net'));document.head.appendChild(s)})}
+  sb=sb||window.supabase.createClient(SB_URL,SB_KEY,{auth:{persistSession:true,storageKey:'orak_auth'}});
+  let {data}=await sb.auth.getSession(); let ses=data&&data.session;
+  if(!ses){const r=await sb.auth.signInAnonymously();if(r.error)throw r.error;ses=r.data.session}
+  sbUid=ses.user.id; return true;
+}
+function myGroupRow(code){
+  const owned=Object.keys(MT.cm).filter(c=>MT.inv[c]); const allcm={}; owned.forEach(c=>allcm[c]=MT.cm[c]);
+  return {group_code:code,uid:sbUid,nick:MT.nick,season:SS.id,total:Math.round(total()),flex:flexScore(MT.inv),
+    profile:{eq:MT.eq,multi:MT.multi,allcm,lv:MT.lv},updated_at:new Date().toISOString()};
+}
+async function gSync(force){
+  if(!MT.groups.length||!SB_URL)return; const now=Date.now(); if(!force&&now-gLastSync<30000)return; gLastSync=now;
+  try{await sbInit();for(const g of MT.groups){await sb.from('members').upsert(myGroupRow(g.code),{onConflict:'group_code,uid'})}}catch(e){}
+}
+const gCode=()=>{const A='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let s='';const r=crypto.getRandomValues(new Uint8Array(6));for(const b of r)s+=A[b%A.length];return s};
+async function gCreate(name){
+  name=(name||'').trim().slice(0,20); if(!name)return toast('그룹 이름을 적어줘');
+  try{gBusy=true;renderGroup();await sbInit();let code,ok=false;
+    for(let k=0;k<4&&!ok;k++){code=gCode();const r=await sb.from('groups').insert({code,name,owner:sbUid});ok=!r.error}
+    if(!ok)throw new Error('create');
+    await gJoin(code,true);toast(`"${name}" 그룹 완성! 링크로 친구 불러와 👥`);
+  }catch(e){gBusy=false;gErr='그룹을 못 만들었어. 잠시 후 다시 해줘';renderGroup()}
+}
+async function gJoin(code,silent){
+  code=(code||'').trim().toUpperCase().replace(/[^A-Z0-9]/g,'');if(code.length!==6)return toast('초대 코드는 6자리야');
+  try{gBusy=true;if(!silent)renderGroup();await sbInit();
+    const g=await sb.from('groups').select('code,name').eq('code',code).maybeSingle();
+    if(g.error||!g.data){gBusy=false;gErr='없는 초대 코드야';renderGroup();return}
+    const r=await sb.from('members').upsert(myGroupRow(code),{onConflict:'group_code,uid'});
+    if(r.error){gBusy=false;gErr=/full/.test(r.error.message||'')?'그룹이 꽉 찼어 (최대 50명)':'참가에 실패했어';renderGroup();return}
+    if(!MT.groups.find(x=>x.code===code))MT.groups.push({code,name:g.data.name});saveM();
+    gSel=code;gBusy=false;gErr='';rankMode='group';if(!silent)toast(`"${g.data.name}" 그룹에 들어왔어! 🎉`);
+    if(location.hash.startsWith('#g-'))history.replaceState(null,'',location.pathname+location.search);
+    renderRank();
+  }catch(e){gBusy=false;gErr='서버에 연결하지 못했어';renderGroup()}
+}
+async function gLeave(code){
+  try{await sbInit();await sb.from('members').delete().eq('group_code',code).eq('uid',sbUid)}catch(e){}
+  MT.groups=MT.groups.filter(g=>g.code!==code);saveM();gSel=MT.groups[0]?MT.groups[0].code:null;gRows=[];renderRank();toast('그룹에서 나왔어');
+}
+function cleanProfile(p){
+  p=p||{};const eq=Object.assign({},DEF_EQ);for(const k in DEF_EQ)if(p.eq&&IT[p.eq[k]]&&IT[p.eq[k]].slot===k)eq[k]=p.eq[k];
+  const multi={};for(const k of['acc','aura','lux','wdeco'])multi[k]=((p.multi&&p.multi[k])||[]).filter(id=>IT[id]&&IT[id].slot===k).slice(0,20);
+  const allcm={};for(const c in (p.allcm||{}))if(IT[c]&&IT[c].slot==='car'){const m=Object.assign({},DEF_CM);for(const k of CARMOD){const v=p.allcm[c][k];if(IT[v]&&IT[v].slot===k)m[k]=v}allcm[c]=m}
+  if(eq.car!=='car_none'&&!allcm[eq.car])eq.car='car_none';
+  return {eq,multi,allcm,cm:allcm[eq.car]||DEF_CM,cars:Object.keys(allcm),lv:Math.max(1,Math.min(99,+p.lv||1))};
+}
+async function gLoad(){
+  if(!gSel)return; try{await sbInit();const r=await sb.from('members').select('*').eq('group_code',gSel);
+    if(r.error)throw r.error; gRows=r.data||[]; gErr='';}catch(e){gErr='기록을 불러오지 못했어'}
+  renderGroup();
+}
+function gInviteUrl(code){return location.origin+location.pathname+'#g-'+code}
+async function gCopy(code){
+  const url=gInviteUrl(code), name=(MT.groups.find(g=>g.code===code)||{}).name||'';
+  const text=`📈 오르락내리락 "${name}" 그룹에서 같이 하자! 500만 원으로 누가 더 버는지 붙어보자 👉 ${url}`;
+  try{if(navigator.share){await navigator.share({title:'오르락내리락',text,url});return}}catch(e){}
+  try{await navigator.clipboard.writeText(text);toast('초대 링크 복사 완료! 단톡방에 붙여넣어 👍')}catch(e){$('#ginv').style.display='';$('#ginv').value=url;$('#ginv').select();toast('링크를 길게 눌러 복사해줘')}
+}
+function renderGroup(){
+  const el=$('#rlist');
+  if(!SB_URL){el.innerHTML=`<div class="gempty"><div class="gic2">👥</div><b>그룹 기능 준비 중</b><p>서버 설정이 끝나면 친구를 링크로 불러서 같은 시장에서 붙을 수 있어.</p></div>`;return}
+  if(gBusy){el.innerHTML=`<div class="gempty"><div class="gic2">⏳</div><b>잠깐만…</b></div>`;return}
+  const err=gErr?`<div class="gerr">${gErr}</div>`:'';
+  const chips=MT.groups.map(g=>`<button class="chip${g.code===gSel?' on':''}" data-gsel="${g.code}">👥 ${g.name}</button>`).join('')+`<button class="chip${!gSel?' on':''}" data-gsel="">＋ 새 그룹</button>`;
+  if(!gSel){
+    el.innerHTML=`<div class="chips">${chips}</div>${err}<div class="gempty"><div class="gic2">👥</div><b>친구랑 같은 시장에서 붙어보자</b><p>그룹을 만들고 링크를 단톡방에 뿌리면 끝! 다들 똑같은 시장, 똑같은 500만 원으로 시작해.</p>
+      <div class="gform"><input id="gname" maxlength="20" placeholder="그룹 이름 (예: 우리반 주식왕)"><button class="sbtn" data-gact="create">만들기</button></div>
+      <div class="gform"><input id="gcode" maxlength="6" placeholder="초대 코드 6자리" style="text-transform:uppercase"><button class="sbtn eq" data-gact="join">참가</button></div></div>`;
+    return;
+  }
+  const g=MT.groups.find(x=>x.code===gSel)||{name:'',code:gSel};
+  const rows=gRows.map(r=>{const cur=r.season===SS.id, v=cur?Number(r.total):START_CASH, me=r.uid===sbUid;
+    return {name:r.nick,v:me?total():v,me,flex:me?flexScore(MT.inv):Number(r.flex),pr:me?Object.assign(myPr(),{lv:MT.lv}):cleanProfile(r.profile),stale:!cur&&!me}});
+  if(!rows.some(r=>r.me))rows.push({name:MT.nick,v:total(),me:true,flex:flexScore(MT.inv),pr:Object.assign(myPr(),{lv:MT.lv})});
+  rows.sort((a,b)=>b.v-a.v); rankRows=rows;
+  el.innerHTML=`<div class="chips">${chips}</div>${err}
+    <div class="ghead"><div><b>${g.name}</b><small>코드 ${g.code} · ${rows.length}명</small></div><button class="sbtn" data-gact="invite">🔗 초대 링크</button></div>
+    <input id="ginv" class="ginv" readonly style="display:none">
+    ${rows.map((r,k)=>{const ret=r.v/START_CASH-1, ft=flexTier(r.flex), medal=['🥇','🥈','🥉'][k]||(k+1);
+      return `<div class="row rrow${r.me?' me':''}" data-visit="${k}"><div class="rank">${medal}</div><div class="rav">${charIMG(r.pr,{aura:false,pet:false})}</div><div class="nm"><b>${r.name}${r.me?' (나)':''}</b><small>${r.stale?'이번 주 아직 안 들어옴':ft[1]+' '+ft[2]}</small></div><div class="pr"><b>${won(r.v)}</b><small class="${cls(ret)}">${pct(ret)}</small></div></div>`}).join('')}
+    <div class="gfoot"><button class="gleave" data-gact="leave">그룹 나가기</button><span>기록은 30초마다 갱신돼</span></div>`;
+}
+async function showInvite(code){
+  try{if(!(await sbInit()))return;const g=await sb.from('groups').select('code,name').eq('code',code).maybeSingle();
+    if(!g.data){toast('초대 링크가 만료됐거나 없는 그룹이야');return}
+    if(MT.groups.find(x=>x.code===code)){gSel=code;rankMode='group';goView('rank');return}
+    $('#mbox').innerHTML=`<div class="guide"><div class="gic">👥</div><h3>"${g.data.name}" 그룹 초대</h3><p>친구들이랑 같은 시장, 같은 500만 원으로 누가 더 버는지 붙어보자!</p><div class="grid2"><button class="go cancel">나중에</button><button class="go flexgo" data-gjoin="${code}">참가하기</button></div></div>`;
+    $('#modal').classList.add('on');
+  }catch(e){toast('서버에 연결하지 못했어')}
+}
+window.addEventListener('hashchange',()=>{const m=location.hash.match(/^#g-([A-Z0-9]{6})$/);if(m&&MT.onboarded)showInvite(m[1])});
+function goView(v){view=v;document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));document.querySelectorAll('main section').forEach(s=>s.classList.toggle('on',s.id==='v-'+v));window.scrollTo(0,0);render()}
+
+// ===== 시작 =====
+function loop(){
+  if(seasonOf(now()).id!==SS.id){location.reload();return}
+  const target=curTick();
+  if(m.t<target){catchUp(target,6000);render();P.last=m.t;P.total=total();P.rank=myRank();saveP();if(autoMsgs.length){toast(autoMsgs.join(' · '));autoMsgs=[]}showLevelUp()}
+  renderClock(); liveUpdate(); gSync();
+}
+if(DEV)document.addEventListener('DOMContentLoaded',()=>{});
+function boot(){
+  if(DEV)$('#devcard').style.display='';
+  if('serviceWorker' in navigator&&location.protocol==='https:'&&!/claude|anthropic/.test(location.host)){navigator.serviceWorker.register('sw.js').catch(()=>{})}
+  const target=curTick();
+  const go=()=>{
+    const done=catchUp(target,5000);
+    $('#lbar').style.width=(target?m.t/target*100:100)+'%';
+    $('#ltxt').textContent=`시장 불러오는 중… ${gclock(m.t)}`;
+    if(!done){requestAnimationFrame(go);return}
+    $('#loading').style.display='none';
+    P.last=m.t;saveP();
+    render();renderClock();
+    if(!MT.onboarded)showGuide(0);else if(PREV)showSeasonResult();else showAway();
+    if(PENDING_G&&MT.onboarded){const w=setInterval(()=>{if(!$('#modal').classList.contains('on')){clearInterval(w);showInvite(PENDING_G)}},500)}
+    setInterval(loop,200);
+  };
+  go();
+}
+boot();
+})();
+</script>
+</body>
+</html>
