@@ -150,6 +150,9 @@ canvas{width:100%;display:block}
 .gform{display:flex;gap:6px;margin-top:8px}.gform input{flex:1;min-width:0;background:#0e1319;border:1px solid var(--line);color:var(--tx);border-radius:10px;padding:10px;font-size:15px}
 .ghead{display:flex;justify-content:space-between;align-items:center;padding:10px 4px 8px;border-bottom:1px solid var(--line)}.ghead b{font-size:17px}.ghead small{display:block;color:var(--sub);font-size:12px;margin-top:2px}
 .ginv{width:100%;margin:8px 0;background:#0e1319;border:1px solid var(--acc);color:var(--tx);border-radius:8px;padding:8px;font-size:12px}
+.vreport{display:block;margin:14px auto 4px;background:none;border:1px solid var(--line);color:var(--sub);font-size:12px;padding:7px 14px;border-radius:8px}
+.wnote{background:#141a22;border:1px dashed var(--line);border-radius:8px;padding:8px 10px;font-size:12px;color:var(--sub);margin:6px 0;line-height:1.5}
+.wme{border-top:1px dashed var(--line);margin-top:4px;padding-top:4px}
 .gerr{background:#3a1a1e;color:#ffb3b8;border-radius:8px;padding:8px 10px;font-size:13px;margin:6px 0}
 .gfoot{display:flex;justify-content:space-between;align-items:center;padding:12px 4px 6px;font-size:11px;color:var(--sub)}
 .gleave{background:none;border:1px solid #5c1f24;color:#ff8a92;border-radius:8px;padding:6px 10px;font-size:12px}.rav{width:40px;flex:none}.rav img.px{width:40px}
@@ -272,7 +275,7 @@ select{background:var(--card);color:var(--tx);border:1px solid var(--line);borde
       <div class="card"><div class="ct">설정</div>
         <div class="setlist"><button data-set="guide"><i data-ic="book"></i> 게임 안내 다시 보기</button><button data-set="wipe"><i data-ic="trash"></i> 모든 데이터 초기화</button><a class="setlink" href="privacy.html" target="_blank" rel="noopener"><i data-ic="lock"></i> 개인정보처리방침</a></div>
         <p class="legal">오르락내리락은 JamesWorks가 만든, 가상의 기업과 코인을 다루는 시뮬레이션 게임이야. 실제 주식·코인 시세와 관계없고, 투자 조언이 아니야. 게임 속 돈은 현금으로 바꿀 수 없어.</p>
-        <p class="legal">v1.3.3</p>
+        <p class="legal">v1.4.0</p>
       </div>
       <div class="card" id="devcard" style="display:none"><div class="ct">개발용 (주소 끝에 #dev 일 때만 보임)</div>
         <div class="dev"><button data-dev="3600000">+1시간</button><button data-dev="86400000">+1일</button><button data-dev="reset">내 계좌 초기화</button><button data-dev="clear">시간 원래대로</button><button data-dev="xp">+500 XP</button><button data-dev="cash">+10억 현금</button><button data-dev="mreset">성장 초기화</button></div>
@@ -308,8 +311,8 @@ select{background:var(--card);color:var(--tx);border:1px solid var(--line);borde
     </div>
     </section>
     <section id="v-rank">
-      <div class="seg tabs"><button data-rmode="asset" class="on"><i data-ic="coin"></i> 자산</button><button data-rmode="flex"><i data-ic="gem"></i> 플렉스</button><button data-rmode="group"><i data-ic="group"></i> 그룹</button></div><div class="card" style="padding:4px 10px"><div id="rlist"></div></div>
-      <p id="rnote" style="color:var(--sub);font-size:12px;padding:0 6px">지금은 AI 트레이더 12명과 경쟁해. 온라인 랭킹은 곧 열려! 누르면 그 사람 집·차·명품을 구경할 수 있어. 플렉스 랭킹은 산 물건 총액 순이야.</p>
+      <div class="seg tabs"><button data-rmode="world" class="on"><i data-ic="coin"></i> 전체</button><button data-rmode="wflex"><i data-ic="gem"></i> 플렉스</button><button data-rmode="group"><i data-ic="group"></i> 그룹</button><button data-rmode="asset"><i data-ic="robot"></i> AI</button></div><div class="card" style="padding:4px 10px"><div id="rlist"></div></div>
+      <p id="rnote" style="color:var(--sub);font-size:12px;padding:0 6px">AI 트레이더 12명과 겨루는 연습 랭킹이야. 누르면 그 사람 집·차·명품을 구경할 수 있어.</p>
       <div class="adslot" style="display:none"></div>
     </section>
   </main>
@@ -349,6 +352,7 @@ select{background:var(--card);color:var(--tx);border:1px solid var(--line);borde
   <div class="vstats" id="vstats"></div>
   <div class="card carcard" id="vcar"></div>
   <div class="card"><div class="ct">착용 중인 명품·오라·럭셔리</div><div id="vbling"></div></div>
+  <button id="vreport" class="vreport" style="display:none">이 기록이 이상해요 (신고)</button>
 </div></div>
 <div id="modal"><div class="box" id="mbox"></div></div>
 <div id="toast"></div>
@@ -800,7 +804,7 @@ function renderHeader(){
   const T=total(), r=T/START_CASH-1;
   $('#htotal').textContent=won(T); const e=$('#hret'); e.textContent=pct(r); e.className=cls(r);
   $('#hseason').innerHTML=`<b class="brand">${IC('chart','sm')} 오르락내리락</b> · 시즌 ${SEASON_NO} · Lv.${MT.lv} ${title()}`;
-  $('#hrank').textContent=`랭킹 ${myRank()}위 / ${bots.length+1}명${P.debt?` · 빚 ${kwon(P.debt)}`:''}`;
+  $('#hrank').textContent=`${typeof wMyRank!=='undefined'&&wMyRank?`전체 ${wMyRank}위`:`AI전 ${myRank()}위 / ${bots.length+1}명`}${P.debt?` · 빚 ${kwon(P.debt)}`:''}`;
 }
 function renderClock(){
   $('#hclock').textContent=m.t>=SEASON_TICKS?'시즌 종료':gclock(m.t);
@@ -947,7 +951,7 @@ document.addEventListener('click',e=>{
     $('#qin').value=Math.max(0,q);updEst();return}
   const ln=e.target.closest('[data-loan]'); if(ln){const a=ln.dataset.loan;if(a==='borrow')borrow();else repay(a==='repayall');return}
   const bx=e.target.closest('[data-box]'); if(bx){openBox();return}
-  const gs=e.target.closest('[data-gsel]'); if(gs){gSel=gs.dataset.gsel||null;gErr='';gRows=[];gLastLoad=0;renderRank();return}
+  const gs=e.target.closest('[data-gsel]'); if(gs){gSel=gs.dataset.gsel||'';gErr='';gRows=[];gLastLoad=0;renderRank();return}
   const ga=e.target.closest('[data-gact]'); if(ga){const a=ga.dataset.gact;if(a==='create')gCreate($('#gname').value);if(a==='join')gJoin($('#gcode').value);if(a==='invite')gCopy(gSel);if(a==='leave')gLeave(gSel);return}
   const gj=e.target.closest('[data-gjoin]'); if(gj){$('#modal').classList.remove('on');goView('rank');gJoin(gj.dataset.gjoin);return}
   const gd=e.target.closest('[data-guide]'); if(gd){guideNext(+gd.dataset.guide);return}
@@ -956,7 +960,7 @@ document.addEventListener('click',e=>{
   const mt=e.target.closest('[data-my]'); if(mt){myTab=mt.dataset.my;renderMy();return}
   const so=e.target.closest('[data-slot]'); if(so){mySlot[myTab]=so.dataset.slot;renderMy();return}
   const ic=e.target.closest('[data-item]'); if(ic){tapItem(ic.dataset.item);return}
-  const rm=e.target.closest('[data-rmode]'); if(rm){rankMode=rm.dataset.rmode;renderRank();return}
+  const rm=e.target.closest('[data-rmode]'); if(rm){const was=rankMode;rankMode=rm.dataset.rmode;if(was!==rankMode&&(rankMode==='world'||rankMode==='wflex'))wLastLoad=0;renderRank();return}
   if(e.target.closest('#mycar')){const cars=myPr().cars;if(cars.length>1){const k=cars.indexOf(MT.eq.car);MT.eq.car=cars[(k+1)%cars.length];saveM();renderMy();toast(`${IT[MT.eq.car].name}로 바꿔 탔어`)}return}
   const vs=e.target.closest('[data-visit]'); if(vs){openVisit(+vs.dataset.visit);return}
   const sk=e.target.closest('[data-sk]'); if(sk){const k=SKILLS.find(x=>x.id===sk.dataset.sk);if(MT.sp>0&&MT.sk[k.id]<k.max&&MT.lv>=k.req[MT.sk[k.id]]){MT.sp--;MT.sk[k.id]++;saveM();toast(`${k.name} Lv.${MT.sk[k.id]} 습득!`);render()}return}
@@ -977,6 +981,7 @@ const setAuto=()=>{const h=P.hold[det];if(!h)return;h.sl=+$('#asl').value||0;h.t
 $('#asl').addEventListener('change',setAuto);$('#atp').addEventListener('change',setAuto);
 $('#dback').onclick=()=>{det=-1;$('#detail').classList.remove('on')};
 $('#vback').onclick=()=>$('#visit').classList.remove('on');
+$('#vreport').onclick=e=>wReport(e.currentTarget.dataset.uid,e.currentTarget);
 $('#mynick').addEventListener('change',e=>{const v=e.target.value.trim().slice(0,12);if(v){MT.nick=v;saveM();toast('닉네임 변경 완료')}else e.target.value=MT.nick});
 $('#myvisit').onclick=()=>{renderRank();openVisit(rankRows.findIndex(r=>r.me))};
 $('#qin').addEventListener('input',updEst);
@@ -1689,17 +1694,18 @@ function botProfile(b){
   const pr={eq,multi,cm:cm[eq.car]||DEF_CM,allcm:cm,cars:Object.keys(cm),inv,lv:1+Math.floor(r()*22),flex:flexScore(inv)};
   BOTP.set(k,pr);return pr;
 }
-let rankRows=[], rankMode='asset';
+let rankRows=[], rankMode='world';
 let gLastLoad=0;
 function renderRank(){
-  const rn=$('#rnote');if(rn)rn.style.display=rankMode==='group'?'none':'';
-  if(rankMode==='group'){document.querySelectorAll('[data-rmode]').forEach(b=>b.classList.toggle('on',b.dataset.rmode==='group'));if(!gSel&&MT.groups.length)gSel=MT.groups[0].code;renderGroup();if(gSel&&!gBusy&&Date.now()-gLastLoad>30000){gLastLoad=Date.now();gLoad()}return}
+  const rn=$('#rnote');if(rn)rn.style.display=rankMode==='asset'?'':'none';
+  if(rankMode==='world'||rankMode==='wflex'){renderWorld();if(!wBusy&&Date.now()-wLastLoad>30000){wLastLoad=Date.now();wLoad()}return}
+  if(rankMode==='group'){document.querySelectorAll('[data-rmode]').forEach(b=>b.classList.toggle('on',b.dataset.rmode==='group'));if(gSel===null&&MT.groups.length)gSel=MT.groups[0].code;renderGroup();if(gSel&&!gBusy&&Date.now()-gLastLoad>30000){gLastLoad=Date.now();gLoad()}return}
   const rows=bots.map(b=>{const pr=botProfile(b);return{name:b.name,v:botVal(b),me:false,bot:b,pr,flex:pr.flex}});
   const mp=Object.assign(myPr(),{lv:MT.lv});rows.push({name:MT.nick,v:total(),me:true,pr:mp,flex:flexScore(MT.inv)});
-  rows.sort((a,b)=>rankMode==='asset'?b.v-a.v:b.flex-a.flex); rankRows=rows;
+  rows.sort((a,b)=>b.v-a.v); rankRows=rows;
   document.querySelectorAll('[data-rmode]').forEach(b=>b.classList.toggle('on',b.dataset.rmode===rankMode));
   $('#rlist')._h=null;$('#rlist').innerHTML=rows.map((r,k)=>{const ret=r.v/START_CASH-1, ft=flexTier(r.flex), medal=[IC('medal'),IC('medal2'),IC('medal3')][k]||(k+1);
-    const right=rankMode==='asset'?`<b>${won(r.v)}</b><small class="${cls(ret)}">${pct(ret)}</small>`:`<b>${kwon(r.flex)}</b><small>${ft[2]}</small>`;
+    const right=`<b>${won(r.v)}</b><small class="${cls(ret)}">${pct(ret)}</small>`;
     return `<div class="row rrow${r.me?' me':''}" data-visit="${k}"><div class="rank">${medal}</div><div class="rav">${charIMG(r.pr,{aura:false,pet:false})}</div><div class="nm"><b>${r.name}${r.me?' (나)':''}</b><small>${IC(ft[1],'sm')} ${ft[2]} · ${IT[r.pr.eq.car].name}</small></div><div class="pr">${right}</div></div>`}).join('');
 }
 function openVisit(k){
@@ -1712,6 +1718,7 @@ function openVisit(k){
   $('#vcar').innerHTML=carIMG(pr.eq.car,(pr.allcm||{})[pr.eq.car]||pr.cm,true)+`<div class="garage">${IT[pr.eq.car].name}${cars.length?` 외 ${cars.length}대`:''}</div>`+(cars.length?`<div class="gar">${cars.map(c=>`<div>${carIMG(c,pr.allcm[c],false)}<small>${IT[c].name}</small></div>`).join('')}</div>`:'');
   const bling=[...(pr.multi.acc||[]),...(pr.multi.aura||[]),...(pr.multi.lux||[]),...(pr.multi.wdeco||[])].map(id=>IT[id].name);
   $('#vbling').innerHTML=bling.length?bling.map(n=>`<span class="pill">${n}</span>`).join(''):'<span class="pill">아직 소박하게 사는 중</span>';
+  const vr=$('#vreport'); vr.style.display=row.uid&&!row.me?'':'none'; vr.dataset.uid=row.uid||''; vr.disabled=false; vr.textContent='이 기록이 이상해요 (신고)';
   $('#visit').classList.add('on'); $('#visit').scrollTop=0;
 }
 
@@ -1779,6 +1786,7 @@ async function gSync(force){
 const gCode=()=>{const A='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let s='';const r=crypto.getRandomValues(new Uint8Array(6));for(const b of r)s+=A[b%A.length];return s};
 async function gCreate(name){
   name=(name||'').trim().slice(0,20); if(!name)return toast('그룹 이름을 적어줘');
+  if(MT.groups.length>=10)return toast('그룹은 10개까지 들어갈 수 있어');
   try{gBusy=true;renderGroup();await sbInit();let code,ok=false;
     for(let k=0;k<4&&!ok;k++){code=gCode();const r=await sb.from('groups').insert({code,name,owner:sbUid});ok=!r.error}
     if(!ok)throw new Error('create');
@@ -1787,6 +1795,7 @@ async function gCreate(name){
 }
 async function gJoin(code,silent){
   code=(code||'').trim().toUpperCase().replace(/[^A-Z0-9]/g,'');if(code.length!==6)return toast('초대 코드는 6자리야');
+  if(MT.groups.length>=10&&!MT.groups.find(x=>x.code===code))return toast('그룹은 10개까지 들어갈 수 있어');
   try{gBusy=true;if(!silent)renderGroup();await sbInit();
     const g=await sb.from('groups').select('code,name').eq('code',code).maybeSingle();
     if(g.error||!g.data){gBusy=false;gErr='없는 초대 코드야';renderGroup();return}
@@ -1826,7 +1835,7 @@ function renderGroup(){
   const real=$('#rlist'), el={set innerHTML(h){setHTML(real,h)},contains:x=>real.contains(x)};
   if(typing()&&el.contains(document.activeElement)&&!gBusy)return;
   if(!SB_URL){el.innerHTML=`<div class="gempty"><div class="gic2">${IC('group','big')}</div><b>그룹 기능 준비 중</b><p>서버 설정이 끝나면 친구를 링크로 불러서 같은 시장에서 붙을 수 있어.</p></div>`;return}
-  if(gBusy){el.innerHTML=`<div class="gempty"><div class="gic2">⏳</div><b>잠깐만…</b></div>`;return}
+  if(gBusy){el.innerHTML=`<div class="gempty"><div class="gic2">${IC('gear','big')}</div><b>잠깐만…</b></div>`;return}
   const err=gErr?`<div class="gerr">${gErr}</div>`:'';
   const chips=MT.groups.map(g=>`<button class="chip${g.code===gSel?' on':''}" data-gsel="${g.code}">${g.name}</button>`).join('')+`<button class="chip${!gSel?' on':''}" data-gsel="">＋ 새 그룹</button>`;
   if(!gSel){
@@ -1844,7 +1853,7 @@ function renderGroup(){
     <div class="ghead"><div><b>${g.name}</b><small>코드 ${g.code} · ${rows.length}명</small></div><button class="sbtn" data-gact="invite">${IC('link','sm')} 초대 링크</button></div>
     <input id="ginv" class="ginv" readonly style="display:none">
     ${rows.map((r,k)=>{const ret=r.v/START_CASH-1, ft=flexTier(r.flex), medal=[IC('medal'),IC('medal2'),IC('medal3')][k]||(k+1);
-      return `<div class="row rrow${r.me?' me':''}" data-visit="${k}"><div class="rank">${medal}</div><div class="rav">${charIMG(r.pr,{aura:false,pet:false})}</div><div class="nm"><b>${r.name}${r.me?' (나)':''}</b><small>${r.stale?'이번 주 아직 안 들어옴':ft[1]+' '+ft[2]}</small></div><div class="pr"><b>${won(r.v)}</b><small class="${cls(ret)}">${pct(ret)}</small></div></div>`}).join('')}
+      return `<div class="row rrow${r.me?' me':''}" data-visit="${k}"><div class="rank">${medal}</div><div class="rav">${charIMG(r.pr,{aura:false,pet:false})}</div><div class="nm"><b>${r.name}${r.me?' (나)':''}</b><small>${r.stale?'이번 주 아직 안 들어옴':IC(ft[1],'sm')+' '+ft[2]}</small></div><div class="pr"><b>${won(r.v)}</b><small class="${cls(ret)}">${pct(ret)}</small></div></div>`}).join('')}
     <div class="gfoot"><button class="gleave" data-gact="leave">그룹 나가기</button><span>기록은 30초마다 갱신돼</span></div>`;
 }
 async function showInvite(code){
@@ -1854,6 +1863,66 @@ async function showInvite(code){
     $('#mbox').innerHTML=`<div class="guide"><div class="gic">${IC('group','big')}</div><h3>"${g.data.name}" 그룹 초대</h3><p>친구들이랑 같은 시장, 같은 500만 원으로 누가 더 버는지 붙어보자!</p><div class="grid2"><button class="go cancel">나중에</button><button class="go flexgo" data-gjoin="${code}">참가하기</button></div></div>`;
     $('#modal').classList.add('on');
   }catch(e){toast('서버에 연결하지 못했어')}
+}
+// ===== 전체 랭킹 (실제 유저) =====
+// 서버(supabase-world.sql)가 저장할 때마다 시즌·증가 속도·상한을 검사해서, 말이 안 되는 기록은 거부하거나 숨김
+let wRows=[], wMine=null, wMyRank=0, wBusy=false, wLastLoad=0, wLastSync=0, wErr='', wBlock='', wHold=0;
+async function wSync(force){
+  if(!SB_URL||!MT.onboarded||(DEV&&devOff)||wBlock==='banned')return; const t=Date.now();
+  if(t<wHold)return; if(!force&&(t-wLastSync<60000||document.hidden))return; wLastSync=t;
+  try{await sbInit();const r=myGroupRow('');delete r.group_code;delete r.updated_at;
+    const q=await sb.from('world').upsert(r,{onConflict:'season,uid'});
+    if(q.error){const msg=q.error.message||'';
+      if(/banned/.test(msg)){wBlock='banned'}
+      else if(/range|jump|flex/.test(msg)){wBlock='reject';wHold=t+5*60000}
+      return}
+    if(wBlock==='reject')wBlock='';
+  }catch(e){}
+}
+async function wLoad(){
+  if(!SB_URL)return; const col=rankMode==='wflex'?'flex':'total';
+  try{wBusy=wRows.length===0;if(wBusy)renderWorld();await sbInit();await wSync(true);
+    const r=await sb.from('world').select('uid,nick,total,flex,profile,status').eq('season',SS.id).order(col,{ascending:false}).limit(100);
+    if(r.error)throw r.error; wRows=(r.data||[]).filter(x=>x.status===0||x.status===2||x.uid===sbUid);
+    const me=await sb.from('world').select('total,flex,status').eq('season',SS.id).eq('uid',sbUid).maybeSingle(); wMine=me.data||null;
+    wMyRank=0; const pub=wRows.filter(x=>x.status===0||x.status===2), idx=pub.findIndex(x=>x.uid===sbUid);
+    if(idx>=0)wMyRank=idx+1; else if(wMine&&(wMine.status===0||wMine.status===2)){const c=await sb.from('world').select('uid',{count:'exact',head:true}).eq('season',SS.id).gt(col,wMine[col]);if(!c.error)wMyRank=(c.count||0)+1}
+    wErr='';
+  }catch(e){wErr='전체 랭킹을 불러오지 못했어. 잠시 후 다시 열어줘'}
+  wBusy=false; if(rankMode==='world'||rankMode==='wflex')renderWorld();
+}
+function renderWorld(){
+  const fl=rankMode==='wflex', el=$('#rlist');
+  document.querySelectorAll('[data-rmode]').forEach(b=>b.classList.toggle('on',b.dataset.rmode===rankMode));
+  if(!SB_URL){setHTML(el,`<div class="gempty"><div class="gic2">${IC('trophy','big')}</div><b>전체 랭킹 준비 중</b></div>`);return}
+  if(wBusy){setHTML(el,`<div class="gempty"><div class="gic2">${IC('gear','big')}</div><b>랭킹 불러오는 중</b></div>`);return}
+  const pub=wRows.filter(x=>x.status===0||x.status===2||x.uid===sbUid);
+  const rows=pub.map(r=>{const me=r.uid===sbUid;return{uid:r.uid,name:r.nick,me,hidden:r.status===1||r.status===3,
+    v:me?total():Number(r.total),flex:me?flexScore(MT.inv):Number(r.flex),pr:me?Object.assign(myPr(),{lv:MT.lv}):cleanProfile(r.profile)}});
+  const shown=rows.filter(r=>!r.hidden);
+  shown.sort((a,b)=>fl?b.flex-a.flex:b.v-a.v);
+  let mine=rows.find(r=>r.me);
+  if(!mine)mine={uid:sbUid,name:MT.nick,me:true,v:total(),flex:flexScore(MT.inv),pr:Object.assign(myPr(),{lv:MT.lv})};
+  const inList=shown.includes(mine);
+  rankRows=inList?shown:[...shown,mine];
+  const line=(r,k,rk)=>{const ret=r.v/START_CASH-1, ft=flexTier(r.flex), medal=rk?([IC('medal'),IC('medal2'),IC('medal3')][rk-1]||rk):'-';
+    const right=fl?`<b>${kwon(r.flex)}</b><small>${ft[2]}</small>`:`<b>${won(r.v)}</b><small class="${cls(ret)}">${pct(ret)}</small>`;
+    return `<div class="row rrow${r.me?' me':''}" data-visit="${k}"><div class="rank">${medal}</div><div class="rav">${charIMG(r.pr,{aura:false,pet:false})}</div><div class="nm"><b>${r.name}${r.me?' (나)':''}</b><small>${IC(ft[1],'sm')} ${ft[2]}</small></div><div class="pr">${right}</div></div>`};
+  let note='';
+  if(wBlock==='banned')note='운영 정책 위반으로 전체 랭킹 참여가 정지됐어. 문의: jamesworks0101@gmail.com';
+  else if(wBlock==='reject')note='기록이 정상 범위를 벗어나서 서버가 저장하지 않았어. 잠시 후 다시 시도할게.';
+  else if(wMine&&wMine.status===1)note='기록이 너무 높아서 운영자가 확인하는 중이야. 확인되면 전체 랭킹에 나와.';
+  else if(wMine&&wMine.status===3)note='신고가 쌓여서 운영자가 확인하는 중이야. 문제가 없으면 다시 보여.';
+  const err=wErr?`<div class="gerr">${wErr}</div>`:'';
+  const myLine=inList?'':`<div class="wme">${line(mine,rankRows.length-1,(wMine&&(wMine.status===0||wMine.status===2))?wMyRank:0)}</div>`;
+  setHTML(el,`${err}${note?`<div class="wnote">${note}</div>`:''}${shown.length?shown.map((r,k)=>line(r,k,k+1)).join(''):`<div class="gempty"><b>아직 기록이 없어</b><p>이번 시즌 첫 번째 주인공이 돼봐.</p></div>`}${myLine}
+    <div class="gfoot"><span>이번 시즌 실제 유저 상위 100명 · 1분마다 갱신</span></div>`);
+}
+async function wReport(uid,btn){
+  if(!uid)return; btn.disabled=true;
+  try{await sbInit();const r=await sb.from('reports').insert({season:SS.id,target:uid,reporter:sbUid});
+    btn.textContent=r.error&&!/duplicate/.test(r.error.message||'')?'신고에 실패했어':'신고했어. 고마워';
+  }catch(e){btn.textContent='신고에 실패했어'}
 }
 window.addEventListener('hashchange',()=>{const m=location.hash.match(/^#g-([A-Z0-9]{6})$/);if(m&&MT.onboarded)showInvite(m[1])});
 function goView(v){view=v;document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));document.querySelectorAll('main section').forEach(s=>s.classList.toggle('on',s.id==='v-'+v));window.scrollTo(0,0);render()}
@@ -1923,7 +1992,7 @@ function loop(){
   if(seasonOf(now()).id!==SS.id){location.reload();return}
   const target=curTick();
   if(m.t<target){catchUp(target,6000);render();P.last=m.t;P.total=total();P.rank=myRank();saveP();if(autoMsgs.length){toast(autoMsgs.join(' · '));autoMsgs=[]}if(loanMsgs.length){toast(loanMsgs[0]);loanMsgs=[]}showLevelUp()}
-  renderClock(); liveUpdate(); gSync();
+  renderClock(); liveUpdate(); gSync(); wSync();
 }
 if(DEV)document.addEventListener('DOMContentLoaded',()=>{});
 function boot(){

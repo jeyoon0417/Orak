@@ -40,12 +40,12 @@ create policy groups_read   on public.groups for select to authenticated using (
 create policy groups_create on public.groups for insert to authenticated with check (owner = auth.uid());
 create policy groups_delete on public.groups for delete to authenticated using (owner = auth.uid());
 
--- 멤버 기록은 같은 그룹 사람만 볼 수 있고, 내 줄만 쓰고 지울 수 있음
+-- 멤버 기록: 내 줄은 항상, 남의 줄은 같은 그룹일 때만 볼 수 있고, 내 줄만 쓰고 지울 수 있음
 drop policy if exists members_read   on public.members;
 drop policy if exists members_join   on public.members;
 drop policy if exists members_update on public.members;
 drop policy if exists members_leave  on public.members;
-create policy members_read   on public.members for select to authenticated using (public.is_member(group_code));
+create policy members_read   on public.members for select to authenticated using (uid = auth.uid() or public.is_member(group_code));
 create policy members_join   on public.members for insert to authenticated with check (uid = auth.uid());
 create policy members_update on public.members for update to authenticated using (uid = auth.uid()) with check (uid = auth.uid());
 create policy members_leave  on public.members for delete to authenticated using (uid = auth.uid());
