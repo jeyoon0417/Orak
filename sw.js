@@ -1,5 +1,5 @@
 // 오르락내리락 오프라인 캐시 (새 버전 배포 시 VERSION 숫자만 올리면 됨)
-const VERSION = 'orak-v1.3.1';
+const VERSION = 'orak-v1.3.3';
 const FILES = ['./', './index.html', './privacy.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable-512.png'];
 
 self.addEventListener('install', e => {

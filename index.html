@@ -13,6 +13,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="오르락내리락">
 <link rel="manifest" href="manifest.webmanifest">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/galmuri@latest/dist/galmuri.css">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <style>
@@ -186,6 +187,19 @@ img.px{image-rendering:pixelated;image-rendering:crisp-edges;width:100%;display:
 .row.me .nm b{color:var(--acc)}
 .dev{display:flex;gap:6px;flex-wrap:wrap}
 .brand{color:var(--acc);font-weight:900}
+/* 픽셀 글씨체 (갈무리): 숫자·버튼·탭·제목 */
+.total,.big,#dprice,.bprice,.brand,nav button,.seg button,.chip,.go,.sbtn,.st,.rar,.ct,h3,.iname,.pr b,.kv b,.rank,.flexb,.roomtag,.badge,.tag,#loading .logo,.hrow,.ghead b,.gempty b,.vst b,.cashbar b{font-family:"Galmuri11","Galmuri9",-apple-system,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;letter-spacing:0}
+.total,#dprice,.big,.bprice{font-family:"Galmuri14","Galmuri11",sans-serif}
+img.pi{width:1.25em;height:1.25em;image-rendering:pixelated;image-rendering:crisp-edges;vertical-align:-.25em;display:inline-block}
+img.pi.sm{width:1.05em;height:1.05em;vertical-align:-.18em}
+img.pi.big{width:56px;height:56px;vertical-align:middle}
+nav button b img.pi{width:24px;height:24px}
+.sic img.pi{width:34px;height:34px}
+.boxic img.pi{width:36px;height:36px}
+.gic2 img.pi{width:48px;height:48px}
+.rank img.pi{width:24px;height:24px}
+.burst img.pi{width:30px;height:30px}
+#loading .logo span img.pi{width:36px;height:36px}
 #loading .logo{font-size:26px;font-weight:900;letter-spacing:-.5px;display:flex;align-items:center;gap:8px}
 #loading .logo span{font-size:32px;animation:bob 1s infinite alternate}
 @keyframes bob{to{transform:translateY(-6px)}}
@@ -211,7 +225,7 @@ select{background:var(--card);color:var(--tx);border:1px solid var(--line);borde
 </style>
 </head>
 <body>
-<div id="loading"><div class="logo"><span>📈</span>오르락내리락</div><div class="bar"><i id="lbar"></i></div><p id="ltxt">시장 불러오는 중…</p></div>
+<div id="loading"><div class="logo"><span><i data-ic="chart"></i></span>오르락내리락</div><div class="bar"><i id="lbar"></i></div><p id="ltxt">시장 불러오는 중…</p></div>
 
 <div id="app">
   <header>
@@ -227,11 +241,11 @@ select{background:var(--card);color:var(--tx);border:1px solid var(--line);borde
         <canvas id="idxcv" style="height:110px;margin-top:6px"></canvas>
       </div>
       <div class="grid2">
-        <div class="card mv"><div class="ct">🔥 급등</div><div id="gainers"></div></div>
-        <div class="card mv"><div class="ct">🧊 급락</div><div id="losers"></div></div>
+        <div class="card mv"><div class="ct"><span><i data-ic="up" class="sm"></i> 급등</span></div><div id="gainers"></div></div>
+        <div class="card mv"><div class="ct"><span><i data-ic="down" class="sm"></i> 급락</span></div><div id="losers"></div></div>
       </div>
       <div class="card" id="boxcard" style="display:none"></div>
-      <div class="card"><div class="ct"><span>📰 속보</span><span style="font-size:11px">찌라시는 믿거나 말거나</span></div><div id="newsfeed"></div></div>
+      <div class="card"><div class="ct"><span><i data-ic="news" class="sm"></i> 속보</span><span style="font-size:11px">찌라시는 믿거나 말거나</span></div><div id="newsfeed"></div></div>
       <div class="adslot" style="display:none"></div>
     </section>
     <section id="v-market">
@@ -255,10 +269,10 @@ select{background:var(--card);color:var(--tx);border:1px solid var(--line);borde
       <div class="card" id="loancard"></div>
       <div class="card" style="padding:4px 12px"><div class="ct" style="margin:10px 0 2px">보유 종목</div><div id="aholds"></div></div>
       <div class="card"><div class="ct">최근 거래</div><div id="atrades"></div></div>
-      <div class="card"><div class="ct">⚙️ 설정</div>
-        <div class="setlist"><button data-set="guide">📖 게임 안내 다시 보기</button><button data-set="wipe">🗑️ 모든 데이터 초기화</button><a class="setlink" href="privacy.html" target="_blank" rel="noopener">🔒 개인정보처리방침</a></div>
+      <div class="card"><div class="ct">설정</div>
+        <div class="setlist"><button data-set="guide"><i data-ic="book"></i> 게임 안내 다시 보기</button><button data-set="wipe"><i data-ic="trash"></i> 모든 데이터 초기화</button><a class="setlink" href="privacy.html" target="_blank" rel="noopener"><i data-ic="lock"></i> 개인정보처리방침</a></div>
         <p class="legal">오르락내리락은 JamesWorks가 만든, 가상의 기업과 코인을 다루는 시뮬레이션 게임이야. 실제 주식·코인 시세와 관계없고, 투자 조언이 아니야. 게임 속 돈은 현금으로 바꿀 수 없어.</p>
-        <p class="legal">v1.3.1</p>
+        <p class="legal">v1.3.3</p>
       </div>
       <div class="card" id="devcard" style="display:none"><div class="ct">개발용 (주소 끝에 #dev 일 때만 보임)</div>
         <div class="dev"><button data-dev="3600000">+1시간</button><button data-dev="86400000">+1일</button><button data-dev="reset">내 계좌 초기화</button><button data-dev="clear">시간 원래대로</button><button data-dev="xp">+500 XP</button><button data-dev="cash">+10억 현금</button><button data-dev="mreset">성장 초기화</button></div>
@@ -268,12 +282,12 @@ select{background:var(--card);color:var(--tx);border:1px solid var(--line);borde
       <div class="card mytop"><div id="myavatar" class="avbox"></div><div class="nm">
         <input id="mynick" maxlength="12" placeholder="닉네임">
         <small id="mytitle"></small>
-        <button id="myvisit" class="sbtn eq" style="margin-top:8px">👀 내 프로필 보기</button>
+        <button id="myvisit" class="sbtn eq" style="margin-top:8px">내 프로필 보기</button>
       </div></div>
       <div id="mystage"></div>
       <div class="card carcard" id="mycar"></div>
       <div class="card" id="boxcard2" style="display:none"></div>
-      <div class="seg tabs" id="myseg"><button data-my="char" class="on">😎 캐릭터</button><button data-my="house">🏠 집</button><button data-my="car">🚗 차</button><button data-my="grow">🌱 성장</button></div>
+      <div class="seg tabs" id="myseg"><button data-my="char" class="on"><i data-ic="user"></i> 캐릭터</button><button data-my="house"><i data-ic="home"></i> 집</button><button data-my="car"><i data-ic="car"></i> 차</button><button data-my="grow"><i data-ic="sprout"></i> 성장</button></div>
       <div id="my-shop">
         <div class="cashbar"><span id="mycash"></span><span>산 물건은 시즌이 바뀌어도 유지</span></div>
         <div class="chips" id="myslots"></div>
@@ -294,7 +308,7 @@ select{background:var(--card);color:var(--tx);border:1px solid var(--line);borde
     </div>
     </section>
     <section id="v-rank">
-      <div class="seg tabs"><button data-rmode="asset" class="on">💰 자산</button><button data-rmode="flex">💎 플렉스</button><button data-rmode="group">👥 그룹</button></div><div class="card" style="padding:4px 10px"><div id="rlist"></div></div>
+      <div class="seg tabs"><button data-rmode="asset" class="on"><i data-ic="coin"></i> 자산</button><button data-rmode="flex"><i data-ic="gem"></i> 플렉스</button><button data-rmode="group"><i data-ic="group"></i> 그룹</button></div><div class="card" style="padding:4px 10px"><div id="rlist"></div></div>
       <p id="rnote" style="color:var(--sub);font-size:12px;padding:0 6px">지금은 AI 트레이더 12명과 경쟁해. 온라인 랭킹은 곧 열려! 누르면 그 사람 집·차·명품을 구경할 수 있어. 플렉스 랭킹은 산 물건 총액 순이야.</p>
       <div class="adslot" style="display:none"></div>
     </section>
@@ -302,11 +316,11 @@ select{background:var(--card);color:var(--tx);border:1px solid var(--line);borde
 </div>
 
 <nav><div class="in">
-  <button class="on" data-v="home"><b>🏠</b>홈</button>
-  <button data-v="market"><b>📈</b>시장</button>
-  <button data-v="acct"><b>💼</b>계좌</button>
-  <button data-v="my"><b>😎</b>마이</button>
-  <button data-v="rank"><b>🏆</b>랭킹</button>
+  <button class="on" data-v="home"><b><i data-ic="home"></i></b>홈</button>
+  <button data-v="market"><b><i data-ic="chart"></i></b>시장</button>
+  <button data-v="acct"><b><i data-ic="wallet"></i></b>계좌</button>
+  <button data-v="my"><b><i data-ic="user"></i></b>마이</button>
+  <button data-v="rank"><b><i data-ic="trophy"></i></b>랭킹</button>
 </div></nav>
 
 <div id="detail" class="sheet"><div class="wrap">
@@ -325,7 +339,7 @@ select{background:var(--card);color:var(--tx);border:1px solid var(--line);borde
     <div class="est" id="dest"></div>
     <button id="dgo" class="go buy">매수하기</button>
   </div>
-  <div class="card" id="autocard" style="display:none"><div class="ct">🤖 자동 감시 주문 <span style="font-size:11px">평단 기준</span></div><div class="kv"><span>손절</span><select id="asl"><option value="0">없음</option><option value="-5">-5%</option><option value="-10">-10%</option><option value="-20">-20%</option><option value="-30">-30%</option><option value="-50">-50%</option></select></div><div class="kv"><span>익절</span><select id="atp"><option value="0">없음</option><option value="10">+10%</option><option value="20">+20%</option><option value="50">+50%</option><option value="100">+100%</option><option value="300">+300%</option></select></div></div>
+  <div class="card" id="autocard" style="display:none"><div class="ct"><span><i data-ic="robot" class="sm"></i> 자동 감시 주문</span> <span style="font-size:11px">평단 기준</span></div><div class="kv"><span>손절</span><select id="asl"><option value="0">없음</option><option value="-5">-5%</option><option value="-10">-10%</option><option value="-20">-20%</option><option value="-30">-30%</option><option value="-50">-50%</option></select></div><div class="kv"><span>익절</span><select id="atp"><option value="0">없음</option><option value="10">+10%</option><option value="20">+20%</option><option value="50">+50%</option><option value="100">+100%</option><option value="300">+300%</option></select></div></div>
   <div class="card"><div class="ct">관련 뉴스</div><div id="dnews"></div></div>
 </div></div>
 
@@ -334,7 +348,7 @@ select{background:var(--card);color:var(--tx);border:1px solid var(--line);borde
   <div id="vstage"></div>
   <div class="vstats" id="vstats"></div>
   <div class="card carcard" id="vcar"></div>
-  <div class="card"><div class="ct">💎 착용 중인 명품·오라·럭셔리</div><div id="vbling"></div></div>
+  <div class="card"><div class="ct">착용 중인 명품·오라·럭셔리</div><div id="vbling"></div></div>
 </div></div>
 <div id="modal"><div class="box" id="mbox"></div></div>
 <div id="toast"></div>
@@ -668,10 +682,10 @@ const TITLES=[[1,'쌩초보'],[3,'주린이 졸업'],[5,'단타 고수'],[8,'슈
 const title=(lv=MT.lv)=>{let t=TITLES[0][1];for(const [l,n] of TITLES)if(lv>=l)t=n;return t};
 const needXP=lv=>Math.round(100*Math.pow(lv,1.5));
 const SKILLS=[
-  {id:'info',ic:'📡',name:'정보력',max:3,req:[2,5,9],desc:'뉴스를 남들보다 먼저 봐',eff:l=>['없음','3틱(약 9분) 먼저','6틱(약 18분) 먼저','10틱(약 30분) 먼저'][l]},
-  {id:'fee',ic:'🤝',name:'수수료 협상',max:3,req:[3,6,10],desc:'매매 수수료가 줄어',eff:l=>['0.10%','0.08%','0.05%','0.02%'][l]},
-  {id:'radar',ic:'⚡',name:'거래량 레이더',max:1,req:[4],desc:'거래량이 비정상적으로 튀는 종목에 ⚡ 표시',eff:l=>l?'켜짐':'없음'},
-  {id:'auto',ic:'🤖',name:'자동 감시 주문',max:1,req:[7],desc:'보유 종목에 손절·익절 가격을 걸어두면 자는 동안에도 자동 매도',eff:l=>l?'켜짐':'없음'},
+  {id:'info',ic:'antenna',name:'정보력',max:3,req:[2,5,9],desc:'뉴스를 남들보다 먼저 봐',eff:l=>['없음','3틱(약 9분) 먼저','6틱(약 18분) 먼저','10틱(약 30분) 먼저'][l]},
+  {id:'fee',ic:'tag',name:'수수료 협상',max:3,req:[3,6,10],desc:'매매 수수료가 줄어',eff:l=>['0.10%','0.08%','0.05%','0.02%'][l]},
+  {id:'radar',ic:'bolt',name:'거래량 레이더',max:1,req:[4],desc:'거래량이 갑자기 튀는 종목에 번개 표시',eff:l=>l?'켜짐':'없음'},
+  {id:'auto',ic:'robot',name:'자동 감시 주문',max:1,req:[7],desc:'보유 종목에 손절·익절 가격을 걸어두면 자는 동안에도 자동 매도',eff:l=>l?'켜짐':'없음'},
 ];
 const feeRate=()=>[.001,.0008,.0005,.0002][MT.sk.fee];
 const early=()=>[0,3,6,10][MT.sk.info];
@@ -711,7 +725,7 @@ function loanTick(){
   if(hv>0&&P.cash+hv<P.debt*MARGIN){
     for(const k of Object.keys(P.hold)){const h=P.hold[k];if(h&&h.q>0)sellAt(+k,h.q,'반대매매')}
     const pay=Math.min(P.cash,P.debt);P.cash-=pay;P.debt-=pay;if(P.debt<1)P.debt=0;
-    loanMsgs.push('🚨 반대매매! 담보가 부족해서 보유 종목을 전부 팔아 빚을 갚았어');
+    loanMsgs.push('반대매매: 담보가 부족해서 보유 종목을 전부 팔아 빚을 갚았어');
   }
 }
 function withAd(cb){if(ADS.rewardedUnit)showRewarded(cb);else if(DEV)fakeAd(cb);else cb()}
@@ -719,21 +733,21 @@ function borrow(){
   if(m.t>=SEASON_TICKS)return toast('시즌이 끝나서 대출이 안 돼');
   if((P.debt||0)+LOAN_UNIT>LOAN_MAX+1)return toast(`대출 한도(${kwon(LOAN_MAX)})가 꽉 찼어`);
   withAd(()=>{P.cash+=LOAN_UNIT;P.debt=(P.debt||0)+LOAN_UNIT;if(P.debtDay==null)P.debtDay=gday();P.loans=(P.loans||0)+1;saveP();
-    burst(['💵','💸']);toast(`${kwon(LOAN_UNIT)}원 대출 완료! 이자 조심 😈`);render();gSync(true)});
+    burst(['cash','coin']);toast(`${kwon(LOAN_UNIT)}원 빌렸어. 이자는 게임 하루마다 붙어`);render();gSync(true)});
 }
 function repay(all){
   if(!P.debt)return;const amt=Math.min(all?P.debt:LOAN_UNIT,P.debt,Math.floor(P.cash));
   if(amt<=0)return toast('갚을 현금이 없어. 종목을 먼저 팔아줘');
-  P.cash-=amt;P.debt-=amt;if(P.debt<1){P.debt=0;P.debtDay=null}saveP();toast(`${won(amt)} 상환 완료${P.debt?'':' · 빚 없음 🎉'}`);render();
+  P.cash-=amt;P.debt-=amt;if(P.debt<1){P.debt=0;P.debtDay=null}saveP();toast(`${won(amt)} 상환 완료${P.debt?'':' · 빚을 다 갚았어'}`);render();
 }
 function renderLoan(){
   const el=$('#loancard');if(!el)return;const d=P.debt||0,room=Math.max(0,LOAN_MAX-d);
   let hv=0;for(const k in P.hold)hv+=P.hold[k].q*tpx(+k);const ratio=d?(P.cash+hv)/d:0;
-  const adTxt=ADS.rewardedUnit||DEV?'📺 광고 보고 ':'';
-  el.innerHTML=`<div class="ct"><span>🏦 대출</span><span style="font-size:11px">이자: 게임 하루 0.05% (현실 하루 약 7.5%)</span></div>
+  const adTxt=ADS.rewardedUnit||DEV?'광고 보고 ':'';
+  el.innerHTML=`<div class="ct"><span>${IC('bank','sm')} 대출</span><span style="font-size:11px">이자: 게임 하루 0.05% (현실 하루 약 7.5%)</span></div>
     <div class="kv"><span>빌린 돈 (이자 포함)</span><b class="${d?'dn':''}">${won(d)}</b></div>
     <div class="kv"><span>더 빌릴 수 있는 돈</span><b>${won(room)}</b></div>
-    ${d?`<div class="kv"><span>담보 비율</span><b class="${ratio<1.5?'up':''}">${Math.round(ratio*100)}% ${ratio<1.5?'⚠️':''}</b></div><p class="legal">담보 비율이 120% 아래로 떨어지면 보유 종목이 자동으로 전부 팔려 (반대매매)</p>`:''}
+    ${d?`<div class="kv"><span>담보 비율</span><b class="${ratio<1.5?'up':''}">${Math.round(ratio*100)}% ${ratio<1.5?IC('warn','sm'):''}</b></div><p class="legal">담보 비율이 120% 아래로 떨어지면 보유 종목이 자동으로 전부 팔려 (반대매매)</p>`:''}
     <div class="loanbtns"><button class="sbtn" data-loan="borrow" ${room<LOAN_UNIT?'disabled':''}>${adTxt}${kwon(LOAN_UNIT)} 빌리기</button>
     <button class="sbtn eq" data-loan="repay1" ${d?'':'disabled'}>${kwon(LOAN_UNIT)} 갚기</button><button class="sbtn eq" data-loan="repayall" ${d?'':'disabled'}>전부 갚기</button></div>
     <p class="legal">랭킹은 빚을 뺀 순자산으로 계산돼. 시즌이 끝나면 빚은 사라지지만 순자산에서 빠진 채로 결산돼.</p>`;
@@ -742,8 +756,8 @@ function checkAuto(){
   if(!MT.sk.auto)return;
   for(const k in P.hold){const i=+k,h=P.hold[k];if(!h.sl&&!h.tp)continue;
     const r=m.p[i]/h.avg-1;
-    if(h.sl&&r<=h.sl/100){const x=sellAt(i,h.q,'손절');autoMsgs.push(`🤖 ${STOCKS[i].name} 자동 손절 (${pct(r)})`)}
-    else if(h.tp&&r>=h.tp/100){const x=sellAt(i,h.q,'익절');autoMsgs.push(`🤖 ${STOCKS[i].name} 자동 익절 (${pct(r)})`)}
+    if(h.sl&&r<=h.sl/100){const x=sellAt(i,h.q,'손절');autoMsgs.push(`${STOCKS[i].name} 자동 손절 (${pct(r)})`)}
+    else if(h.tp&&r>=h.tp/100){const x=sellAt(i,h.q,'익절');autoMsgs.push(`${STOCKS[i].name} 자동 익절 (${pct(r)})`)}
   }
 }
 
@@ -785,7 +799,7 @@ let view='home', filt='all', det=-1, cmode='day', tmode='buy';
 function renderHeader(){
   const T=total(), r=T/START_CASH-1;
   $('#htotal').textContent=won(T); const e=$('#hret'); e.textContent=pct(r); e.className=cls(r);
-  $('#hseason').innerHTML=`<b class="brand">📈 오르락내리락</b> · 시즌 ${SEASON_NO} · Lv.${MT.lv} ${title()}`;
+  $('#hseason').innerHTML=`<b class="brand">${IC('chart','sm')} 오르락내리락</b> · 시즌 ${SEASON_NO} · Lv.${MT.lv} ${title()}`;
   $('#hrank').textContent=`랭킹 ${myRank()}위 / ${bots.length+1}명${P.debt?` · 빚 ${kwon(P.debt)}`:''}`;
 }
 function renderClock(){
@@ -798,14 +812,14 @@ function stockRow(i,extra){
   const s=STOCKS[i], c=dchg(i);
   const lp=liveP(i);
   const lim=!s.coin&&(lp>=m.open[i]*1.2999?'<span class="badge u">상한가</span>':lp<=m.open[i]*.7001?'<span class="badge d">하한가</span>':'');
-  const rad=MT.sk.radar&&m.lastVm[i]>=2.2?'<span class="badge r">⚡</span>':'';
+  const rad=MT.sk.radar&&m.lastVm[i]>=2.2?'<span class="badge r">'+IC('bolt','sm')+'</span>':'';
   return `<div class="row" data-i="${i}"><div class="nm"><b>${s.name}${lim||''}${rad}</b><small>${extra||TYPE[s.type].label+' · '+SECT[s.sec]}</small></div><div class="pr"><b class="${cls(c)}" data-lp="${i}">${fp(px(i),s.coin)}</b><small class="${cls(c)}" data-lc="${i}">${pct(c)}</small></div></div>`;
 }
 function newsHtml(list){
   if(!list.length) return '<div class="empty">아직 뉴스가 없어</div>';
   return list.map(e=>{const tgt=e.kind==='stock'?` data-i="${e.i}"`:'';
     const mk=e.pos===true?'<span class="up">▲</span>':e.pos===false?'<span class="dn">▼</span>':'<span class="fl">●</span>';
-    return `<div class="news${e.early?' early':''}"${tgt}><small>${gclock(e.t)} <span class="tag t-${e.tag}">${e.tag}</span>${e.early?'<span class="tag t-선공개">📡 선공개</span>':''}</small>${mk} ${e.text}</div>`}).join('');
+    return `<div class="news${e.early?' early':''}"${tgt}><small>${gclock(e.t)} <span class="tag t-${e.tag}">${e.tag}</span>${e.early?'<span class="tag t-선공개">선공개</span>':''}</small>${mk} ${e.text}</div>`}).join('');
 }
 function renderIdx(){
   const v=m.t>=1?liveIdx():m.idx, c=v/m.idxOpen-1;
@@ -836,7 +850,7 @@ function renderAcct(){
   $('#aholds').innerHTML=ids.length?ids.map(i=>{const h=P.hold[i],s=STOCKS[i],v=h.q*px(i),r=px(i)/h.avg-1;
     return `<div class="row" data-i="${i}"><div class="nm"><b>${s.name}</b><small>${h.q.toLocaleString()}주 · 평단 ${fp(h.avg,s.coin)}</small></div><div class="pr"><b>${won(v)}</b><small class="${cls(r)}">${pct(r)}</small></div></div>`}).join(''):'<div class="empty">보유 종목이 없어. 시장에서 사봐!</div>';
   const tr=P.trades.slice(-15).reverse();
-  $('#atrades').innerHTML=tr.length?tr.map(x=>{const s=STOCKS[x.i];return `<div class="news"><small>${gclock(x.t)}</small><span class="${x.q>0?'up':'dn'}">${x.q>0?'매수':x.auto?'🤖 자동 '+x.auto:'매도'}</span> ${s.name} ${Math.abs(x.q).toLocaleString()}주 @ ${fp(x.px,s.coin)}</div>`}).join(''):'<div class="empty">거래 내역 없음</div>';
+  $('#atrades').innerHTML=tr.length?tr.map(x=>{const s=STOCKS[x.i];return `<div class="news"><small>${gclock(x.t)}</small><span class="${x.q>0?'up':'dn'}">${x.q>0?'매수':x.auto?'자동 '+x.auto:'매도'}</span> ${s.name} ${Math.abs(x.q).toLocaleString()}주 @ ${fp(x.px,s.coin)}</div>`}).join(''):'<div class="empty">거래 내역 없음</div>';
 }
 function renderGrow(){
   const need=needXP(MT.lv);
@@ -845,12 +859,12 @@ function renderGrow(){
   const nx=TITLES.find(([l])=>l>MT.lv); $('#gnext').textContent=nx?`${nx[1]} (Lv.${nx[0]})`:'최고 칭호';
   $('#gskills').innerHTML=SKILLS.map(k=>{const l=MT.sk[k.id],mx=l>=k.max,req=mx?0:k.req[l],lock=!mx&&MT.lv<req;
     const btn=mx?'<button class="sbtn" disabled>최대</button>':lock?`<button class="sbtn" disabled>Lv.${req} 필요</button>`:`<button class="sbtn" data-sk="${k.id}" ${MT.sp<1?'disabled':''}>배우기 · SP 1</button>`;
-    return `<div class="card skill"><div class="sic">${k.ic}</div><div class="nm"><b>${k.name} <small>${l}/${k.max}</small></b><small>${k.desc}</small><small>현재: ${k.eff(l)}${mx?'':' → 다음: '+k.eff(l+1)}</small></div>${btn}</div>`}).join('');
+    return `<div class="card skill"><div class="sic">${IC(k.ic)}</div><div class="nm"><b>${k.name} <small>${l}/${k.max}</small></b><small>${k.desc}</small><small>현재: ${k.eff(l)}${mx?'':' → 다음: '+k.eff(l+1)}</small></div>${btn}</div>`}).join('');
 }
 function showLevelUp(){
   if(!lvQueue.length)return; const lv=lvQueue[lvQueue.length-1]; lvQueue=[];
   const t=TITLES.find(([l])=>l===lv);
-  $('#mbox').innerHTML=`<h3>🎉 레벨 업! Lv.${lv}</h3><p style="color:var(--sub);font-size:14px;margin:8px 0">${t?`새 칭호 <b style="color:var(--acc)">${t[1]}</b> 획득!<br>`:''}스킬 포인트 +1 · 마이 → 성장에서 스킬을 배워봐</p><button class="go">확인</button>`;
+  $('#mbox').innerHTML=`<div class="gic" style="text-align:center">${IC('star','big')}</div><h3 style="text-align:center">레벨 업! Lv.${lv}</h3><p style="color:var(--sub);font-size:14px;margin:8px 0">${t?`새 칭호 <b style="color:var(--acc)">${t[1]}</b> 획득!<br>`:''}스킬 포인트 +1 · 마이 → 성장에서 스킬을 배워봐</p><button class="go">확인</button>`;
   $('#modal').classList.add('on');
 }
 let lastDP=null;
@@ -943,7 +957,7 @@ document.addEventListener('click',e=>{
   const so=e.target.closest('[data-slot]'); if(so){mySlot[myTab]=so.dataset.slot;renderMy();return}
   const ic=e.target.closest('[data-item]'); if(ic){tapItem(ic.dataset.item);return}
   const rm=e.target.closest('[data-rmode]'); if(rm){rankMode=rm.dataset.rmode;renderRank();return}
-  if(e.target.closest('#mycar')){const cars=myPr().cars;if(cars.length>1){const k=cars.indexOf(MT.eq.car);MT.eq.car=cars[(k+1)%cars.length];saveM();renderMy();toast(`${IT[MT.eq.car].name} 탑승 🚗`)}return}
+  if(e.target.closest('#mycar')){const cars=myPr().cars;if(cars.length>1){const k=cars.indexOf(MT.eq.car);MT.eq.car=cars[(k+1)%cars.length];saveM();renderMy();toast(`${IT[MT.eq.car].name}로 바꿔 탔어`)}return}
   const vs=e.target.closest('[data-visit]'); if(vs){openVisit(+vs.dataset.visit);return}
   const sk=e.target.closest('[data-sk]'); if(sk){const k=SKILLS.find(x=>x.id===sk.dataset.sk);if(MT.sp>0&&MT.sk[k.id]<k.max&&MT.lv>=k.req[MT.sk[k.id]]){MT.sp--;MT.sk[k.id]++;saveM();toast(`${k.name} Lv.${MT.sk[k.id]} 습득!`);render()}return}
   const dv=e.target.closest('[data-dev]'); if(dv){const a=dv.dataset.dev;
@@ -982,7 +996,7 @@ function showAway(){
   const nn=m.news.filter(e=>e.t>lastSeen).length;
   const au=autoMsgs.splice(0);
   const li=x=>`<div class="kv"><span>${STOCKS[x.i].name}</span><b class="${cls(x.c)}">${pct(x.c)}</b></div>`;
-  $('#mbox').innerHTML=`<h3>😴 자는 동안 ${days}일이 지났어</h3>
+  $('#mbox').innerHTML=`<div class="gic" style="text-align:center">${IC('moon','big')}</div><h3 style="text-align:center">자리 비운 사이 ${days}일이 지났어</h3>
    <p style="color:var(--sub);font-size:13px;margin-bottom:12px">그사이 뉴스 ${nn}건이 터졌어</p>
    <div class="kv"><span>내 자산 변화</span><b class="${cls(d)}">${d>0?'+':''}${won(d)}</b></div>
    <div class="ct" style="margin-top:12px">가장 많이 오른 종목</div>${mv.slice(0,3).map(li).join('')}
@@ -1085,7 +1099,7 @@ const myPr=()=>({eq:MT.eq,multi:MT.multi,cm:MT.cm[MT.eq.car]||DEF_CM,cars:Object
 const RAR=p=>p>=1e8?3:p>=1e7?2:p>=1e6?1:0;
 const RAR_NAME=['일반','레어','에픽','전설'];
 function flexScore(inv){let t=0;for(const id in inv)if(IT[id])t+=IT[id].price;return t}
-const FLEX_TIERS=[[0,'🌱','새싹'],[1e6,'🥉','브론즈'],[1e7,'🥈','실버'],[5e7,'🥇','골드'],[2e8,'💎','다이아'],[1e9,'👑','플렉스 킹'],[3e9,'🌌','플렉스 갓']];
+const FLEX_TIERS=[[0,'sprout','새싹'],[1e6,'medal3','브론즈'],[1e7,'medal2','실버'],[5e7,'medal','골드'],[2e8,'gem','다이아'],[1e9,'crown','플렉스 킹'],[3e9,'galaxy','플렉스 갓']];
 const flexTier=sc=>{let t=FLEX_TIERS[0];for(const f of FLEX_TIERS)if(sc>=f[0])t=f;return t};
 
 // ===== 고퀄 픽셀 렌더러 =====
@@ -1131,6 +1145,54 @@ function ptext(s,str,x0,y0,col){[...str].forEach((ch,k)=>{const g=FONT[ch];if(!g
 const IMGC=new Map();
 function toImg(s,scale,key,cls='px'){if(key&&IMGC.has(key))return IMGC.get(key);const b=document.createElement('canvas');b.width=s.w*scale;b.height=s.h*scale;const bx=b.getContext('2d');bx.imageSmoothingEnabled=false;bx.drawImage(s.c,0,0,b.width,b.height);
   const html=`<img class="${cls}" src="${b.toDataURL()}" alt="">`;if(IMGC.size>600)IMGC.clear();if(key)IMGC.set(key,html);return html}
+
+// ===== 픽셀 아이콘 세트 (16x16, 게임 그래픽과 같은 셀아웃 외곽선) =====
+const ICON_DRAW={
+  home:s=>{s.poly([[1,8],[8,1],[15,8]],'#e5484d');s.poly([[3,7],[8,2],[8,4],[4,7]],'#ff7a80');s.r(11,2,2,4,'#b3202a');s.r(3,8,10,6,'#e6edf3');s.r(3,8,10,1,'#c9d1da');s.r(7,10,2,4,'#8b5a2b');s.r(4,9,2,2,'#7fb6ff');s.r(10,9,2,2,'#7fb6ff')},
+  chart:s=>{s.r(2,9,3,5,'#3d8bff');s.r(6,6,3,8,'#ff4d55');s.r(10,3,3,11,'#ff4d55');s.r(2,9,1,5,'#8fc0ff');s.r(6,6,1,8,'#ff9aa2');s.r(10,3,1,11,'#ff9aa2');s.r(1,14,14,1,'#8b98a5')},
+  wallet:s=>{s.r(4,3,8,1,'#5a3a1a');s.r(4,3,1,2,'#5a3a1a');s.r(11,3,1,2,'#5a3a1a');s.r(1,5,14,9,'#8b5a2b');s.r(1,5,14,2,'#a5703d');s.r(1,9,14,1,'#5a3a1a');s.r(7,8,2,3,'#ffc94d');s.p(7,8,'#fff0a0')},
+  user:s=>{s.ell(8,5,3.5,3.5,'#f3c6a0');s.r(4,1,8,3,'#2a1f1a');s.r(3,9,10,6,'#3d8bff');s.r(3,9,10,1,'#8fc0ff');s.r(6,9,4,1,'#f3c6a0');s.p(6,5,'#2b3a67');s.p(9,5,'#2b3a67')},
+  trophy:s=>{const G=mat('gold');s.r(4,2,8,5,G.b);s.ell(8,6,4,3,G.b,6);s.r(5,2,2,5,G.l);s.r(2,3,2,1,G.d);s.r(1,3,1,3,G.d);s.r(2,6,2,1,G.d);s.r(12,3,2,1,G.d);s.r(14,3,1,3,G.d);s.r(12,6,2,1,G.d);s.r(7,9,2,3,G.d);s.r(4,12,8,2,G.b);s.r(4,12,8,1,G.l)},
+  coin:s=>{const G=mat('gold');s.ell(8,8,6.5,6.5,G.d);s.ell(8,8,5.5,5.5,G.b);s.ell(8,8,5.5,5.5,G.l,-1e9,4);s.r(6,5,1,6,G.dd);s.r(9,5,1,6,G.dd);s.r(5,7,6,1,G.dd);s.p(4,4,'#ffffff')},
+  gem:s=>{s.poly([[2,6],[5,2],[11,2],[14,6],[8,14]],'#7fe7ff');s.poly([[2,6],[14,6],[8,14]],'#4ab8d8');s.poly([[5,2],[8,6],[11,2]],'#c8f7ff');s.r(2,6,12,1,'#bff3ff');s.p(5,4,'#ffffff');s.p(6,3,'#ffffff')},
+  group:s=>{s.ell(5,5,3,3,'#f3c6a0');s.r(2,2,6,2,'#2a1f1a');s.r(1,9,8,6,'#2fd081');s.ell(11,5,3,3,'#d39b74');s.r(8,2,6,2,'#4a2e1e');s.r(8,9,7,6,'#3d8bff');s.r(8,9,1,6,'#2a6bd6')},
+  car:s=>{s.poly([[1,11],[1,8],[4,7],[6,4],[11,4],[13,7],[15,8],[15,11]],'#e5484d');s.poly([[6,7],[7,5],[10,5],[11,7]],'#9fc8e6');s.r(1,8,14,1,'#ff7a80');s.ell(4.5,12,2.2,2.2,'#1b1d22');s.ell(11.5,12,2.2,2.2,'#1b1d22');s.p(4,12,'#c3ccd6');s.p(11,12,'#c3ccd6');s.r(14,9,1,1,'#fff6c2')},
+  sprout:s=>{s.r(7,7,2,7,'#2f8a4a');s.ell(4.5,6,3.5,2.2,'#2fd081');s.ell(11.5,4,3.5,2.2,'#2fd081');s.p(3,5,'#9dffc9');s.p(10,3,'#9dffc9');s.r(4,13,8,2,'#8b5a2b');s.r(4,13,8,1,'#a5703d')},
+  news:s=>{s.r(2,2,12,12,'#f4f4f4');s.r(2,2,12,3,'#3a3f47');s.r(4,6,5,4,'#b9c0c8');s.r(10,6,2,1,'#8b98a5');s.r(10,8,2,1,'#8b98a5');s.r(4,11,8,1,'#8b98a5');s.r(4,12,6,1,'#8b98a5');s.r(3,3,6,1,'#ffffff')},
+  bank:s=>{s.poly([[1,5],[8,1],[15,5]],'#c3ccd6');s.r(2,5,12,1,'#7b8592');[3,6,9,12].forEach(x=>{s.r(x,6,2,6,'#e6edf3');s.r(x+1,6,1,6,'#b9c0c8')});s.r(1,12,14,2,'#7b8592');s.ell(8,3.3,1.2,1,'#ffc94d')},
+  gift:s=>{s.r(2,6,12,8,'#e5484d');s.r(1,4,14,3,'#ff5a62');s.r(7,4,2,10,'#ffc94d');s.r(1,4,14,1,'#ff8a92');s.ell(5.5,3,2.5,1.6,'#ffc94d');s.ell(10.5,3,2.5,1.6,'#ffc94d');s.p(7,7,'#fff0a0')},
+  bolt:s=>{s.poly([[9,1],[3,9],[7,9],[6,15],[13,6],[9,6],[11,1]],'#ffe14d');s.poly([[9,1],[5,8],[7,8]],'#fff6c2')},
+  antenna:s=>{s.ell(7,7,6,6,'#c3ccd6',-1e9,8);s.poly([[2,8],[12,8],[7,3]],'#e6edf3');s.r(6,8,2,5,'#7b8592');s.r(3,13,8,2,'#5e6670');s.r(11,2,1,4,'#7b8592');s.ell(12,2,1.4,1.4,'#e5484d');s.p(14,1,'#ffe14d')},
+  tag:s=>{s.poly([[2,2],[8,2],[15,9],[9,15],[2,8]],'#ffc94d');s.poly([[2,2],[8,2],[4,6],[2,8]],'#fff0a0');s.ell(5,5,1.3,1.3,'#1b1424');s.r(7,9,5,1,'#b07d12');s.r(9,7,1,5,'#b07d12')},
+  robot:s=>{s.r(7,0,2,3,'#7b8592');s.p(7,0,'#e5484d');s.r(2,3,12,9,'#c3ccd6');s.r(2,3,12,1,'#e6edf3');s.r(4,5,3,3,'#1b1d22');s.r(9,5,3,3,'#1b1d22');s.p(5,6,'#2be07a');s.p(10,6,'#2be07a');s.r(5,9,6,1,'#5e6670');s.r(0,6,2,3,'#7b8592');s.r(14,6,2,3,'#7b8592');s.r(4,12,8,3,'#7b8592')},
+  star:s=>{s.poly([[8,1],[10,6],[15,6],[11,9],[13,15],[8,11],[3,15],[5,9],[1,6],[6,6]],'#ffc94d');s.poly([[8,1],[10,6],[8,8],[6,6]],'#fff0a0')},
+  moon:s=>{s.ell(8,8,6,6,'#f4f1d0');s.x.globalCompositeOperation='destination-out';s.ell(11,6,5,5,'#000');s.x.globalCompositeOperation='source-over';s.p(5,10,'#d8d2a8');s.p(13,2,'#ffffff');s.p(14,6,'#c9d1da')},
+  link:s=>{s.ell(5,10,3.5,3.5,'#9aa3ad');s.ell(5,10,1.8,1.8,'#00000000');s.x.clearRect(4,9,2,2);s.ell(11,6,3.5,3.5,'#c3ccd6');s.x.clearRect(10,5,2,2);s.line(6,9,10,6,'#e6edf3')},
+  up:s=>{s.poly([[8,1],[15,9],[11,9],[11,15],[5,15],[5,9],[1,9]],'#ff4d55');s.poly([[8,1],[8,9],[1,9]],'#ff8a92')},
+  down:s=>{s.poly([[8,15],[15,7],[11,7],[11,1],[5,1],[5,7],[1,7]],'#3d8bff');s.poly([[5,1],[8,1],[8,15],[1,7],[5,7]],'#8fc0ff')},
+  gear:s=>{for(let k=0;k<8;k++){const a=k/8*Math.PI*2;s.r(Math.round(7+Math.cos(a)*6),Math.round(7+Math.sin(a)*6),2,2,'#9aa3ad')}s.ell(8,8,5,5,'#9aa3ad');s.ell(8,8,5,5,'#c3ccd6',-1e9,6);s.ell(8,8,2,2,'#2a3340')},
+  book:s=>{s.r(2,2,12,12,'#2f6fd6');s.r(2,2,2,12,'#1f4d9a');s.r(5,4,7,2,'#e6edf3');s.r(5,7,5,1,'#8fc0ff');s.r(4,13,10,1,'#f4f4f4')},
+  trash:s=>{s.r(2,3,12,2,'#9aa3ad');s.r(6,1,4,2,'#9aa3ad');s.r(3,5,10,10,'#c3ccd6');[5,8,11].forEach(x=>s.r(x,7,1,6,'#7b8592'));s.r(3,5,10,1,'#e6edf3')},
+  lock:s=>{s.ell(8,5,4,4,'#9aa3ad',-1e9,6);s.x.clearRect(6,4,4,3);s.r(2,7,12,8,'#ffc94d');s.r(2,7,12,1,'#fff0a0');s.r(7,10,2,3,'#7a5208')},
+  medal:s=>{s.poly([[4,1],[7,1],[9,7],[6,7]],'#3d8bff');s.poly([[9,1],[12,1],[10,7],[7,7]],'#e5484d');s.ell(8,10.5,4.5,4.5,'#ffc94d');s.ell(8,10.5,3,3,'#b07d12');s.ell(8,10.5,3,3,'#fff0a0',-1e9,9)},
+  medal2:s=>{s.poly([[4,1],[7,1],[9,7],[6,7]],'#3d8bff');s.poly([[9,1],[12,1],[10,7],[7,7]],'#e5484d');s.ell(8,10.5,4.5,4.5,'#c3ccd6');s.ell(8,10.5,3,3,'#7b8592');s.ell(8,10.5,3,3,'#ffffff',-1e9,9)},
+  medal3:s=>{s.poly([[4,1],[7,1],[9,7],[6,7]],'#3d8bff');s.poly([[9,1],[12,1],[10,7],[7,7]],'#e5484d');s.ell(8,10.5,4.5,4.5,'#c87a3a');s.ell(8,10.5,3,3,'#8a4a1a');s.ell(8,10.5,3,3,'#f0a46a',-1e9,9)},
+  crown:s=>{const G=mat('gold');s.poly([[1,13],[1,4],[5,8],[8,2],[11,8],[15,4],[15,13]],G.b);s.r(1,11,14,2,G.d);s.p(8,6,'#e0245e');s.p(4,10,'#2bb3ff');s.p(12,10,'#2bb3ff');s.poly([[1,4],[5,8],[3,8]],G.l)},
+  galaxy:s=>{s.ell(8,8,7,7,'#2a1f5a');s.ell(8,8,5,2.5,'#8e5bd6');s.ell(8,8,3,1.4,'#c79bff');s.ell(8,8,1.3,1.3,'#ffffff');s.p(3,3,'#ffffff');s.p(12,12,'#ffe14d');s.p(13,4,'#7fe7ff')},
+  fire:s=>{s.poly([[8,1],[13,8],[12,13],[8,15],[4,13],[3,8],[6,5],[7,8]],'#ff7a1a');s.poly([[8,6],[11,10],[10,13],[8,14],[6,13],[5,10]],'#ffd23d')},
+  check:s=>{s.poly([[1,8],[4,5],[7,8],[13,2],[15,5],[7,13]],'#2fd081')},
+  warn:s=>{s.poly([[8,1],[15,14],[1,14]],'#ffc94d');s.r(7,5,2,5,'#1b1424');s.r(7,11,2,2,'#1b1424')},
+  eye:s=>{s.ell(8,8,7,4,'#f4f4f4');s.ell(8,8,3,3,'#2f6fd6');s.ell(8,8,1.4,1.4,'#111');s.p(7,6,'#ffffff')},
+  tv:s=>{s.r(1,3,14,10,'#1b1d22');s.r(2,4,12,8,'#2f6fd6');s.poly([[6,6],[11,8],[6,10]],'#ffffff');s.r(5,13,6,2,'#3a3f47');s.line(5,0,8,3,'#7b8592');s.line(11,0,8,3,'#7b8592')},
+  cash:s=>{s.r(1,4,14,9,'#2f8a4a');s.r(2,5,12,7,'#3fa35a');s.ell(8,8.5,2.5,2.5,'#a9e2b4');s.r(1,4,14,1,'#58c172');s.p(3,6,'#a9e2b4');s.p(12,11,'#a9e2b4')},
+  wrench:s=>{s.ell(4.5,4.5,3.5,3.5,'#9aa3ad');s.x.clearRect(3,1,3,4);s.line(6,6,13,13,'#9aa3ad');s.line(7,6,14,13,'#c3ccd6');s.line(6,7,13,14,'#7b8592')},
+  game:s=>{s.r(1,5,14,7,'#3a3f47');s.ell(3,9,2.5,3.5,'#3a3f47');s.ell(13,9,2.5,3.5,'#3a3f47');s.r(1,5,14,1,'#5e6670');s.r(4,7,1,3,'#e6edf3');s.r(3,8,3,1,'#e6edf3');s.p(11,7,'#e5484d');s.p(12,9,'#2fd081');s.p(10,9,'#ffc94d')},
+};
+const ICONC={};
+function ICON(name){if(ICONC[name])return ICONC[name];const f=ICON_DRAW[name];if(!f)return '';const s=sprite(16,16,f);
+  const b=document.createElement('canvas');b.width=64;b.height=64;const bx=b.getContext('2d');bx.imageSmoothingEnabled=false;bx.drawImage(s.c,0,0,64,64);return ICONC[name]=b.toDataURL()}
+const IC=(n,cls='')=>`<img class="pi ${cls}" src="${ICON(n)}" alt="">`;
+function fillIcons(root=document){root.querySelectorAll('i[data-ic]').forEach(e=>{e.outerHTML=IC(e.dataset.ic,e.className||'')})}
 
 // ===== 사람 (36x58 스프라이트) =====
 function charSprite(pr){
@@ -1536,9 +1598,9 @@ function carIMG(carId,cm,bg=true){
 
 // ===== 마이 탭 UI =====
 const SHOP={
-  char:[['hair','💇','헤어'],['outfit','👔','옷'],['hat','🎩','모자'],['glasses','🕶️','안경'],['acc','💍','액세서리'],['shoes','👟','신발'],['held','💰','손'],['back','🪽','등'],['pet','🐶','펫'],['aura','✨','오라'],['skin','🎨','피부']],
-  house:[['house','🏠','집'],['lux','💎','럭셔리'],['wdeco','🖼️','벽 장식'],['bed','🛏️','침대'],['desk','🖥️','책상'],['lamp','💡','조명'],['tv','📺','TV'],['sofa','🛋️','소파'],['frame','🖼️','액자'],['rug','🟫','러그'],['plant','🪴','화분']],
-  car:[['car','🚗','차고'],['paint','🎨','도색'],['wheel','🛞','휠'],['spoiler','🪽','스포일러'],['kit','🔧','바디킷'],['low','⬇️','차고 높이'],['tint','🪟','틴팅'],['decal','🔥','데칼'],['glow','🌈','언더글로우'],['exhaust','💨','머플러'],['roof','👑','장식'],['hl','💡','라이트']],
+  char:[['hair','','헤어'],['outfit','','옷'],['hat','','모자'],['glasses','','안경'],['acc','','액세서리'],['shoes','','신발'],['held','','손'],['back','','등'],['pet','','펫'],['aura','','오라'],['skin','','피부']],
+  house:[['house','','집'],['lux','','럭셔리'],['wdeco','','벽 장식'],['bed','','침대'],['desk','','책상'],['lamp','','조명'],['tv','','TV'],['sofa','','소파'],['frame','','액자'],['rug','','러그'],['plant','','화분']],
+  car:[['car','','차고'],['paint','','도색'],['wheel','','휠'],['spoiler','','스포일러'],['kit','','바디킷'],['low','','차고 높이'],['tint','','틴팅'],['decal','','데칼'],['glow','','언더글로우'],['exhaust','','머플러'],['roof','','장식'],['hl','','라이트']],
 };
 let myTab='char'; const mySlot={char:'hair',house:'house',car:'car'};
 function isOn(sl,id){if(MULTI[sl])return (MT.multi[sl]||[]).includes(id);if(CARMOD.includes(sl))return (MT.cm[MT.eq.car]||DEF_CM)[sl]===id;return MT.eq[sl]===id}
@@ -1556,9 +1618,9 @@ function thumbOf(sl,id){
 const chH=pr=>Math.round(68*Math.min(1.05,ROOMW[1]/ROOMW[IT[pr.eq.house].v]));
 function renderStage(){
   const pr=myPr(), sc=flexScore(MT.inv), ft=flexTier(sc);
-  $('#mystage').innerHTML=`<div class="stage">${roomIMG(pr)}<div class="ch" style="height:${chH(pr)}%">${charIMG(pr)}</div><div class="flexb">${ft[1]} ${ft[2]} · 플렉스 ${kwon(sc)}</div><div class="roomtag">${IT[pr.eq.house].name}</div></div>`;
+  $('#mystage').innerHTML=`<div class="stage">${roomIMG(pr)}<div class="ch" style="height:${chH(pr)}%">${charIMG(pr)}</div><div class="flexb">${IC(ft[1],'sm')} ${ft[2]} · 플렉스 ${kwon(sc)}</div><div class="roomtag">${IT[pr.eq.house].name}</div></div>`;
   const cars=pr.cars.length;
-  $('#mycar').innerHTML=`${carIMG(MT.eq.car,MT.cm[MT.eq.car],true)}<div class="garage">🚘 차고 ${cars}대${cars>1?' · 탭해서 바꿔 타기':''}</div>`;
+  $('#mycar').innerHTML=`${carIMG(MT.eq.car,MT.cm[MT.eq.car],true)}<div class="garage">차고 ${cars}대${cars>1?' · 탭해서 바꿔 타기':''}</div>`;
 }
 function renderMy(){
   renderBox();
@@ -1569,14 +1631,14 @@ function renderMy(){
   const grow=myTab==='grow'; $('#my-shop').style.display=grow?'none':''; $('#my-grow').style.display=grow?'':'none';
   renderStage();
   if(grow){renderGrow();return}
-  $('#mycash').innerHTML=`💵 <b>${won(P.cash)}</b>`;
-  $('#myslots').innerHTML=SHOP[myTab].map(([sl,ic,n])=>`<button class="chip${mySlot[myTab]===sl?' on':''}" data-slot="${sl}">${ic} ${n}${MULTI[sl]?' <i>여러 개</i>':''}</button>`).join('');
+  $('#mycash').innerHTML=`${IC('cash','sm')} <b>${won(P.cash)}</b>`;
+  $('#myslots').innerHTML=SHOP[myTab].map(([sl,ic,n])=>`<button class="chip${mySlot[myTab]===sl?' on':''}" data-slot="${sl}">${n}${MULTI[sl]?' <i>여러 개</i>':''}</button>`).join('');
   const sl=mySlot[myTab], tier=IT[MT.eq.house].v;
   let note='';
-  if(myTab==='house'&&sl!=='house'&&tier<SLOT_TIER[sl])note=`🔒 ${IT[HOUSE_BY_TIER[SLOT_TIER[sl]]].name} 이상으로 이사하면 놓을 수 있어 (미리 사둘 수는 있어)`;
-  if(myTab==='car'&&sl!=='car'&&MT.eq.car==='car_none')note='🚗 차부터 사야 튜닝할 수 있어';
-  if(myTab==='car'&&sl!=='car'&&MT.eq.car!=='car_none')note=`🔧 지금 타는 <b>${IT[MT.eq.car].name}</b>에 적용돼. 산 부품은 다른 차에도 쓸 수 있어`;
-  if(MULTI[sl])note=(note?note+'<br>':'')+'✅ 여러 개를 동시에 착용할 수 있어. 다시 누르면 벗어';
+  if(myTab==='house'&&sl!=='house'&&tier<SLOT_TIER[sl])note=`${IT[HOUSE_BY_TIER[SLOT_TIER[sl]]].name} 이상으로 이사하면 놓을 수 있어 (미리 사둘 수는 있어)`;
+  if(myTab==='car'&&sl!=='car'&&MT.eq.car==='car_none')note='차부터 사야 튜닝할 수 있어';
+  if(myTab==='car'&&sl!=='car'&&MT.eq.car!=='car_none')note=`지금 타는 <b>${IT[MT.eq.car].name}</b>에 적용돼. 산 부품은 다른 차에도 쓸 수 있어`;
+  if(MULTI[sl])note=(note?note+'<br>':'')+'여러 개를 같이 착용할 수 있어. 한 번 더 누르면 벗어';
   $('#mynote').innerHTML=note; $('#mynote').style.display=note?'':'none';
   if(myTab==='car'&&sl!=='car'&&MT.eq.car==='car_none'){$('#myitems').innerHTML='';return}
   $('#myitems').innerHTML=BY_SLOT[sl].map(it=>{const on=isOn(sl,it.id), own=owned(it.id), rr=RAR(it.price);
@@ -1593,22 +1655,22 @@ function tapItem(id){
   saveM();renderMy();
 }
 function askBuy(id){
-  const it=IT[id], rr=RAR(it.price); if(P.cash<it.price)return toast('현금이 부족해 😢');
+  const it=IT[id], rr=RAR(it.price); if(P.cash<it.price)return toast('현금이 부족해');
   $('#mbox').innerHTML=`<div class="buybox r${rr}"><div class="rar big">${RAR_NAME[rr]}</div><div class="th th-${myTab} bigth">${thumbOf(it.slot,id)}</div><h3>${it.name}</h3>
     <div class="bprice">${won(it.price)}</div><p class="bnote">이번 시즌 현금에서 빠져서 랭킹 자산이 줄어. 대신 영원히 내 거야.</p>
-    <div class="grid2"><button class="go cancel">다음에</button><button class="go flexgo" data-cbuy="${id}">FLEX 💸</button></div></div>`;
+    <div class="grid2"><button class="go cancel">다음에</button><button class="go flexgo" data-cbuy="${id}">구매</button></div></div>`;
   $('#modal').classList.add('on');
 }
 function doBuy(id){
-  const it=IT[id]; if(P.cash<it.price)return toast('현금이 부족해 😢');
+  const it=IT[id]; if(P.cash<it.price)return toast('현금이 부족해');
   P.cash-=it.price; MT.inv[id]=1;
   if(it.slot==='car'){MT.cm[id]=MT.cm[id]||Object.assign({},DEF_CM)}
   saveP();saveM();tapItem(id);
-  burst(RAR(it.price)>=2?['💎','💰','✨','👑','💸']:['💸','✨','💵']);
-  toast(`${it.name} GET! ${RAR(it.price)>=3?'🔥 전설급 플렉스 🔥':''}`); renderHeader();
+  burst(RAR(it.price)>=2?['gem','coin','star','crown']:['coin','star','cash']);
+  toast(`${it.name} 구매 완료${RAR(it.price)>=3?' · 전설 등급':''}`); renderHeader();
 }
 function burst(em){
-  const host=document.body;for(let k=0;k<18;k++){const e=document.createElement('span');e.className='burst';e.textContent=em[k%em.length];
+  const host=document.body;for(let k=0;k<18;k++){const e=document.createElement('span');e.className='burst';e.innerHTML=IC(em[k%em.length]);
     const a=Math.random()*Math.PI*2,d=90+Math.random()*140;e.style.setProperty('--dx',Math.cos(a)*d+'px');e.style.setProperty('--dy',(Math.sin(a)*d-60)+'px');e.style.animationDelay=(Math.random()*.15)+'s';host.appendChild(e);setTimeout(()=>e.remove(),1400)}
 }
 
@@ -1636,18 +1698,18 @@ function renderRank(){
   const mp=Object.assign(myPr(),{lv:MT.lv});rows.push({name:MT.nick,v:total(),me:true,pr:mp,flex:flexScore(MT.inv)});
   rows.sort((a,b)=>rankMode==='asset'?b.v-a.v:b.flex-a.flex); rankRows=rows;
   document.querySelectorAll('[data-rmode]').forEach(b=>b.classList.toggle('on',b.dataset.rmode===rankMode));
-  $('#rlist')._h=null;$('#rlist').innerHTML=rows.map((r,k)=>{const ret=r.v/START_CASH-1, ft=flexTier(r.flex), medal=['🥇','🥈','🥉'][k]||(k+1);
+  $('#rlist')._h=null;$('#rlist').innerHTML=rows.map((r,k)=>{const ret=r.v/START_CASH-1, ft=flexTier(r.flex), medal=[IC('medal'),IC('medal2'),IC('medal3')][k]||(k+1);
     const right=rankMode==='asset'?`<b>${won(r.v)}</b><small class="${cls(ret)}">${pct(ret)}</small>`:`<b>${kwon(r.flex)}</b><small>${ft[2]}</small>`;
-    return `<div class="row rrow${r.me?' me':''}" data-visit="${k}"><div class="rank">${medal}</div><div class="rav">${charIMG(r.pr,{aura:false,pet:false})}</div><div class="nm"><b>${r.name}${r.me?' (나)':''}</b><small>${ft[1]} ${ft[2]} · ${IT[r.pr.eq.car].name}</small></div><div class="pr">${right}</div></div>`}).join('');
+    return `<div class="row rrow${r.me?' me':''}" data-visit="${k}"><div class="rank">${medal}</div><div class="rav">${charIMG(r.pr,{aura:false,pet:false})}</div><div class="nm"><b>${r.name}${r.me?' (나)':''}</b><small>${IC(ft[1],'sm')} ${ft[2]} · ${IT[r.pr.eq.car].name}</small></div><div class="pr">${right}</div></div>`}).join('');
 }
 function openVisit(k){
   const row=rankRows[k]; if(!row)return; const pr=row.pr, ft=flexTier(row.flex);
-  $('#vname').textContent=row.name+(row.me?' (나)':''); $('#vsub').textContent=`Lv.${pr.lv||MT.lv} ${title(pr.lv||MT.lv)} · ${ft[1]} ${ft[2]}`;
+  $('#vname').textContent=row.name+(row.me?' (나)':''); $('#vsub').innerHTML=`Lv.${pr.lv||MT.lv} ${title(pr.lv||MT.lv)} · ${IC(ft[1],'sm')} ${ft[2]}`;
   const ret=row.v/START_CASH-1;
-  $('#vstage').innerHTML=`<div class="stage">${roomIMG(pr)}<div class="ch" style="height:${chH(pr)}%">${charIMG(pr)}</div><div class="flexb">${ft[1]} 플렉스 ${kwon(row.flex)}</div><div class="roomtag">${IT[pr.eq.house].name}</div></div>`;
+  $('#vstage').innerHTML=`<div class="stage">${roomIMG(pr)}<div class="ch" style="height:${chH(pr)}%">${charIMG(pr)}</div><div class="flexb">${IC(ft[1],'sm')} 플렉스 ${kwon(row.flex)}</div><div class="roomtag">${IT[pr.eq.house].name}</div></div>`;
   $('#vstats').innerHTML=`<div class="vst"><span>순위</span><b>${k+1}위</b></div><div class="vst"><span>총자산</span><b>${kwon(row.v)}</b></div><div class="vst"><span>수익률</span><b class="${cls(ret)}">${pct(ret)}</b></div><div class="vst"><span>집</span><b>${IT[pr.eq.house].name}</b></div>`;
   const cars=(pr.cars||[]).filter(c=>c!==pr.eq.car);
-  $('#vcar').innerHTML=carIMG(pr.eq.car,(pr.allcm||{})[pr.eq.car]||pr.cm,true)+`<div class="garage">🚘 ${IT[pr.eq.car].name}${cars.length?` 외 ${cars.length}대`:''}</div>`+(cars.length?`<div class="gar">${cars.map(c=>`<div>${carIMG(c,pr.allcm[c],false)}<small>${IT[c].name}</small></div>`).join('')}</div>`:'');
+  $('#vcar').innerHTML=carIMG(pr.eq.car,(pr.allcm||{})[pr.eq.car]||pr.cm,true)+`<div class="garage">${IT[pr.eq.car].name}${cars.length?` 외 ${cars.length}대`:''}</div>`+(cars.length?`<div class="gar">${cars.map(c=>`<div>${carIMG(c,pr.allcm[c],false)}<small>${IT[c].name}</small></div>`).join('')}</div>`:'');
   const bling=[...(pr.multi.acc||[]),...(pr.multi.aura||[]),...(pr.multi.lux||[]),...(pr.multi.wdeco||[])].map(id=>IT[id].name);
   $('#vbling').innerHTML=bling.length?bling.map(n=>`<span class="pill">${n}</span>`).join(''):'<span class="pill">아직 소박하게 사는 중</span>';
   $('#visit').classList.add('on'); $('#visit').scrollTop=0;
@@ -1655,37 +1717,37 @@ function openVisit(k){
 
 // ===== 첫 실행 안내 =====
 const GUIDE=[
-  {ic:'📈',t:'오르락내리락에 온 걸 환영해!',d:'<b>500만 원</b> 들고 가상 주식이랑 코인 사고팔면서 노는 게임이야. 진짜 돈은 하나도 안 들어! 일단 이름부터 정하자.',nick:true},
-  {ic:'📰',t:'뉴스 보고 눈치껏',d:'가격은 5초마다 오르락내리락해. 뉴스가 뜨면 크게 출렁이고, <b>[찌라시]</b>는 맞을 때도 틀릴 때도 있어. 코인은 제한이 없어서 롤러코스터야 🎢'},
-  {ic:'🏆',t:'매주 새 판',d:'매주 월요일마다 다 같이 500만 원으로 새로 시작해. 망해도 괜찮아, 다음 주에 또 하면 돼! 순위가 높으면 경험치를 더 받고, 레벨은 계속 남아.'},
-  {ic:'🏦',t:'급하면 대출도 돼',d:'계좌 탭에서 돈을 빌릴 수 있어. 대신 이자가 붙고, 많이 잃으면 보유 종목이 강제로 팔려(반대매매). 랭킹은 빚을 뺀 순자산 기준이야.'},
-  {ic:'💎',t:'번 돈으로 꾸미기',d:'마이 탭에서 옷, 펫, 집, 차를 살 수 있어. 산 건 계속 내 거야. 대신 이번 주 랭킹 자산은 그만큼 줄어. <b>랭킹이냐, 플렉스냐!</b>'},
+  {ic:'chart',t:'오르락내리락에 온 걸 환영해!',d:'<b>500만 원</b> 들고 가상 주식이랑 코인 사고팔면서 노는 게임이야. 진짜 돈은 하나도 안 들어. 이름부터 정하자.',nick:true},
+  {ic:'news',t:'뉴스 보고 눈치껏',d:'가격은 5초마다 오르락내리락해. 뉴스가 뜨면 크게 출렁이고, <b>[찌라시]</b>는 맞을 때도 틀릴 때도 있어. 코인은 제한이 없어서 롤러코스터야.'},
+  {ic:'trophy',t:'매주 새 판',d:'매주 월요일마다 다 같이 500만 원으로 새로 시작해. 망해도 다음 주에 다시 하면 돼. 순위가 높으면 경험치를 더 받고, 레벨은 계속 남아.'},
+  {ic:'bank',t:'급하면 대출도 돼',d:'계좌 탭에서 돈을 빌릴 수 있어. 대신 이자가 붙고, 많이 잃으면 보유 종목이 강제로 팔려(반대매매). 랭킹은 빚을 뺀 순자산 기준이야.'},
+  {ic:'gem',t:'번 돈으로 꾸미기',d:'마이 탭에서 옷, 펫, 집, 차를 살 수 있어. 산 건 계속 내 거야. 대신 이번 주 랭킹 자산은 그만큼 줄어. <b>랭킹이냐, 플렉스냐.</b>'},
 ];
 function showGuide(k){
   const g=GUIDE[k], last=k===GUIDE.length-1;
-  $('#mbox').innerHTML=`<div class="guide"><div class="gic">${g.ic}</div><h3>${g.t}</h3><p>${g.d}</p>${g.nick?`<input id="gnick" maxlength="12" value="${MT.nick}" placeholder="닉네임">`:''}
+  $('#mbox').innerHTML=`<div class="guide"><div class="gic">${IC(g.ic,'big')}</div><h3>${g.t}</h3><p>${g.d}</p>${g.nick?`<input id="gnick" maxlength="12" value="${MT.nick}" placeholder="닉네임">`:''}
     <div class="gdots">${GUIDE.map((_,i)=>`<i class="${i===k?'on':''}"></i>`).join('')}</div>
-    <button class="go flexgo" data-guide="${k+1}">${last?'시작하기 🚀':'다음'}</button></div>`;
+    <button class="go flexgo" data-guide="${k+1}">${last?'시작하기':'다음'}</button></div>`;
   $('#modal').classList.add('on');
 }
 function guideNext(k){
   const n=$('#gnick'); if(n){const v=n.value.trim().slice(0,12);if(v)MT.nick=v}
   if(k<GUIDE.length){showGuide(k);return}
-  MT.onboarded=1;saveM();$('#modal').classList.remove('on');render();if(PENDING_G)setTimeout(()=>showInvite(PENDING_G),300);toast(`${MT.nick}, 가볍게 한 판 가보자! 🎢`);
+  MT.onboarded=1;saveM();$('#modal').classList.remove('on');render();if(PENDING_G)setTimeout(()=>showInvite(PENDING_G),300);toast(`${MT.nick}, 가볍게 한 판 해보자`);
 }
 // ===== 지난 시즌 결산 =====
 function showSeasonResult(){
   const r=PREV, ret=r.total/START_CASH-1, xp=r.rank===1?600:r.rank<=3?350:r.rank<=6?200:100, bonus=Math.max(0,Math.round(ret*100));
   gainXP(xp+bonus); lvQueue=[]; MT.best=Math.max(MT.best||0,r.total); MT.seasons=(MT.seasons||0)+1; if(r.rank===1)MT.wins=(MT.wins||0)+1; saveM();
-  const medal=['🥇','🥈','🥉'][r.rank-1]||'🎖️';
+  const medal=[IC('medal','big'),IC('medal2','big'),IC('medal3','big')][r.rank-1]||IC('trophy','big');
   $('#mbox').innerHTML=`<div class="guide"><div class="gic">${medal}</div><h3>시즌 ${r.season-SS.id+SEASON_NO} 결산</h3>
     <div class="kv"><span>최종 순위</span><b>${r.rank}위</b></div><div class="kv"><span>최종 자산</span><b>${won(r.total)}</b></div><div class="kv"><span>수익률</span><b class="${cls(ret)}">${pct(ret)}</b></div>
     <div class="kv"><span>보상</span><b style="color:var(--acc)">+${xp+bonus} XP</b></div>
-    <p>새 시즌이 시작됐어. 계좌는 500만 원으로 돌아갔고, 산 물건과 레벨은 그대로야.</p><button class="go flexgo">새 시즌 시작 🔥</button></div>`;
+    <p>새 시즌이 시작됐어. 계좌는 500만 원으로 돌아갔고, 산 물건과 레벨은 그대로야.</p><button class="go flexgo">새 시즌 시작</button></div>`;
   $('#modal').classList.add('on'); PREV=null;
 }
 function askWipe(){
-  $('#mbox').innerHTML=`<div class="guide"><div class="gic">⚠️</div><h3>정말 전부 지울까?</h3><p>계좌, 레벨, 산 물건, 닉네임이 모두 사라지고 되돌릴 수 없어.</p><div class="grid2"><button class="go cancel">취소</button><button class="go" style="background:var(--up);color:#fff" data-set="wipe2">전부 지우기</button></div></div>`;
+  $('#mbox').innerHTML=`<div class="guide"><div class="gic">${IC('warn','big')}</div><h3>정말 전부 지울까?</h3><p>계좌, 레벨, 산 물건, 닉네임이 모두 사라지고 되돌릴 수 없어.</p><div class="grid2"><button class="go cancel">취소</button><button class="go" style="background:var(--up);color:#fff" data-set="wipe2">전부 지우기</button></div></div>`;
   $('#modal').classList.add('on');
 }
 
@@ -1720,7 +1782,7 @@ async function gCreate(name){
   try{gBusy=true;renderGroup();await sbInit();let code,ok=false;
     for(let k=0;k<4&&!ok;k++){code=gCode();const r=await sb.from('groups').insert({code,name,owner:sbUid});ok=!r.error}
     if(!ok)throw new Error('create');
-    await gJoin(code,true);toast(`"${name}" 그룹 완성! 링크로 친구 불러와 👥`);
+    await gJoin(code,true);toast(`"${name}" 그룹을 만들었어. 초대 링크로 친구를 불러와`);
   }catch(e){gBusy=false;gErr='그룹을 못 만들었어. 잠시 후 다시 해줘';renderGroup()}
 }
 async function gJoin(code,silent){
@@ -1731,7 +1793,7 @@ async function gJoin(code,silent){
     const r=await sb.from('members').upsert(myGroupRow(code),{onConflict:'group_code,uid'});
     if(r.error){gBusy=false;gErr=/full/.test(r.error.message||'')?'그룹이 꽉 찼어 (최대 50명)':'참가에 실패했어';renderGroup();return}
     if(!MT.groups.find(x=>x.code===code))MT.groups.push({code,name:g.data.name});saveM();
-    gSel=code;gBusy=false;gErr='';rankMode='group';if(!silent)toast(`"${g.data.name}" 그룹에 들어왔어! 🎉`);
+    gSel=code;gBusy=false;gErr='';rankMode='group';if(!silent)toast(`"${g.data.name}" 그룹에 들어왔어`);
     if(location.hash.startsWith('#g-'))history.replaceState(null,'',location.pathname+location.search);
     renderRank();
   }catch(e){gBusy=false;gErr='서버에 연결하지 못했어';renderGroup()}
@@ -1755,20 +1817,20 @@ async function gLoad(){
 function gInviteUrl(code){return location.origin+location.pathname+'#g-'+code}
 async function gCopy(code){
   const url=gInviteUrl(code), name=(MT.groups.find(g=>g.code===code)||{}).name||'';
-  const text=`📈 오르락내리락 "${name}" 그룹에서 같이 하자! 500만 원으로 누가 더 버는지 붙어보자 👉 ${url}`;
+  const text=`오르락내리락 "${name}" 그룹에서 같이 하자. 500만 원으로 누가 더 버는지 붙어보자 ${url}`;
   try{if(navigator.share){await navigator.share({title:'오르락내리락',text,url});return}}catch(e){}
-  try{await navigator.clipboard.writeText(text);toast('초대 링크 복사 완료! 단톡방에 붙여넣어 👍')}catch(e){$('#ginv').style.display='';$('#ginv').value=url;$('#ginv').select();toast('링크를 길게 눌러 복사해줘')}
+  try{await navigator.clipboard.writeText(text);toast('초대 링크를 복사했어')}catch(e){$('#ginv').style.display='';$('#ginv').value=url;$('#ginv').select();toast('링크를 길게 눌러 복사해줘')}
 }
 function setHTML(el,h){if(el._h===h)return;el._h=h;el.innerHTML=h}
 function renderGroup(){
   const real=$('#rlist'), el={set innerHTML(h){setHTML(real,h)},contains:x=>real.contains(x)};
   if(typing()&&el.contains(document.activeElement)&&!gBusy)return;
-  if(!SB_URL){el.innerHTML=`<div class="gempty"><div class="gic2">👥</div><b>그룹 기능 준비 중</b><p>서버 설정이 끝나면 친구를 링크로 불러서 같은 시장에서 붙을 수 있어.</p></div>`;return}
+  if(!SB_URL){el.innerHTML=`<div class="gempty"><div class="gic2">${IC('group','big')}</div><b>그룹 기능 준비 중</b><p>서버 설정이 끝나면 친구를 링크로 불러서 같은 시장에서 붙을 수 있어.</p></div>`;return}
   if(gBusy){el.innerHTML=`<div class="gempty"><div class="gic2">⏳</div><b>잠깐만…</b></div>`;return}
   const err=gErr?`<div class="gerr">${gErr}</div>`:'';
-  const chips=MT.groups.map(g=>`<button class="chip${g.code===gSel?' on':''}" data-gsel="${g.code}">👥 ${g.name}</button>`).join('')+`<button class="chip${!gSel?' on':''}" data-gsel="">＋ 새 그룹</button>`;
+  const chips=MT.groups.map(g=>`<button class="chip${g.code===gSel?' on':''}" data-gsel="${g.code}">${g.name}</button>`).join('')+`<button class="chip${!gSel?' on':''}" data-gsel="">＋ 새 그룹</button>`;
   if(!gSel){
-    el.innerHTML=`<div class="chips">${chips}</div>${err}<div class="gempty"><div class="gic2">👥</div><b>친구랑 같은 시장에서 붙어보자</b><p>그룹을 만들고 링크를 단톡방에 뿌리면 끝! 다들 똑같은 시장, 똑같은 500만 원으로 시작해.</p>
+    el.innerHTML=`<div class="chips">${chips}</div>${err}<div class="gempty"><div class="gic2">${IC('group','big')}</div><b>친구랑 같은 시장에서 붙어보자</b><p>그룹을 만들고 링크를 단톡방에 뿌리면 끝! 다들 똑같은 시장, 똑같은 500만 원으로 시작해.</p>
       <div class="gform"><input id="gname" maxlength="20" placeholder="그룹 이름 (예: 우리반 주식왕)"><button class="sbtn" data-gact="create">만들기</button></div>
       <div class="gform"><input id="gcode" maxlength="6" placeholder="초대 코드 6자리" style="text-transform:uppercase"><button class="sbtn eq" data-gact="join">참가</button></div></div>`;
     return;
@@ -1779,9 +1841,9 @@ function renderGroup(){
   if(!rows.some(r=>r.me))rows.push({name:MT.nick,v:total(),me:true,flex:flexScore(MT.inv),pr:Object.assign(myPr(),{lv:MT.lv})});
   rows.sort((a,b)=>b.v-a.v); rankRows=rows;
   el.innerHTML=`<div class="chips">${chips}</div>${err}
-    <div class="ghead"><div><b>${g.name}</b><small>코드 ${g.code} · ${rows.length}명</small></div><button class="sbtn" data-gact="invite">🔗 초대 링크</button></div>
+    <div class="ghead"><div><b>${g.name}</b><small>코드 ${g.code} · ${rows.length}명</small></div><button class="sbtn" data-gact="invite">${IC('link','sm')} 초대 링크</button></div>
     <input id="ginv" class="ginv" readonly style="display:none">
-    ${rows.map((r,k)=>{const ret=r.v/START_CASH-1, ft=flexTier(r.flex), medal=['🥇','🥈','🥉'][k]||(k+1);
+    ${rows.map((r,k)=>{const ret=r.v/START_CASH-1, ft=flexTier(r.flex), medal=[IC('medal'),IC('medal2'),IC('medal3')][k]||(k+1);
       return `<div class="row rrow${r.me?' me':''}" data-visit="${k}"><div class="rank">${medal}</div><div class="rav">${charIMG(r.pr,{aura:false,pet:false})}</div><div class="nm"><b>${r.name}${r.me?' (나)':''}</b><small>${r.stale?'이번 주 아직 안 들어옴':ft[1]+' '+ft[2]}</small></div><div class="pr"><b>${won(r.v)}</b><small class="${cls(ret)}">${pct(ret)}</small></div></div>`}).join('')}
     <div class="gfoot"><button class="gleave" data-gact="leave">그룹 나가기</button><span>기록은 30초마다 갱신돼</span></div>`;
 }
@@ -1789,7 +1851,7 @@ async function showInvite(code){
   try{if(!(await sbInit()))return;const g=await sb.from('groups').select('code,name').eq('code',code).maybeSingle();
     if(!g.data){toast('초대 링크가 만료됐거나 없는 그룹이야');return}
     if(MT.groups.find(x=>x.code===code)){gSel=code;rankMode='group';goView('rank');return}
-    $('#mbox').innerHTML=`<div class="guide"><div class="gic">👥</div><h3>"${g.data.name}" 그룹 초대</h3><p>친구들이랑 같은 시장, 같은 500만 원으로 누가 더 버는지 붙어보자!</p><div class="grid2"><button class="go cancel">나중에</button><button class="go flexgo" data-gjoin="${code}">참가하기</button></div></div>`;
+    $('#mbox').innerHTML=`<div class="guide"><div class="gic">${IC('group','big')}</div><h3>"${g.data.name}" 그룹 초대</h3><p>친구들이랑 같은 시장, 같은 500만 원으로 누가 더 버는지 붙어보자!</p><div class="grid2"><button class="go cancel">나중에</button><button class="go flexgo" data-gjoin="${code}">참가하기</button></div></div>`;
     $('#modal').classList.add('on');
   }catch(e){toast('서버에 연결하지 못했어')}
 }
@@ -1834,7 +1896,7 @@ function showRewarded(onReward){
 }
 // 개발 모드(#dev)에서만 쓰는 가짜 광고 (흐름 테스트용)
 function fakeAd(onReward){
-  let n=3;$('#mbox').innerHTML=`<div class="guide"><div class="gic">📺</div><h3>테스트 광고</h3><p>실제 광고 대신 3초를 기다려 (개발 모드 전용)</p><div class="bprice" id="fakec">3</div></div>`;$('#modal').classList.add('on');
+  let n=3;$('#mbox').innerHTML=`<div class="guide"><div class="gic">${IC('tv','big')}</div><h3>테스트 광고</h3><p>실제 광고 대신 3초를 기다려 (개발 모드 전용)</p><div class="bprice" id="fakec">3</div></div>`;$('#modal').classList.add('on');
   const t=setInterval(()=>{n--;const el=$('#fakec');if(el)el.textContent=n;if(n<=0){clearInterval(t);$('#modal').classList.remove('on');onReward()}},1000);
 }
 const todayKey=()=>{const d=new Date(Date.now()+9*3600e3);return d.toISOString().slice(0,10)};
@@ -1842,19 +1904,19 @@ function boxLeft(){if(!MT.box||MT.box.day!==todayKey())MT.box={day:todayKey(),n:
 function boxPool(){return Object.values(IT).filter(it=>it.price>0&&it.price<=5000000&&!MT.inv[it.id]&&!['house','car','lux','wdeco','skin'].includes(it.slot))}
 function openBox(){
   if(boxLeft()<=0)return toast('오늘 럭키 박스는 다 열었어. 내일 또 와!');
-  if(!boxPool().length)return toast('럭키 박스 아이템을 전부 모았어! 🎉');
+  if(!boxPool().length)return toast('럭키 박스 아이템을 전부 모았어');
   showRewarded(()=>{
     const pool=boxPool();if(!pool.length)return;const it=pool[Math.floor(Math.random()*pool.length)];
-    MT.inv[it.id]=1;MT.box.n++;saveM();burst(['🎁','✨','💎']);
+    MT.inv[it.id]=1;MT.box.n++;saveM();burst(['gift','star','gem']);
     const tab=['house','bed','desk','lamp','frame','plant','rug','tv','sofa'].includes(it.slot)?'house':CARMOD.includes(it.slot)?'car':'char';
     const prevTab=myTab;myTab=tab;const th=thumbOf(it.slot,it.id);myTab=prevTab;
-    $('#mbox').innerHTML=`<div class="buybox r${RAR(it.price)}"><div class="rar big">${RAR_NAME[RAR(it.price)]}</div><div class="th th-${tab} bigth">${th}</div><h3>${it.name} 획득!</h3><p class="bnote">마이 탭에서 바로 착용할 수 있어. 오늘 남은 박스 ${boxLeft()}개</p><button class="go flexgo">좋아 🎉</button></div>`;
+    $('#mbox').innerHTML=`<div class="buybox r${RAR(it.price)}"><div class="rar big">${RAR_NAME[RAR(it.price)]}</div><div class="th th-${tab} bigth">${th}</div><h3>${it.name} 획득!</h3><p class="bnote">마이 탭에서 바로 착용할 수 있어. 오늘 남은 박스 ${boxLeft()}개</p><button class="go flexgo">확인</button></div>`;
     $('#modal').classList.add('on');gSync(true);renderBox();if(view==='my')renderMy();
   });
 }
 function renderBox(){['#boxcard2'].forEach(id=>{const e2=$(id);if(e2){if(!rewardOn())e2.style.display='none';else{e2.style.display='';e2.innerHTML=boxHTML()}}});const el=$('#boxcard');if(!el)return;if(!rewardOn()){el.style.display='none';return}el.style.display='';
   el.innerHTML=boxHTML()}
-function boxHTML(){const left=boxLeft();return `<div class="boxrow"><div class="boxic">🎁</div><div class="nm"><b>오늘의 럭키 박스</b><small>광고 보고 열면 꾸미기 아이템 하나가 공짜! (${left}/${BOX_PER_DAY})</small></div><button class="sbtn" data-box="1" ${left<=0?'disabled':''}>${left>0?'📺 열기':'내일 또'}</button></div>`;}
+function boxHTML(){const left=boxLeft();return `<div class="boxrow"><div class="boxic">${IC('gift')}</div><div class="nm"><b>오늘의 럭키 박스</b><small>광고를 보면 꾸미기 아이템 하나를 줘 (${left}/${BOX_PER_DAY})</small></div><button class="sbtn" data-box="1" ${left<=0?'disabled':''}>${left>0?'열기':'내일 또'}</button></div>`;}
 
 // ===== 시작 =====
 function loop(){
@@ -1865,6 +1927,7 @@ function loop(){
 }
 if(DEV)document.addEventListener('DOMContentLoaded',()=>{});
 function boot(){
+  fillIcons();
   if(DEV)$('#devcard').style.display='';
   mountBanners();
   if('serviceWorker' in navigator&&location.protocol==='https:'&&!/claude|anthropic/.test(location.host)){navigator.serviceWorker.register('sw.js').catch(()=>{})}
