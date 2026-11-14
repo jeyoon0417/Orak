@@ -1,6 +1,6 @@
 // 오르락내리락 오프라인 캐시 (새 버전 배포 시 VERSION 숫자만 올리면 됨)
-const VERSION = 'orak-v1.1.2';
-const FILES = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable-512.png'];
+const VERSION = 'orak-v1.3.1';
+const FILES = ['./', './index.html', './privacy.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable-512.png'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(VERSION).then(c => c.addAll(FILES)).then(() => self.skipWaiting()));
@@ -17,7 +17,7 @@ self.addEventListener('activate', e => {
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET' || new URL(e.request.url).origin !== location.origin) return;
   e.respondWith(
-    fetch(e.request)
+    fetch(e.request, { cache: 'no-cache' })   // 깃허브 페이지의 10분 캐시를 건너뛰고 항상 최신 확인
       .then(res => { const copy = res.clone(); caches.open(VERSION).then(c => c.put(e.request, copy)); return res; })
       .catch(() => caches.match(e.request).then(r => r || caches.match('./index.html')))
   );
